@@ -133,12 +133,13 @@ check_status "uci commit dhcp" "DHCP configuration committed"
 log_status "INFO" "Configuring wireless devices..."
 check_status "uci set wireless.@wifi-device[0].disabled='0'" "WiFi device enabled"
 check_status "uci set wireless.@wifi-iface[0].disabled='0'" "WiFi interface enabled"
-check_status "uci set wireless.@wifi-device[0].country='ID'" "WiFi country set to Indonesia"
-check_status "uci set wireless.@wifi-device[0].htmode='HT20'" "WiFi HT mode set to HT20"
 check_status "uci set wireless.@wifi-iface[0].mode='ap'" "WiFi mode set to Access Point"
 check_status "uci set wireless.@wifi-iface[0].encryption='none'" "WiFi encryption disabled"
-check_status "uci set wireless.@wifi-device[0].channel='1'" "WiFi channel set to 1"
 check_status "uci set wireless.@wifi-iface[0].ssid='XIDZs-WRT'" "WiFi SSID set to XIDZs-WRT"
+check_status "uci set wireless.@wifi-device[0].channel='1'" "WiFi channel set to 1"
+check_status "uci set wireless.@wifi-device[0].band='2g'" "WiFi Band 2.4Ghz"
+check_status "uci set wireless.@wifi-device[0].country='ID'" "WiFi country set to Indonesia"
+check_status "uci set wireless.@wifi-device[0].htmode='HT20'" "WiFi HT mode set to HT20"
 
 # Check for Raspberry Pi
 if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo; then
