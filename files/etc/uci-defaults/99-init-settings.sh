@@ -148,6 +148,7 @@ if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo; then
     check_status "uci set wireless.@wifi-iface[1].disabled='0'" "5GHz WiFi interface enabled"
     check_status "uci set wireless.@wifi-device[1].country='ID'" "5GHz WiFi country set to Indonesia"
     check_status "uci set wireless.@wifi-device[1].channel='149'" "5GHz WiFi channel set to 149"
+    check_status "uci set wireless.@wifi-device[1].band='5g'" "WiFi Band 5Ghz"
     check_status "uci set wireless.@wifi-device[1].htmode='VHT80'" "5GHz WiFi HT mode set to VHT80"
     check_status "uci set wireless.@wifi-iface[1].mode='ap'" "5GHz WiFi mode set to Access Point"
     check_status "uci set wireless.@wifi-iface[1].ssid='XIDZs-WRT_5G'" "5GHz WiFi SSID set to XIDZs-WRT_5G"
