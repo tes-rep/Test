@@ -109,9 +109,6 @@ check_status "uci set network.wan.device='usb0'" "WAN device set to usb0"
 check_status "uci set network.modem=interface" "Modem interface created"
 check_status "uci set network.modem.proto='dhcp'" "Modem protocol set to DHCP"
 check_status "uci set network.modem.device='eth1'" "Modem device set to eth1"
-check_status "uci set network.rakitan=interface" "Rakitan interface created"
-check_status "uci set network.rakitan.proto='none'" "Rakitan protocol set to none"
-check_status "uci set network.rakitan.device='wwan0'" "Rakitan device set to wwan0"
 check_status "uci -q delete network.wan6" "delete wan6"
 check_status "uci commit network" "Network configuration committed"
 
@@ -131,36 +128,27 @@ check_status "uci commit dhcp" "DHCP configuration committed"
 
 # configure wireless device
 log_status "INFO" "Configuring wireless devices..."
-check_status "uci set wireless.@wifi-device[0].disabled='0'" "WiFi device enabled"
-check_status "uci set wireless.@wifi-iface[0].disabled='0'" "WiFi interface enabled"
+check_status "uci set wireless.@wifi-device[0].disabled='0'" "WiFi device 0 enabled"
+check_status "uci set wireless.@wifi-iface[0].disabled='0'" "WiFi interface 0 enabled"
 check_status "uci set wireless.@wifi-iface[0].mode='ap'" "WiFi mode set to Access Point"
 check_status "uci set wireless.@wifi-iface[0].encryption='none'" "WiFi encryption disabled"
-check_status "uci set wireless.@wifi-iface[0].ssid='XIDZs-WRT'" "WiFi SSID set to XIDZs-WRT"
-check_status "uci set wireless.@wifi-device[0].channel='1'" "WiFi channel set to 1"
-check_status "uci set wireless.@wifi-device[0].band='2g'" "WiFi Band 2.4Ghz"
 check_status "uci set wireless.@wifi-device[0].country='ID'" "WiFi country set to Indonesia"
-check_status "uci set wireless.@wifi-device[0].htmode='HT20'" "WiFi HT mode set to HT20"
 
 # Check for Raspberry Pi
 if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo; then
     log_status "INFO" "Raspberry Pi 3/4 detected, configuring 5GHz WiFi..."
-    check_status "uci set wireless.@wifi-device[1].disabled='0'" "5GHz WiFi device enabled"
-    check_status "uci set wireless.@wifi-iface[1].disabled='0'" "5GHz WiFi interface enabled"
-    check_status "uci set wireless.@wifi-device[1].country='ID'" "5GHz WiFi country set to Indonesia"
-    check_status "uci set wireless.@wifi-device[1].channel='149'" "5GHz WiFi channel set to 149"
-    check_status "uci set wireless.@wifi-device[1].band='5g'" "WiFi Band 5Ghz"
-    check_status "uci set wireless.@wifi-device[1].htmode='VHT80'" "5GHz WiFi HT mode set to VHT80"
-    check_status "uci set wireless.@wifi-iface[1].mode='ap'" "5GHz WiFi mode set to Access Point"
-    check_status "uci set wireless.@wifi-iface[1].ssid='XIDZs-WRT_5G'" "5GHz WiFi SSID set to XIDZs-WRT_5G"
-    check_status "uci set wireless.@wifi-iface[1].encryption='none'" "5GHz WiFi encryption disabled"
+    check_status "uci set wireless.@wifi-iface[0].ssid='XIDZs-WRT_5G'" "5GHz WiFi SSID set to XIDZs-WRT_5G"
+    check_status "uci set wireless.@wifi-device[0].channel='149'" "5GHz WiFi channel set to 149"
+    check_status "uci set wireless.@radio0.htmode='VHT80'" "5GHz WiFi HT mode set to VHT80"
+    check_status "uci set wireless.@radio0.band='5g'" "WiFi Band 5Ghz"
 else
+    check_status "uci set wireless.@wifi-iface[0].ssid='XIDZs-WRT'" "WiFi SSID set to XIDZs-WRT"
+    check_status "uci set wireless.@wifi-device[0].channel='1'" "WiFi channel set to 1"
+    check_status "uci set wireless.@wifi-device[0].band='2g'" "WiFi Band 2.4Ghz"
     log_status "INFO" "Raspberry Pi 3/4 not detected, skipping 5GHz configuration"
 fi
-
 check_status "uci commit wireless" "Wireless configuration committed"
 check_status "wifi reload && wifi up" "WiFi reloaded and started"
-
-# Check wireless interface
 if iw dev | grep -q Interface; then
     log_status "SUCCESS" "Wireless interface detected"
     if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo; then
