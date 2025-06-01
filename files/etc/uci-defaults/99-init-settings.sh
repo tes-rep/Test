@@ -128,36 +128,29 @@ check_status "uci commit dhcp" "DHCP configuration committed"
 
 # configure wireless device
 log_status "INFO" "Configuring wireless devices..."
-configure_wifi_common() {
-    local device_idx="$1"
-    local iface_idx="$2" 
-    local channel="$3"
-    local htmode="$4"
-    local ssid="$5"
-    
-    # Use safe UCI commands
-    uci -q set wireless.@wifi-device[$device_idx].disabled=0
-    uci -q set wireless.@wifi-iface[$iface_idx].disabled=0
-    uci -q set wireless.@wifi-device[$device_idx].country=ID
-    uci -q set wireless.@wifi-device[$device_idx].channel=$channel
-    uci -q set wireless.@wifi-device[$device_idx].htmode=$htmode
-    uci -q set wireless.@wifi-iface[$iface_idx].mode=ap
-    uci -q set wireless.@wifi-iface[$iface_idx].ssid="$ssid"
-    uci -q set wireless.@wifi-iface[$iface_idx].encryption=none
-}
+check_status "uci -q set wireless.@wifi-device[0].disabled='0'" "WiFi device enabled"
+check_status "uci -q set wireless.@wifi-iface[0].disabled='0'" "WiFi interface enabled"
+check_status "uci -q set wireless.@wifi-device[0].country='ID'" "WiFi country set to Indonesia"
+check_status "uci -q set wireless.@wifi-device[0].htmode='HT20'" "WiFi HT mode set to HT20"
+check_status "uci -q set wireless.@wifi-iface[0].mode='ap'" "WiFi mode set to Access Point"
+check_status "uci -q set wireless.@wifi-iface[0].encryption='none'" "WiFi encryption disabled"
+check_status "uci -q set wireless.@wifi-device[0].channel='9'" "WiFi channel set to 9"
+check_status "uci -q set wireless.@wifi-iface[0].ssid='XIDZs-WRT'" "WiFi SSID set to XIDZs-WRT"
 
-# Configure 2.4GHz
-configure_wifi_common 0 0 3 "HT20" "XIDZs-WRT"
-
-# Configure 5GHz if available
-if grep -q "Raspberry Pi [34]" /proc/cpuinfo 2>/dev/null; then
-    log_status "INFO" "Dual-band device detected, configuring 5GHz..."
-    configure_wifi_common 1 1 149 "VHT80" "XIDZs-WRT_5G"
+# Check for Raspberry Pi
+if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo; then
+    log_status "INFO" "Raspberry Pi 3/4 detected, configuring 5GHz WiFi..."
+    check_status "uci -q set wireless.@wifi-device[1].disabled='0'" "5GHz WiFi device enabled"
+    check_status "uci -q set wireless.@wifi-iface[1].disabled='0'" "5GHz WiFi interface enabled"
+    check_status "uci -q set wireless.@wifi-device[1].country='ID'" "5GHz WiFi country set to Indonesia"
+    check_status "uci -q set wireless.@wifi-device[1].channel='149'" "5GHz WiFi channel set to 149"
+    check_status "uci -q set wireless.@wifi-device[1].htmode='VHT80'" "5GHz WiFi HT mode set to VHT80"
+    check_status "uci -q set wireless.@wifi-iface[1].mode='ap'" "5GHz WiFi mode set to Access Point"
+    check_status "uci -q set wireless.@wifi-iface[1].ssid='XIDZs-WRT_5G'" "5GHz WiFi SSID set to XIDZs-WRT_5G"
+    check_status "uci -q set wireless.@wifi-iface[1].encryption='none'" "5GHz WiFi encryption disabled"
 else
-    log_status "INFO" "Single-band device detected, 5GHz configuration skipped"
+    log_status "INFO" "Raspberry Pi 3/4 not detected, skipping 5GHz configuration"
 fi
-
-log_status "INFO" "Wireless configuration completed"
 
 # Commit and reload wireless
 if ! check_status "uci commit wireless" "Committing wireless configuration"; then
@@ -193,6 +186,27 @@ else
 fi
 
 log_status "INFO" "Wireless setup completed"
+
+# Check wireless interface
+if iw dev | grep -q Interface; then
+    log_status "SUCCESS" "Wireless interface detected"
+    if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo; then
+        if ! grep -q "wifi up" /etc/rc.local; then
+            check_status "sed -i '/exit 0/i # remove if you dont use wireless' /etc/rc.local" "Added WiFi comment to rc.local"
+            check_status "sed -i '/exit 0/i sleep 10 && wifi up' /etc/rc.local" "Added WiFi startup command to rc.local"
+        fi
+        if ! grep -q "wifi up" /etc/crontabs/root; then
+            if echo "# remove if you dont use wireless" >> /etc/crontabs/root && echo "0 */12 * * * wifi down && sleep 5 && wifi up" >> /etc/crontabs/root; then
+                log_status "SUCCESS" "WiFi cron job added"
+                check_status "/etc/init.d/cron restart" "Cron service restarted"
+            else
+                log_status "ERROR" "Failed to add WiFi cron job"
+            fi
+        fi
+    fi
+else
+    log_status "WARNING" "No wireless device detected"
+fi
 
 # remove huawei me909s and dw5821e usb-modeswitch
 log_status "INFO" "Removing Huawei ME909S and DW5821E USB modeswitch entries..."
