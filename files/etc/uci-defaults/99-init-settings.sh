@@ -131,10 +131,10 @@ log_status "INFO" "Configuring wireless devices..."
 check_status "uci set wireless.@wifi-device[0].disabled='0'" "WiFi device 0 enabled"
 check_status "uci set wireless.@wifi-iface[0].disabled='0'" "WiFi interface 0 enabled"
 check_status "uci set wireless.@wifi-device[0].country='ID'" "WiFi country set to Indonesia"
-check_status "uci set wireless.@wifi-device[0].htmode='HT20'" "WiFi HT mode set to HT40"
+check_status "uci set wireless.@wifi-device[0].htmode='HT20'" "WiFi HT mode set to HT20"
 check_status "uci set wireless.@wifi-iface[0].mode='ap'" "WiFi mode set to Access Point"
 check_status "uci set wireless.@wifi-iface[0].encryption='none'" "WiFi encryption disabled"
-check_status "uci set wireless.@wifi-device[0].channel='3'" "WiFi channel set to 5"
+check_status "uci set wireless.@wifi-device[0].channel='1'" "WiFi channel set to 1"
 check_status "uci set wireless.@wifi-iface[0].ssid='XIDZs-WRT'" "WiFi SSID set to XIDZs-WRT"
 
 # Check for Raspberry Pi
@@ -153,7 +153,7 @@ else
 fi
 
 check_status "uci commit wireless" "Wireless configuration committed"
-check_status "wifi reload && sleep 2 && wifi up" "WiFi reloaded and started"
+check_status "wifi reload && wifi up" "WiFi reloaded and started"
 
 # Check wireless interface
 if iw dev | grep -q Interface; then
