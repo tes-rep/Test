@@ -1,486 +1,372 @@
 #!/bin/sh
 
-exec > /root/setup-xidzwrt.log 2>&1
+# Setup logging
+LOG_FILE="/root/setup-xidzwrt.log"
+exec > "$LOG_FILE" 2>&1
 
-# Fungsi logging dan status checking
+# Fungsi untuk logging dengan status
 log_status() {
     local status="$1"
     local message="$2"
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [$status] $message"
-}
-
-check_status() {
-    if [ $? -eq 0 ]; then
-        log_status "SUCCESS" "$1"
-        return 0
-    else
-        log_status "ERROR" "$1 failed"
-        return 1
-    fi
-}
-
-safe_uci() {
-    local action="$1"
-    shift
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     
-    case "$action" in
-        "set")
-            if uci -q get "$1" >/dev/null 2>&1 || uci set "$@"; then
-                return 0
-            else
-                log_status "ERROR" "Failed to set UCI: $*"
-                return 1
-            fi
+    case "$status" in
+        "INFO")
+            echo "[$timestamp] [INFO] $message"
             ;;
-        "delete")
-            if uci -q get "$1" >/dev/null 2>&1; then
-                uci delete "$@"
-                return $?
-            else
-                log_status "INFO" "UCI path does not exist: $1"
-                return 0
-            fi
+        "SUCCESS")
+            echo "[$timestamp] [SUCCESS] ✓ $message"
             ;;
-        "add_list")
-            uci add_list "$@"
-            return $?
+        "ERROR")
+            echo "[$timestamp] [ERROR] ✗ $message"
             ;;
-        "commit")
-            uci commit "$@"
-            return $?
+        "WARNING")
+            echo "[$timestamp] [WARNING] ⚠ $message"
             ;;
         *)
-            log_status "ERROR" "Unknown UCI action: $action"
-            return 1
+            echo "[$timestamp] $message"
             ;;
     esac
 }
 
+# Fungsi untuk check status command
+check_status() {
+    local command="$1"
+    local description="$2"
+    
+    if eval "$command" >/dev/null 2>&1; then
+        log_status "SUCCESS" "$description"
+        return 0
+    else
+        log_status "ERROR" "$description - Command failed: $command"
+        return 1
+    fi
+}
+
+# Header log
+log_status "INFO" "========================================="
+log_status "INFO" "XIDZs-WRT Setup Script Started"
+log_status "INFO" "Script Setup By Xidz-x | Fidz"
+log_status "INFO" "Installed Time: $(date '+%A, %d %B %Y %T')"
+log_status "INFO" "========================================="
+
 # dont remove script !!!
-log_status "INFO" "Setup XIDZs-WRT Started"
-log_status "INFO" "Script By Xidz-x | Fidz"
-echo "Installed Time: $(date '+%A, %d %B %Y %T')"
-
-# Modifikasi tampilan firmware
-log_status "INFO" "Modifying firmware display"
-if [ -f "/www/luci-static/resources/view/status/include/10_system.js" ]; then
-    sed -i "s#_('Firmware Version'),(L.isObject(boardinfo.release)?boardinfo.release.description+' / ':'')+(luciversion||''),#_('Firmware Version'),(L.isObject(boardinfo.release)?boardinfo.release.description+' By Xidz_x':''),#g" /www/luci-static/resources/view/status/include/10_system.js
-    check_status "Firmware display modification"
+log_status "INFO" "Modifying firmware display..."
+if sed -i "s#_('Firmware Version'),(L.isObject(boardinfo.release)?boardinfo.release.description+' / ':'')+(luciversion||''),#_('Firmware Version'),(L.isObject(boardinfo.release)?boardinfo.release.description+' By Xidz_x':''),#g" /www/luci-static/resources/view/status/include/10_system.js; then
+    log_status "SUCCESS" "Firmware display modified"
+else
+    log_status "ERROR" "Failed to modify firmware display"
 fi
 
-if [ -f "/www/luci-static/resources/view/status/include/29_ports.js" ]; then
-    sed -i -E "s|icons/port_%s.png|icons/port_%s.gif|g" /www/luci-static/resources/view/status/include/29_ports.js
-    check_status "Port icons modification"
+check_status "sed -i -E 's|icons/port_%s.png|icons/port_%s.gif|g' /www/luci-static/resources/view/status/include/29_ports.js" "Port icons changed from PNG to GIF"
+
+# Check system release
+log_status "INFO" "Checking system release..."
+if grep -q "ImmortalWrt" /etc/openwrt_release; then
+    log_status "INFO" "ImmortalWrt detected"
+    check_status "sed -i 's/\(DISTRIB_DESCRIPTION='\''ImmortalWrt [0-9]*\.[0-9]*\.[0-9]*\).*'\''/\1'\''/g' /etc/openwrt_release" "ImmortalWrt release description cleaned"
+    check_status "sed -i 's|system/ttyd|services/ttyd|g' /usr/share/luci/menu.d/luci-app-ttyd.json" "TTYD menu moved to services"
+    BRANCH_VERSION=$(grep 'DISTRIB_DESCRIPTION=' /etc/openwrt_release | awk -F"'" '{print $2}')
+    log_status "INFO" "Branch version: $BRANCH_VERSION"
+elif grep -q "OpenWrt" /etc/openwrt_release; then
+    log_status "INFO" "OpenWrt detected"
+    check_status "sed -i 's/\(DISTRIB_DESCRIPTION='\''OpenWrt [0-9]*\.[0-9]*\.[0-9]*\).*'\''/\1'\''/g' /etc/openwrt_release" "OpenWrt release description cleaned"
+    BRANCH_VERSION=$(grep 'DISTRIB_DESCRIPTION=' /etc/openwrt_release | awk -F"'" '{print $2}')
+    log_status "INFO" "Branch version: $BRANCH_VERSION"
+else
+    log_status "WARNING" "Unknown system release"
 fi
 
-# Deteksi dan setup berdasarkan distribusi
-if [ -f "/etc/openwrt_release" ]; then
-    if grep -q "ImmortalWrt" /etc/openwrt_release; then
-        log_status "INFO" "ImmortalWrt detected"
-        sed -i "s/\(DISTRIB_DESCRIPTION='ImmortalWrt [0-9]*\.[0-9]*\.[0-9]*\).*'/\1'/g" /etc/openwrt_release
-        if [ -f "/usr/share/luci/menu.d/luci-app-ttyd.json" ]; then
-            sed -i 's|system/ttyd|services/ttyd|g' /usr/share/luci/menu.d/luci-app-ttyd.json
+# setup login root password
+log_status "INFO" "Setting up root password..."
+if (echo "xyyraa"; sleep 2; echo "xyyraa") | passwd > /dev/null 2>&1; then
+    log_status "SUCCESS" "Root password configured"
+else
+    log_status "ERROR" "Failed to set root password"
+fi
+
+# setup hostname and timezone
+log_status "INFO" "Configuring hostname and timezone to Asia/Jakarta..."
+check_status "uci set system.@system[0].hostname='XIDZs-WRT'" "Hostname set to XIDZs-WRT"
+check_status "uci set system.@system[0].timezone='WIB-7'" "Timezone set to WIB-7"
+check_status "uci set system.@system[0].zonename='Asia/Jakarta'" "Zone name set to Asia/Jakarta"
+check_status "uci delete system.ntp.server" "Existing NTP servers cleared"
+check_status "uci add_list system.ntp.server='pool.ntp.org'" "Added pool.ntp.org NTP server"
+check_status "uci add_list system.ntp.server='id.pool.ntp.org'" "Added id.pool.ntp.org NTP server"
+check_status "uci add_list system.ntp.server='time.google.com'" "Added time.google.com NTP server"
+check_status "uci commit system" "System configuration committed"
+
+# setup bahasa default
+log_status "INFO" "Setting up default language to English..."
+check_status "uci set luci.@core[0].lang='en'" "Language set to English"
+check_status "uci commit luci" "LuCI language configuration committed"
+
+# configure wan and lan
+log_status "INFO" "Configuring WAN and LAN interfaces..."
+check_status "uci set network.wan=interface" "WAN interface created"
+check_status "uci set network.wan.proto='dhcp'" "WAN protocol set to DHCP"
+check_status "uci set network.wan.device='usb0'" "WAN device set to usb0"
+check_status "uci set network.modem=interface" "Modem interface created"
+check_status "uci set network.modem.proto='dhcp'" "Modem protocol set to DHCP"
+check_status "uci set network.modem.device='eth1'" "Modem device set to eth1"
+check_status "uci delete network.wan6" "delete wan6"
+check_status "uci commit network" "Network configuration committed"
+
+log_status "INFO" "Configuring firewall..."
+check_status "uci set firewall.@defaults[0].input='ACCEPT'" "Firewall input policy set to ACCEPT"
+check_status "uci set firewall.@defaults[0].output='ACCEPT'" "Firewall output policy set to ACCEPT"
+check_status "uci set firewall.@defaults[0].forward='REJECT'" "Firewall forward policy set to REJECT"
+check_status "uci set firewall.@zone[1].network='wan modem'" "Firewall zone configured for WAN and MODEM"
+check_status "uci commit firewall" "Firewall configuration committed"
+
+# disable ipv6 lan
+log_status "INFO" "Disabling IPv6 on LAN..."
+check_status "uci delete dhcp.lan.dhcpv6" "DHCPv6 disabled on LAN"
+check_status "uci delete dhcp.lan.ra" "Router Advertisement disabled on LAN"
+check_status "uci delete dhcp.lan.ndp" "NDP disabled on LAN"
+check_status "uci commit dhcp" "DHCP configuration committed"
+
+# configure wireless device
+log_status "INFO" "Configuring wireless devices..."
+check_status "uci set wireless.@wifi-device[0].disabled='0'" "WiFi device 0 enabled"
+check_status "uci set wireless.@wifi-iface[0].disabled='0'" "WiFi interface 0 enabled"
+check_status "uci set wireless.@wifi-device[0].country='ID'" "WiFi country set to Indonesia"
+check_status "uci set wireless.@wifi-device[0].htmode='HT20'" "WiFi HT mode set to HT40"
+check_status "uci set wireless.@wifi-iface[0].mode='ap'" "WiFi mode set to Access Point"
+check_status "uci set wireless.@wifi-iface[0].encryption='none'" "WiFi encryption disabled"
+check_status "uci set wireless.@wifi-device[0].channel='3'" "WiFi channel set to 5"
+check_status "uci set wireless.@wifi-iface[0].ssid='XIDZs-WRT'" "WiFi SSID set to XIDZs-WRT"
+
+# Check for Raspberry Pi
+if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo; then
+    log_status "INFO" "Raspberry Pi 3/4 detected, configuring 5GHz WiFi..."
+    check_status "uci set wireless.@wifi-device[1].disabled='0'" "5GHz WiFi device enabled"
+    check_status "uci set wireless.@wifi-iface[1].disabled='0'" "5GHz WiFi interface enabled"
+    check_status "uci set wireless.@wifi-device[1].country='ID'" "5GHz WiFi country set to Indonesia"
+    check_status "uci set wireless.@wifi-device[1].channel='149'" "5GHz WiFi channel set to 149"
+    check_status "uci set wireless.@wifi-device[1].htmode='VHT80'" "5GHz WiFi HT mode set to VHT80"
+    check_status "uci set wireless.@wifi-iface[1].mode='ap'" "5GHz WiFi mode set to Access Point"
+    check_status "uci set wireless.@wifi-iface[1].ssid='XIDZs-WRT_5G'" "5GHz WiFi SSID set to XIDZs-WRT_5G"
+    check_status "uci set wireless.@wifi-iface[1].encryption='none'" "5GHz WiFi encryption disabled"
+else
+    log_status "INFO" "Raspberry Pi 3/4 not detected, skipping 5GHz configuration"
+fi
+
+check_status "uci commit wireless" "Wireless configuration committed"
+check_status "wifi reload && sleep 2 && wifi up" "WiFi reloaded and started"
+
+# Check wireless interface
+if iw dev | grep -q Interface; then
+    log_status "SUCCESS" "Wireless interface detected"
+    if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo; then
+        if ! grep -q "wifi up" /etc/rc.local; then
+            check_status "sed -i '/exit 0/i # remove if you dont use wireless' /etc/rc.local" "Added WiFi comment to rc.local"
+            check_status "sed -i '/exit 0/i sleep 10 && wifi up' /etc/rc.local" "Added WiFi startup command to rc.local"
         fi
-        echo Branch version: "$(grep 'DISTRIB_DESCRIPTION=' /etc/openwrt_release | awk -F"'" '{print $2}')"
-    elif grep -q "OpenWrt" /etc/openwrt_release; then
-        log_status "INFO" "OpenWrt detected"
-        sed -i "s/\(DISTRIB_DESCRIPTION='OpenWrt [0-9]*\.[0-9]*\.[0-9]*\).*'/\1'/g" /etc/openwrt_release
-        echo Branch version: "$(grep 'DISTRIB_DESCRIPTION=' /etc/openwrt_release | awk -F"'" '{print $2}')"
-    fi
-fi
-
-# Setup login root password
-log_status "INFO" "Setting up root password"
-if command -v passwd >/dev/null 2>&1; then
-    (echo "xyyraa"; sleep 2; echo "xyyraa") | passwd > /dev/null 2>&1
-    check_status "Root password setup"
-fi
-
-# Setup hostname dan timezone
-log_status "INFO" "Setting up hostname and timezone"
-safe_uci set system.@system[0].hostname='XIDZs-WRT'
-safe_uci set system.@system[0].timezone='WIB-7'
-safe_uci set system.@system[0].zonename='Asia/Jakarta'
-safe_uci delete system.ntp.server
-safe_uci add_list system.ntp.server="pool.ntp.org"
-safe_uci add_list system.ntp.server="id.pool.ntp.org"
-safe_uci add_list system.ntp.server="time.google.com"
-safe_uci commit system
-check_status "Hostname and timezone setup"
-
-# Setup bahasa default
-log_status "INFO" "Setting up default language"
-safe_uci set luci.@core[0].lang='en'
-safe_uci commit luci
-check_status "Default language setup"
-
-# Configure WAN dan LAN
-log_status "INFO" "Configuring WAN and LAN"
-safe_uci set network.wan=interface
-safe_uci set network.wan.proto='dhcp'
-safe_uci set network.wan.device='usb0'
-safe_uci set network.modem=interface
-safe_uci set network.modem.proto='dhcp'
-safe_uci set network.modem.device='eth1'
-safe_uci delete network.wan6
-safe_uci commit network
-check_status "Network configuration"
-
-# Configure firewall
-log_status "INFO" "Configuring firewall"
-safe_uci set firewall.@defaults[0].input='ACCEPT'
-safe_uci set firewall.@defaults[0].output='ACCEPT'
-safe_uci set firewall.@defaults[0].forward='REJECT'
-safe_uci set firewall.@zone[1].network='wan modem'
-safe_uci commit firewall
-check_status "Firewall configuration"
-
-# Disable IPv6 LAN
-log_status "INFO" "Disabling IPv6 LAN"
-safe_uci delete dhcp.lan.dhcpv6
-safe_uci delete dhcp.lan.ra
-safe_uci delete dhcp.lan.ndp
-safe_uci commit dhcp
-check_status "IPv6 LAN disable"
-
-# Configure wireless device
-log_status "INFO" "Configuring wireless device"
-if uci -q get wireless.@wifi-device[0] >/dev/null 2>&1; then
-    safe_uci set wireless.@wifi-device[0].disabled='0'
-    safe_uci set wireless.@wifi-iface[0].disabled='0'
-    safe_uci set wireless.@wifi-device[0].country='ID'
-    safe_uci set wireless.@wifi-device[0].htmode='HT20'
-    safe_uci set wireless.@wifi-iface[0].mode='ap'
-    safe_uci set wireless.@wifi-iface[0].encryption='none'
-    safe_uci set wireless.@wifi-device[0].channel='5'
-    safe_uci set wireless.@wifi-iface[0].ssid='XIDZs-WRT'
-    
-    if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo && uci -q get wireless.@wifi-device[1] >/dev/null 2>&1; then
-        log_status "INFO" "Configuring dual-band wireless for Raspberry Pi"
-        safe_uci set wireless.@wifi-device[1].disabled='0'
-        safe_uci set wireless.@wifi-iface[1].disabled='0'
-        safe_uci set wireless.@wifi-device[1].country='ID'
-        safe_uci set wireless.@wifi-device[1].channel='149'
-        safe_uci set wireless.@wifi-device[1].htmode='VHT80'
-        safe_uci set wireless.@wifi-iface[1].mode='ap'
-        safe_uci set wireless.@wifi-iface[1].ssid='XIDZs-WRT_5G'
-        safe_uci set wireless.@wifi-iface[1].encryption='none'
-    fi
-    
-    safe_uci commit wireless
-    check_status "Wireless configuration"
-    
-    # Reload wireless
-    if command -v wifi >/dev/null 2>&1; then
-        wifi reload
-        if [ $? -ne 0 ]; then
-            log_status "WARNING" "Error reloading wireless, trying individual up/down"
-            wifi down
-            sleep 2
-            wifi up
-        fi
-        
-        wifi reload && wifi up
-        
-        if command -v iw >/dev/null 2>&1 && iw dev | grep -q Interface; then
-            log_status "SUCCESS" "Wireless interface detected"
-            if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo; then
-                if [ -f "/etc/rc.local" ] && ! grep -q "wifi up" /etc/rc.local; then
-                    sed -i '/exit 0/i # remove if you dont use wireless' /etc/rc.local
-                    sed -i '/exit 0/i sleep 10 && wifi up' /etc/rc.local
-                fi
-                if [ -f "/etc/crontabs/root" ] && ! grep -q "wifi up" /etc/crontabs/root; then
-                    echo "# remove if you dont use wireless" >> /etc/crontabs/root
-                    echo "0 */12 * * * wifi down && sleep 5 && wifi up" >> /etc/crontabs/root
-                    if [ -f "/etc/init.d/cron" ]; then
-                        /etc/init.d/cron restart
-                    fi
-                fi
+        if ! grep -q "wifi up" /etc/crontabs/root; then
+            if echo "# remove if you dont use wireless" >> /etc/crontabs/root && echo "0 */12 * * * wifi down && sleep 5 && wifi up" >> /etc/crontabs/root; then
+                log_status "SUCCESS" "WiFi cron job added"
+                check_status "/etc/init.d/cron restart" "Cron service restarted"
+            else
+                log_status "ERROR" "Failed to add WiFi cron job"
             fi
-        else
-            log_status "INFO" "No wireless device detected"
         fi
     fi
 else
-    log_status "INFO" "No wireless configuration found"
+    log_status "WARNING" "No wireless device detected"
 fi
 
-# Remove Huawei ME909S dan DW5821E USB-modeswitch
-log_status "INFO" "Removing Huawei ME909S and DW5821E USB-modeswitch"
-if [ -f "/etc/usb-mode.json" ]; then
-    sed -i -e '/12d1:15c1/,+5d' -e '/413c:81d7/,+5d' /etc/usb-mode.json
-    check_status "USB-modeswitch removal"
-fi
+# remove huawei me909s and dw5821e usb-modeswitch
+log_status "INFO" "Removing Huawei ME909S and DW5821E USB modeswitch entries..."
+check_status "sed -i -e '/12d1:15c1/,+5d' -e '/413c:81d7/,+5d' /etc/usb-mode.json" "USB modeswitch entries removed"
 
-# Disable xmm-modem
-log_status "INFO" "Disabling xmm-modem"
-if uci -q get xmm-modem.@xmm-modem[0] >/dev/null 2>&1; then
-    safe_uci set xmm-modem.@xmm-modem[0].enable='0'
-    safe_uci commit xmm-modem
-    check_status "XMM-modem disable"
-fi
+# create file konfigurasi xmm-modem
+log_status "INFO" "Disabling XMM-Modem using UCI"
+check_status "uci set xmm-modem.@xmm-modem[0].enable='0'" "Disable xmm-modem"
+check_status "uci commit xmm-modem" "disable xmm-modem commited"
 
 # Disable opkg signature check
-log_status "INFO" "Disabling opkg signature check"
-if [ -f "/etc/opkg.conf" ]; then
-    sed -i 's/option check_signature/# option check_signature/g' /etc/opkg.conf
-    check_status "OPKG signature check disable"
+log_status "INFO" "Disabling OPKG signature check..."
+check_status "sed -i 's/option check_signature/# option check_signature/g' /etc/opkg.conf" "OPKG signature check disabled"
+
+# add custom repository
+log_status "INFO" "Adding custom repository..."
+ARCH=$(grep "OPENWRT_ARCH" /etc/os-release | awk -F '"' '{print $2}')
+if echo "src/gz custom_packages https://dl.openwrt.ai/latest/packages/$ARCH/kiddin9" >> /etc/opkg/customfeeds.conf; then
+    log_status "SUCCESS" "Custom repository added for architecture: $ARCH"
+else
+    log_status "ERROR" "Failed to add custom repository"
 fi
 
-# Add custom repository
-log_status "INFO" "Adding custom repository"
-if [ -f "/etc/os-release" ] && grep -q "OPENWRT_ARCH" /etc/os-release; then
-    ARCH=$(grep "OPENWRT_ARCH" /etc/os-release | awk -F '"' '{print $2}')
-    if [ -n "$ARCH" ]; then
-        echo "src/gz custom_packages https://dl.openwrt.ai/latest/packages/${ARCH}/kiddin9" >> /etc/opkg/customfeeds.conf
-        check_status "Custom repository addition"
-    fi
-fi
+# setup default theme
+log_status "INFO" "Setting up Argon theme as default..."
+check_status "uci set luci.main.mediaurlbase='/luci-static/argon'" "Argon theme set as default"
+check_status "uci commit luci" "LuCI theme configuration committed"
 
-# Setup default theme
-log_status "INFO" "Setting up Argon theme"
-safe_uci set luci.main.mediaurlbase='/luci-static/argon'
-safe_uci commit luci
-check_status "Argon theme setup"
+# remove login password ttyd
+log_status "INFO" "Configuring TTYD without login password..."
+check_status "uci set ttyd.@ttyd[0].command='/bin/bash --login'" "TTYD login password removed"
+check_status "uci commit ttyd" "TTYD configuration committed"
 
-# Remove login password ttyd
-log_status "INFO" "Configuring ttyd"
-if uci -q get ttyd.@ttyd[0] >/dev/null 2>&1; then
-    safe_uci set ttyd.@ttyd[0].command='/bin/bash --login'
-    safe_uci commit ttyd
-    check_status "TTYD configuration"
-fi
+# symlink Tinyfm
+log_status "INFO" "Creating TinyFM symlink..."
+check_status "ln -s / /www/tinyfm/rootfs" "TinyFM rootfs symlink created"
 
-# Symlink Tinyfm
-log_status "INFO" "Setting up TinyFM symlink"
-if [ -d "/www/tinyfm" ]; then
-    ln -sf / /www/tinyfm/rootfs
-    check_status "TinyFM symlink creation"
-fi
-
-# Setup device amlogic
-log_status "INFO" "Setting up Amlogic device configuration"
-if command -v opkg >/dev/null 2>&1 && opkg list-installed | grep -q luci-app-amlogic; then
+# setup device amlogic
+log_status "INFO" "Checking for Amlogic device configuration..."
+if opkg list-installed | grep -q luci-app-amlogic; then
     log_status "INFO" "luci-app-amlogic detected"
-    [ -f "/etc/profile.d/30-sysinfo.sh" ] && rm -f /etc/profile.d/30-sysinfo.sh
-    if [ -f "/etc/rc.local" ]; then
-        sed -i '/exit 0/i #sleep 4 && /usr/bin/k5hgled -r' /etc/rc.local
-        sed -i '/exit 0/i #sleep 4 && /usr/bin/k6hgled -r' /etc/rc.local
-    fi
+    check_status "rm -f /etc/profile.d/30-sysinfo.sh" "Removed sysinfo profile script"
+    check_status "sed -i '/exit 0/i #sleep 4 && /usr/bin/k5hgled -r' /etc/rc.local" "Added K5 LED command to rc.local (commented)"
+    check_status "sed -i '/exit 0/i #sleep 4 && /usr/bin/k6hgled -r' /etc/rc.local" "Added K6 LED command to rc.local (commented)"
 else
     log_status "INFO" "luci-app-amlogic not detected"
-    rm -f /usr/bin/k5hgled /usr/bin/k6hgled /usr/bin/k5hgledon /usr/bin/k6hgledon
+    check_status "rm -f /usr/bin/k5hgled /usr/bin/k6hgled /usr/bin/k5hgledon /usr/bin/k6hgledon" "Removed LED control binaries"
 fi
 
-# Setup misc settings and permission
-log_status "INFO" "Setting up misc settings and permissions"
-if [ -f "/etc/profile" ]; then
-    sed -i -e 's/\[ -f \/etc\/banner \] && cat \/etc\/banner/#&/' \
-           -e 's/\[ -n "$FAILSAFE" \] && cat \/etc\/banner.failsafe/& || \/usr\/bin\/idz/' /etc/profile
+# setup misc settings and permission
+log_status "INFO" "Setting up miscellaneous settings and permissions..."
+check_status "sed -i -e 's/\[ -f \/etc\/banner \] && cat \/etc\/banner/#&/' -e 's/\[ -n \"\$FAILSAFE\" \] && cat \/etc\/banner.failsafe/& || \/usr\/bin\/idz/' /etc/profile" "Profile banner configuration modified"
+check_status "chmod +x /usr/lib/ModemManager/connection.d/10-report-down" "ModemManager script permissions set"
+check_status "chmod -R +x /sbin /usr/bin" "Binary directories permissions set"
+check_status "chmod +x /www/vnstati/vnstati.sh" "VnStati script permissions set"
+
+if [ -f /root/install2.sh ]; then
+    check_status "chmod +x /root/install2.sh && /root/install2.sh" "Secondary installation script executed"
+else
+    log_status "WARNING" "install2.sh not found, skipping"
 fi
 
-# Set permissions
-for dir in /sbin /usr/bin; do
-    [ -d "$dir" ] && chmod -R +x "$dir"
-done
+# move jquery.min.js
+log_status "INFO" "Moving jQuery library..."
+check_status "mv /usr/share/netdata/web/lib/jquery-3.6.0.min.js /usr/share/netdata/web/lib/jquery-2.2.4.min.js" "jQuery library version changed"
 
-[ -f "/usr/lib/ModemManager/connection.d/10-report-down" ] && chmod +x /usr/lib/ModemManager/connection.d/10-report-down
-[ -f "/www/vnstati/vnstati.sh" ] && chmod +x /www/vnstati/vnstati.sh
-[ -f "/root/install2.sh" ] && chmod +x /root/install2.sh && /root/install2.sh
+# create directory vnstat
+log_status "INFO" "Creating VnStat directory..."
+check_status "mkdir -p /etc/vnstat" "VnStat directory created"
 
-check_status "Misc settings and permissions"
+# restart netdata and vnstat
+log_status "INFO" "Restarting Netdata and VnStat services..."
+check_status "/etc/init.d/netdata restart" "Netdata service restarted"
+check_status "/etc/init.d/vnstat restart" "VnStat service restarted"
 
-# Move jquery.min.js
-log_status "INFO" "Moving jQuery library"
-if [ -f "/usr/share/netdata/web/lib/jquery-3.6.0.min.js" ]; then
-    mv /usr/share/netdata/web/lib/jquery-3.6.0.min.js /usr/share/netdata/web/lib/jquery-2.2.4.min.js
-    check_status "jQuery library move"
+# run vnstati.sh
+log_status "INFO" "Running VnStati script..."
+check_status "/www/vnstati/vnstati.sh" "VnStati script executed"
+
+# setup Auto Vnstat Database Backup
+log_status "INFO" "Setting up VnStat database backup..."
+check_status "chmod +x /etc/init.d/vnstat_backup && /etc/init.d/vnstat_backup enable" "VnStat backup service enabled"
+
+# add TTL
+log_status "INFO" "Adding and running TTL script..."
+if [ -f /root/indowrt.sh ]; then
+    check_status "chmod +x /root/indowrt.sh && /root/indowrt.sh" "TTL script executed"
+else
+    log_status "WARNING" "indowrt.sh not found, skipping TTL configuration"
 fi
 
-# Create directory vnstat
-log_status "INFO" "Creating VnStat directory"
-[ ! -d "/etc/vnstat" ] && mkdir -p /etc/vnstat
-check_status "VnStat directory creation"
-
-# Restart netdata and vnstat
-log_status "INFO" "Restarting NetData and VnStat services"
-for service in netdata vnstat; do
-    if [ -f "/etc/init.d/$service" ]; then
-        /etc/init.d/$service restart
-        check_status "$service restart"
-    fi
-done
-
-# Run vnstati.sh
-log_status "INFO" "Running VnStati script"
-if [ -x "/www/vnstati/vnstati.sh" ]; then
-    /www/vnstati/vnstati.sh
-    check_status "VnStati script execution"
+# add port board.json
+log_status "INFO" "Adding port configuration..."
+if [ -f /root/addport.sh ]; then
+    check_status "chmod +x /root/addport.sh && /root/addport.sh" "Port configuration script executed"
+else
+    log_status "WARNING" "addport.sh not found, skipping port configuration"
 fi
 
-# Setup Auto Vnstat Database Backup
-log_status "INFO" "Setting up VnStat database backup"
-if [ -f "/etc/init.d/vnstat_backup" ]; then
-    chmod +x /etc/init.d/vnstat_backup && /etc/init.d/vnstat_backup enable
-    check_status "VnStat backup setup"
-fi
-
-# Add TTL
-log_status "INFO" "Setting up TTL script"
-if [ -f "/root/indowrt.sh" ]; then
-    chmod +x /root/indowrt.sh && /root/indowrt.sh
-    check_status "TTL script execution"
-fi
-
-# Add port board.json
-log_status "INFO" "Adding port configuration"
-if [ -f "/root/addport.sh" ]; then
-    chmod +x /root/addport.sh && /root/addport.sh
-    check_status "Port configuration"
-fi
-
-# Setup tunnel applications
-log_status "INFO" "Configuring tunnel applications"
+# setup tunnel installed
+log_status "INFO" "Checking for tunnel applications..."
 for pkg in luci-app-openclash luci-app-nikki luci-app-passwall; do
-    if command -v opkg >/dev/null 2>&1 && opkg list-installed | grep -qw "$pkg"; then
+    if opkg list-installed | grep -qw "$pkg"; then
         log_status "INFO" "$pkg detected"
         case "$pkg" in
             luci-app-openclash)
-                [ -f "/etc/openclash/core/clash_meta" ] && chmod +x /etc/openclash/core/clash_meta
-                [ -f "/etc/openclash/Country.mmdb" ] && chmod +x /etc/openclash/Country.mmdb
-                find /etc/openclash -name "Geo*" -type f -exec chmod +x {} \; 2>/dev/null
+                check_status "chmod +x /etc/openclash/core/clash_meta" "OpenClash core permissions set"
+                check_status "chmod +x /etc/openclash/Country.mmdb" "OpenClash Country.mmdb permissions set"
+                check_status "chmod +x /etc/openclash/Geo* 2>/dev/null || true" "OpenClash Geo files permissions set"
                 
-                if [ -f "/usr/bin/patchoc.sh" ]; then
-                    log_status "INFO" "Patching OpenClash overview"
-                    bash /usr/bin/patchoc.sh
-                    if [ -f "/etc/rc.local" ]; then
-                        sed -i '/exit 0/i #/usr/bin/patchoc.sh' /etc/rc.local 2>/dev/null
-                    fi
+                log_status "INFO" "Patching OpenClash overview..."
+                if [ -f /usr/bin/patchoc.sh ]; then
+                    check_status "bash /usr/bin/patchoc.sh" "OpenClash overview patched"
+                    check_status "sed -i '/exit 0/i #/usr/bin/patchoc.sh' /etc/rc.local 2>/dev/null || true" "OpenClash patch added to rc.local"
+                else
+                    log_status "WARNING" "patchoc.sh not found"
                 fi
                 
-                [ -f "/etc/openclash/history/Quenx.db" ] && ln -sf /etc/openclash/history/Quenx.db /etc/openclash/cache.db
-                [ -f "/etc/openclash/core/clash_meta" ] && ln -sf /etc/openclash/core/clash_meta /etc/openclash/clash
-                
-                # Cleanup
-                rm -f /etc/config/openclash
-                rm -rf /etc/openclash/custom /etc/openclash/game_rules
-                rm -f /usr/share/openclash/openclash_version.sh
-                
-                if [ -d "/etc/openclash/rule_provider" ]; then
-                    find /etc/openclash/rule_provider -type f ! -name "*.yaml" -exec rm -f {} \;
-                fi
-                
-                [ -f "/etc/config/openclash1" ] && mv /etc/config/openclash1 /etc/config/openclash 2>/dev/null
+                check_status "ln -sf /etc/openclash/history/Quenx.db /etc/openclash/cache.db" "OpenClash cache database symlink created"
+                check_status "ln -sf /etc/openclash/core/clash_meta /etc/openclash/clash" "OpenClash binary symlink created"
+                check_status "rm -f /etc/config/openclash" "Old OpenClash config removed"
+                check_status "rm -rf /etc/openclash/custom /etc/openclash/game_rules" "OpenClash custom and game rules removed"
+                check_status "rm -f /usr/share/openclash/openclash_version.sh" "OpenClash version script removed"
+                check_status "find /etc/openclash/rule_provider -type f ! -name '*.yaml' -exec rm -f {} \;" "Non-YAML rule files removed"
+                check_status "mv /etc/config/openclash1 /etc/config/openclash 2>/dev/null || true" "OpenClash configuration restored"
                 ;;
             luci-app-nikki)
-                rm -rf /etc/nikki/run/providers
-                find /etc/nikki/run -name "Geo*" -type f -exec chmod +x {} \; 2>/dev/null
-                log_status "INFO" "Symlinking Nikki to OpenClash"
-                
-                [ -d "/etc/openclash/proxy_provider" ] && ln -sf /etc/openclash/proxy_provider /etc/nikki/run
-                [ -d "/etc/openclash/rule_provider" ] && ln -sf /etc/openclash/rule_provider /etc/nikki/run
-                
-                if [ -f "/etc/config/alpha" ]; then
-                    sed -i '64s/Enable/Disable/' /etc/config/alpha
-                fi
-                if [ -f "/usr/lib/lua/luci/view/themes/argon/header.htm" ]; then
-                    sed -i '171s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm
-                fi
+                check_status "rm -rf /etc/nikki/run/providers" "Nikki providers directory removed"
+                check_status "chmod +x /etc/nikki/run/Geo* 2>/dev/null || true" "Nikki Geo files permissions set"
+                log_status "INFO" "Creating symlinks from OpenClash to Nikki..."
+                check_status "ln -sf /etc/openclash/proxy_provider /etc/nikki/run" "Nikki proxy provider symlink created"
+                check_status "ln -sf /etc/openclash/rule_provider /etc/nikki/run" "Nikki rule provider symlink created"
+                check_status "sed -i '64s/Enable/Disable/' /etc/config/alpha" "Alpha config updated for Nikki"
+                check_status "sed -i '171s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header updated for Nikki"
                 ;;
             luci-app-passwall)
-                if [ -f "/etc/config/alpha" ]; then
-                    sed -i '88s/Enable/Disable/' /etc/config/alpha
-                fi
-                if [ -f "/usr/lib/lua/luci/view/themes/argon/header.htm" ]; then
-                    sed -i '172s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm
-                fi
+                check_status "sed -i '88s/Enable/Disable/' /etc/config/alpha" "Alpha config updated for Passwall"
+                check_status "sed -i '172s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header updated for Passwall"
                 ;;
         esac
-        check_status "$pkg configuration"
     else
-        log_status "INFO" "$pkg not detected - cleaning up"
+        log_status "INFO" "$pkg not detected, cleaning up..."
         case "$pkg" in
             luci-app-openclash)
-                rm -f /etc/config/openclash1
-                rm -rf /etc/openclash /usr/share/openclash /usr/lib/lua/luci/view/openclash
-                if [ -f "/etc/config/alpha" ]; then
-                    sed -i '104s/Enable/Disable/' /etc/config/alpha
-                fi
-                if [ -f "/usr/lib/lua/luci/view/themes/argon/header.htm" ]; then
-                    sed -i '167s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm
-                    sed -i '187s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm
-                    sed -i '189s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm
-                fi
+                check_status "rm -f /etc/config/openclash1" "OpenClash backup config removed"
+                check_status "rm -rf /etc/openclash /usr/share/openclash /usr/lib/lua/luci/view/openclash" "OpenClash files and directories removed"
+                check_status "sed -i '104s/Enable/Disable/' /etc/config/alpha" "Alpha config updated (OpenClash disabled)"
+                check_status "sed -i '167s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 167 removed"
+                check_status "sed -i '187s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 187 removed"
+                check_status "sed -i '189s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 189 removed"
                 ;;
             luci-app-nikki)
-                rm -rf /etc/config/nikki /etc/nikki
-                if [ -f "/etc/config/alpha" ]; then
-                    sed -i '120s/Enable/Disable/' /etc/config/alpha
-                fi
-                if [ -f "/usr/lib/lua/luci/view/themes/argon/header.htm" ]; then
-                    sed -i '168s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm
-                fi
+                check_status "rm -rf /etc/config/nikki /etc/nikki" "Nikki config and directories removed"
+                check_status "sed -i '120s/Enable/Disable/' /etc/config/alpha" "Alpha config updated (Nikki disabled)"
+                check_status "sed -i '168s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 168 removed"
                 ;;
             luci-app-passwall)
-                rm -f /etc/config/passwall
-                if [ -f "/etc/config/alpha" ]; then
-                    sed -i '136s/Enable/Disable/' /etc/config/alpha
-                fi
-                if [ -f "/usr/lib/lua/luci/view/themes/argon/header.htm" ]; then
-                    sed -i '169s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm
-                fi
+                check_status "rm -f /etc/config/passwall" "Passwall config removed"
+                check_status "sed -i '136s/Enable/Disable/' /etc/config/alpha" "Alpha config updated (Passwall disabled)"
+                check_status "sed -i '169s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 169 removed"
                 ;;
         esac
-        check_status "$pkg cleanup"
     fi
 done
 
-# Setup uhttpd dan PHP8
-log_status "INFO" "Setting up uhttpd and PHP8"
-safe_uci set uhttpd.main.ubus_prefix='/ubus'
-safe_uci set uhttpd.main.interpreter='.php=/usr/bin/php-cgi'
-safe_uci set uhttpd.main.index_page='cgi-bin/luci'
-safe_uci add_list uhttpd.main.index_page='index.html'
-safe_uci add_list uhttpd.main.index_page='index.php'
-safe_uci commit uhttpd
+# Setup uhttpd and PHP8
+log_status "INFO" "Configuring uhttpd and PHP8..."
+check_status "uci set uhttpd.main.ubus_prefix='/ubus'" "uhttpd ubus prefix set"
+check_status "uci set uhttpd.main.interpreter='.php=/usr/bin/php-cgi'" "uhttpd PHP interpreter configured"
+check_status "uci set uhttpd.main.index_page='cgi-bin/luci'" "uhttpd index page set to LuCI"
+check_status "uci add_list uhttpd.main.index_page='index.html'" "Added index.html to uhttpd index pages"
+check_status "uci add_list uhttpd.main.index_page='index.php'" "Added index.php to uhttpd index pages"
+check_status "uci commit uhttpd" "uhttpd configuration committed"
 
-if [ -f "/etc/php.ini" ]; then
-    sed -i -E "s|memory_limit = [0-9]+M|memory_limit = 128M|g" /etc/php.ini
-    sed -i -E "s|display_errors = On|display_errors = Off|g" /etc/php.ini
+check_status "sed -i -E 's|memory_limit = [0-9]+M|memory_limit = 128M|g' /etc/php.ini" "PHP memory limit set to 128M"
+check_status "sed -i -E 's|display_errors = On|display_errors = Off|g' /etc/php.ini" "PHP display errors disabled"
+check_status "ln -sf /usr/bin/php-cli /usr/bin/php" "PHP CLI symlink created"
+
+if [ -d /usr/lib/php8 ] && [ ! -d /usr/lib/php ]; then
+    check_status "ln -sf /usr/lib/php8 /usr/lib/php" "PHP8 library symlink created"
 fi
 
-[ -f "/usr/bin/php-cli" ] && ln -sf /usr/bin/php-cli /usr/bin/php
-[ -d "/usr/lib/php8" ] && [ ! -d "/usr/lib/php" ] && ln -sf /usr/lib/php8 /usr/lib/php
-
-if [ -f "/etc/init.d/uhttpd" ]; then
-    /etc/init.d/uhttpd restart
-    check_status "uhttpd and PHP8 setup"
-fi
+check_status "/etc/init.d/uhttpd restart" "uhttpd service restarted"
 
 log_status "SUCCESS" "All setup completed successfully"
+check_status "rm -rf /etc/uci-defaults/$(basename $0)" "Cleanup: removed script from uci-defaults"
 
-# Cleanup
-SCRIPT_NAME=$(basename "$0")
-if [ -f "/etc/uci-defaults/$SCRIPT_NAME" ]; then
-    rm -rf "/etc/uci-defaults/$SCRIPT_NAME"
-    log_status "INFO" "Cleanup completed"
-fi
-
-# Sync filesystem sebelum reboot
-log_status "INFO" "Syncing filesystem before reboot"
-sync
-sleep 2
-
-# Reboot system
-log_status "INFO" "Rebooting system in 3 seconds..."
-echo "System will reboot in 5 seconds to apply all changes..."
-sleep 3
-
-if command -v reboot >/dev/null 2>&1; then
-    log_status "INFO" "Initiating system reboot"
-    reboot
-else
-    log_status "ERROR" "Reboot command not found, manual reboot required"
-fi
+log_status "INFO" "========================================="
+log_status "INFO" "XIDZs-WRT Setup Script Finished"
+log_status "INFO" "Automatic system reboot"
+log_status "INFO" "Check log file: $LOG_FILE"
+log_status "INFO" "========================================="
+check_status "reboot" "Reboot Devices"
 
 exit 0
