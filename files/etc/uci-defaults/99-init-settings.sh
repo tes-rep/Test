@@ -307,11 +307,11 @@ for pkg in luci-app-openclash luci-app-nikki luci-app-passwall; do
                 log_status "INFO" "Creating symlinks from OpenClash to Nikki..."
                 check_status "ln -sf /etc/openclash/proxy_provider /etc/nikki/run" "Nikki proxy provider symlink created"
                 check_status "ln -sf /etc/openclash/rule_provider /etc/nikki/run" "Nikki rule provider symlink created"
-                check_status "sed -i '64s/Enable/Disable/' /etc/config/alpha" "Alpha config updated for Nikki"
+                check_status "sed -i '64s/'Enable'/'Disable'/' /etc/config/alpha" "Alpha config updated for Nikki"
                 check_status "sed -i '171s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header updated for Nikki"
                 ;;
             luci-app-passwall)
-                check_status "sed -i '88s/Enable/Disable/' /etc/config/alpha" "Alpha config updated for Passwall"
+                check_status "sed -i '88s/'Enable'/'Disable'/' /etc/config/alpha" "Alpha config updated for Passwall"
                 check_status "sed -i '172s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header updated for Passwall"
                 ;;
         esac
@@ -321,19 +321,19 @@ for pkg in luci-app-openclash luci-app-nikki luci-app-passwall; do
             luci-app-openclash)
                 check_status "rm -f /etc/config/openclash1" "OpenClash backup config removed"
                 check_status "rm -rf /etc/openclash /usr/share/openclash /usr/lib/lua/luci/view/openclash" "OpenClash files and directories removed"
-                check_status "sed -i '104s/Enable/Disable/' /etc/config/alpha" "Alpha config updated (OpenClash disabled)"
+                check_status "sed -i '104s/'Enable'/'Disable'/' /etc/config/alpha" "Alpha config updated (OpenClash disabled)"
                 check_status "sed -i '167s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 167 removed"
                 check_status "sed -i '187s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 187 removed"
                 check_status "sed -i '189s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 189 removed"
                 ;;
             luci-app-nikki)
                 check_status "rm -rf /etc/config/nikki /etc/nikki" "Nikki config and directories removed"
-                check_status "sed -i '120s/Enable/Disable/' /etc/config/alpha" "Alpha config updated (Nikki disabled)"
+                check_status "sed -i '120s/'Enable'/'Disable'/' /etc/config/alpha" "Alpha config updated (Nikki disabled)"
                 check_status "sed -i '168s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 168 removed"
                 ;;
             luci-app-passwall)
                 check_status "rm -f /etc/config/passwall" "Passwall config removed"
-                check_status "sed -i '136s/Enable/Disable/' /etc/config/alpha" "Alpha config updated (Passwall disabled)"
+                check_status "sed -i '136s/'Enable'/'Disable'/' /etc/config/alpha" "Alpha config updated (Passwall disabled)"
                 check_status "sed -i '169s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 169 removed"
                 ;;
         esac
