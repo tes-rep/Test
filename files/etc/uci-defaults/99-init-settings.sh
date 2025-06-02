@@ -113,9 +113,6 @@ check_status "uci -q delete network.wan6" "delete wan6"
 check_status "uci commit network" "Network configuration committed"
 
 log_status "INFO" "Configuring firewall..."
-check_status "uci set firewall.@defaults[0].input='ACCEPT'" "Firewall input policy set to ACCEPT"
-check_status "uci set firewall.@defaults[0].output='ACCEPT'" "Firewall output policy set to ACCEPT"
-check_status "uci set firewall.@defaults[0].forward='REJECT'" "Firewall forward policy set to REJECT"
 check_status "uci set firewall.@zone[1].network='wan modem'" "Firewall zone configured for WAN and MODEM"
 check_status "uci commit firewall" "Firewall configuration committed"
 
