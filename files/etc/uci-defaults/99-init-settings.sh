@@ -90,7 +90,7 @@ log_status "INFO" "Configuring hostname and timezone to Asia/Jakarta..."
 check_status "uci set system.@system[0].hostname='XIDZs-WRT'" "Hostname set to XIDZs-WRT"
 check_status "uci set system.@system[0].timezone='WIB-7'" "Timezone set to WIB-7"
 check_status "uci set system.@system[0].zonename='Asia/Jakarta'" "Zone name set to Asia/Jakarta"
-check_status "uci -q delete system.ntp.server" "Existing NTP servers cleared"
+check_status "uci delete system.ntp.server" "Existing NTP servers cleared"
 check_status "uci add_list system.ntp.server='pool.ntp.org'" "Added pool.ntp.org NTP server"
 check_status "uci add_list system.ntp.server='id.pool.ntp.org'" "Added id.pool.ntp.org NTP server"
 check_status "uci add_list system.ntp.server='time.google.com'" "Added time.google.com NTP server"
@@ -109,18 +109,21 @@ check_status "uci set network.wan.device='usb0'" "WAN device set to usb0"
 check_status "uci set network.modem=interface" "Modem interface created"
 check_status "uci set network.modem.proto='dhcp'" "Modem protocol set to DHCP"
 check_status "uci set network.modem.device='eth1'" "Modem device set to eth1"
-check_status "uci -q delete network.wan6" "delete wan6"
+check_status "uci delete network.wan6" "delete wan6"
 check_status "uci commit network" "Network configuration committed"
 
 log_status "INFO" "Configuring firewall..."
+check_status "uci set firewall.@defaults[0].input='ACCEPT'" "Firewall input policy set to ACCEPT"
+check_status "uci set firewall.@defaults[0].output='ACCEPT'" "Firewall output policy set to ACCEPT"
+check_status "uci set firewall.@defaults[0].forward='REJECT'" "Firewall forward policy set to REJECT"
 check_status "uci set firewall.@zone[1].network='wan modem'" "Firewall zone configured for WAN and MODEM"
 check_status "uci commit firewall" "Firewall configuration committed"
 
 # disable ipv6 lan
 log_status "INFO" "Disabling IPv6 on LAN..."
-check_status "uci -q delete dhcp.lan.dhcpv6" "DHCPv6 disabled on LAN"
-check_status "uci -q delete dhcp.lan.ra" "Router Advertisement disabled on LAN"
-check_status "uci -q delete dhcp.lan.ndp" "NDP disabled on LAN"
+check_status "uci delete dhcp.lan.dhcpv6" "DHCPv6 disabled on LAN"
+check_status "uci delete dhcp.lan.ra" "Router Advertisement disabled on LAN"
+check_status "uci delete dhcp.lan.ndp" "NDP disabled on LAN"
 check_status "uci commit dhcp" "DHCP configuration committed"
 
 # configure wireless device
@@ -128,24 +131,19 @@ log_status "INFO" "Configuring wireless devices..."
 check_status "uci set wireless.@wifi-device[0].disabled='0'" "WiFi device 0 enabled"
 check_status "uci set wireless.@wifi-iface[0].disabled='0'" "WiFi interface 0 enabled"
 check_status "uci set wireless.@wifi-device[0].country='ID'" "WiFi country set to Indonesia"
-check_status "uci set wireless.@wifi-device[0].htmode='HT20'" "WiFi HT mode set to HT20"
 check_status "uci set wireless.@wifi-iface[0].mode='ap'" "WiFi mode set to Access Point"
 check_status "uci set wireless.@wifi-iface[0].encryption='none'" "WiFi encryption disabled"
-check_status "uci set wireless.@wifi-device[0].channel='1'" "WiFi channel set to 1"
-check_status "uci set wireless.@wifi-iface[0].ssid='XIDZs-WRT'" "WiFi SSID set to XIDZs-WRT"
 
 # Check for Raspberry Pi
 if grep -q "Raspberry Pi 4\|Raspberry Pi 3" /proc/cpuinfo; then
     log_status "INFO" "Raspberry Pi 3/4 detected, configuring 5GHz WiFi..."
-    check_status "uci set wireless.@wifi-device[1].disabled='0'" "5GHz WiFi device enabled"
-    check_status "uci set wireless.@wifi-iface[1].disabled='0'" "5GHz WiFi interface enabled"
-    check_status "uci set wireless.@wifi-device[1].country='ID'" "5GHz WiFi country set to Indonesia"
-    check_status "uci set wireless.@wifi-device[1].channel='149'" "5GHz WiFi channel set to 149"
-    check_status "uci set wireless.@wifi-device[1].htmode='VHT80'" "5GHz WiFi HT mode set to VHT80"
-    check_status "uci set wireless.@wifi-iface[1].mode='ap'" "5GHz WiFi mode set to Access Point"
-    check_status "uci set wireless.@wifi-iface[1].ssid='XIDZs-WRT_5G'" "5GHz WiFi SSID set to XIDZs-WRT_5G"
-    check_status "uci set wireless.@wifi-iface[1].encryption='none'" "5GHz WiFi encryption disabled"
+    check_status "uci set wireless.@wifi-iface[0].ssid='XIDZs-WRT_5G'" "5GHz WiFi SSID set to XIDZs-WRT_5G"
+    check_status "uci set wireless.@wifi-device[0].channel='149'" "5GHz WiFi channel set to 149"
+    check_status "uci set wireless.@wifi-device[0].htmode='VHT80'" "5GHz WiFi HT mode set to VHT80"
 else
+    check_status "uci set wireless.@wifi-iface[0].ssid='XIDZs-WRT'" "WiFi SSID set to XIDZs-WRT"
+    check_status "uci set wireless.@wifi-device[0].channel='1'" "WiFi channel set to 1"
+    check_status "uci set wireless.@wifi-device[0].htmode='HT20'" "WiFi HT mode set to HT20"
     log_status "INFO" "Raspberry Pi 3/4 not detected, skipping 5GHz configuration"
 fi
 
@@ -304,11 +302,11 @@ for pkg in luci-app-openclash luci-app-nikki luci-app-passwall; do
                 log_status "INFO" "Creating symlinks from OpenClash to Nikki..."
                 check_status "ln -sf /etc/openclash/proxy_provider /etc/nikki/run" "Nikki proxy provider symlink created"
                 check_status "ln -sf /etc/openclash/rule_provider /etc/nikki/run" "Nikki rule provider symlink created"
-                check_status "sed -i '64s/'Enable'/'Disable'/' /etc/config/alpha" "Alpha config updated for Nikki"
+                check_status "sed -i '64s/Enable/Disable/' /etc/config/alpha" "Alpha config updated for Nikki"
                 check_status "sed -i '171s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header updated for Nikki"
                 ;;
             luci-app-passwall)
-                check_status "sed -i '88s/'Enable'/'Disable'/' /etc/config/alpha" "Alpha config updated for Passwall"
+                check_status "sed -i '88s/Enable/Disable/' /etc/config/alpha" "Alpha config updated for Passwall"
                 check_status "sed -i '172s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header updated for Passwall"
                 ;;
         esac
@@ -318,19 +316,19 @@ for pkg in luci-app-openclash luci-app-nikki luci-app-passwall; do
             luci-app-openclash)
                 check_status "rm -f /etc/config/openclash1" "OpenClash backup config removed"
                 check_status "rm -rf /etc/openclash /usr/share/openclash /usr/lib/lua/luci/view/openclash" "OpenClash files and directories removed"
-                check_status "sed -i '104s/'Enable'/'Disable'/' /etc/config/alpha" "Alpha config updated (OpenClash disabled)"
+                check_status "sed -i '104s/Enable/Disable/' /etc/config/alpha" "Alpha config updated (OpenClash disabled)"
                 check_status "sed -i '167s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 167 removed"
                 check_status "sed -i '187s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 187 removed"
                 check_status "sed -i '189s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 189 removed"
                 ;;
             luci-app-nikki)
                 check_status "rm -rf /etc/config/nikki /etc/nikki" "Nikki config and directories removed"
-                check_status "sed -i '120s/'Enable'/'Disable'/' /etc/config/alpha" "Alpha config updated (Nikki disabled)"
+                check_status "sed -i '120s/Enable/Disable/' /etc/config/alpha" "Alpha config updated (Nikki disabled)"
                 check_status "sed -i '168s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 168 removed"
                 ;;
             luci-app-passwall)
                 check_status "rm -f /etc/config/passwall" "Passwall config removed"
-                check_status "sed -i '136s/'Enable'/'Disable'/' /etc/config/alpha" "Alpha config updated (Passwall disabled)"
+                check_status "sed -i '136s/Enable/Disable/' /etc/config/alpha" "Alpha config updated (Passwall disabled)"
                 check_status "sed -i '169s#.*#<!-- & -->#' /usr/lib/lua/luci/view/themes/argon/header.htm" "Argon header line 169 removed"
                 ;;
         esac
