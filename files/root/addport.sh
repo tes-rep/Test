@@ -5,7 +5,7 @@ FILE="/etc/board.json"
 sed -i '10i\
     },\
     "wan": {\
-      "ports": ["eth1", "eth2", "usb0"],\
+      "ports": ["eth1", "usb0"],\
       "protocol": "dhcp"\
     ' "$FILE"
 
