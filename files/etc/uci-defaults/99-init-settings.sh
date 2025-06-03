@@ -103,9 +103,9 @@ check_status "uci commit luci" "LuCI language configuration committed"
 
 # configure wan and lan
 log_status "INFO" "Configuring WAN and LAN interfaces..."
-check_status "uci set network.wan=interface" "WAN interface created"
-check_status "uci set network.wan.proto='dhcp'" "WAN protocol set to DHCP"
-check_status "uci set network.wan.device='usb0'" "WAN device set to usb0"
+check_status "uci set network.tethering=interface" "Tethering interface created"
+check_status "uci set network.tethering.proto='dhcp'" "Tethering protocol set to DHCP"
+check_status "uci set network.tethering.device='usb0'" "Tethering device set to usb0"
 check_status "uci set network.modem=interface" "Modem interface created"
 check_status "uci set network.modem.proto='dhcp'" "Modem protocol set to DHCP"
 check_status "uci set network.modem.device='eth1'" "Modem device set to eth1"
@@ -113,10 +113,7 @@ check_status "uci delete network.wan6" "delete wan6"
 check_status "uci commit network" "Network configuration committed"
 
 log_status "INFO" "Configuring firewall..."
-check_status "uci set firewall.@defaults[0].input='ACCEPT'" "Firewall input policy set to ACCEPT"
-check_status "uci set firewall.@defaults[0].output='ACCEPT'" "Firewall output policy set to ACCEPT"
-check_status "uci set firewall.@defaults[0].forward='REJECT'" "Firewall forward policy set to REJECT"
-check_status "uci set firewall.@zone[1].network='wan modem'" "Firewall zone configured for WAN and MODEM"
+check_status "uci set firewall.@zone[1].network='tethering modem'" "Firewall zone configured for TETHERING and MODEM"
 check_status "uci commit firewall" "Firewall configuration committed"
 
 # disable ipv6 lan
@@ -212,8 +209,8 @@ log_status "INFO" "Checking for Amlogic device configuration..."
 if opkg list-installed | grep -q luci-app-amlogic; then
     log_status "INFO" "luci-app-amlogic detected"
     check_status "rm -f /etc/profile.d/30-sysinfo.sh" "Removed sysinfo profile script"
-    check_status "sed -i '/exit 0/i #sleep 4 && /usr/bin/k5hgled -r' /etc/rc.local" "Added K5 LED command to rc.local (commented)"
-    check_status "sed -i '/exit 0/i #sleep 4 && /usr/bin/k6hgled -r' /etc/rc.local" "Added K6 LED command to rc.local (commented)"
+    check_status "sed -i '/exit 0/i #sleep 5 && /usr/bin/k5hgled -r' /etc/rc.local" "Added K5 LED command to rc.local (commented)"
+    check_status "sed -i '/exit 0/i #sleep 5 && /usr/bin/k6hgled -r' /etc/rc.local" "Added K6 LED command to rc.local (commented)"
 else
     log_status "INFO" "luci-app-amlogic not detected"
     check_status "rm -f /usr/bin/k5hgled /usr/bin/k6hgled /usr/bin/k5hgledon /usr/bin/k6hgledon" "Removed LED control binaries"
@@ -362,6 +359,7 @@ log_status "INFO" "XIDZs-WRT Setup Script Finished"
 log_status "INFO" "Automatic system reboot"
 log_status "INFO" "Check log file: $LOG_FILE"
 log_status "INFO" "========================================="
+check_status "sleep 5" "Waiting 5 Seconds"
 check_status "reboot" "Reboot Devices"
 
 exit 0
