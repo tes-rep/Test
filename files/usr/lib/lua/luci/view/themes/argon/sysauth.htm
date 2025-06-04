@@ -82,98 +82,295 @@
         0% { box-shadow: 0 0 5px rgba(78, 205, 196, 0.3); }
         100% { box-shadow: 0 0 15px rgba(78, 205, 196, 0.6); }
       }
+
+      /* Notifikasi Error dengan Animasi Bergerak */
+      .error-notification {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(45deg, #ff4757, #ff3838, #ff6b6b, #ff5252);
+        background-size: 400% 400%;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+        z-index: 1000;
+        font-weight: bold;
+        font-size: 14px;
+        text-align: center;
+        min-width: 300px;
+        animation: slideInShake 0.8s ease-out, gradientError 2s ease-in-out infinite;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .error-notification.show {
+        display: block;
+      }
+
+      .error-notification.hide {
+        animation: slideOutUp 0.5s ease-in forwards;
+      }
+
+      /* Animasi masuk dengan shake */
+      @keyframes slideInShake {
+        0% {
+          transform: translateX(-50%) translateY(-100px) rotate(-5deg);
+          opacity: 0;
+        }
+        50% {
+          transform: translateX(-50%) translateY(10px) rotate(2deg);
+          opacity: 1;
+        }
+        70% {
+          transform: translateX(-50%) translateY(-5px) rotate(-1deg);
+        }
+        100% {
+          transform: translateX(-50%) translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+      }
+
+      /* Animasi keluar */
+      @keyframes slideOutUp {
+        0% {
+          transform: translateX(-50%) translateY(0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateX(-50%) translateY(-100px) scale(0.8);
+          opacity: 0;
+        }
+      }
+
+      /* Animasi gradient untuk error */
+      @keyframes gradientError {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      /* Teks bergerak dalam notifikasi */
+      .moving-text {
+        display: inline-block;
+        animation: textWave 1.5s ease-in-out infinite;
+      }
+
+      .moving-text:nth-child(1) { animation-delay: 0s; }
+      .moving-text:nth-child(2) { animation-delay: 0.1s; }
+      .moving-text:nth-child(3) { animation-delay: 0.2s; }
+      .moving-text:nth-child(4) { animation-delay: 0.3s; }
+      .moving-text:nth-child(5) { animation-delay: 0.4s; }
+      .moving-text:nth-child(6) { animation-delay: 0.5s; }
+      .moving-text:nth-child(7) { animation-delay: 0.6s; }
+      .moving-text:nth-child(8) { animation-delay: 0.7s; }
+
+      @keyframes textWave {
+        0%, 60%, 100% {
+          transform: translateY(0) scale(1);
+        }
+        30% {
+          transform: translateY(-8px) scale(1.1);
+        }
+      }
+
+      /* Efek shake untuk form saat error */
+      .shake-form {
+        animation: shakeForm 0.6s ease-in-out;
+      }
+
+      @keyframes shakeForm {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+      }
+
+      /* Alert message styling yang sudah ada */
+      .alert-message.warning {
+        display: none; /* Sembunyikan alert default */
+      }
     </style>
-    
-    <form method="post" action="<%=pcdata(FULL_REQUEST_URI)%>">
-  <%- if fuser then %>
-    <div class="alert-message warning">
-      <center><p><%:Username Atau Sandi Salah%><br><%:Silahkan Ingat Kembali%></p></center>
-    </div>
-  <% end -%>
   </head>
   <body>
-    <div class="login_form_container">
-      <div class="login_form">
-        <h2 class="animated-title">⚝𝚇𝙸𝙳𝚉-𝚆𝚁𝚃⚝</h2>
-        
-        <script type="text/javascript">
-          window.setTimeout("waktu()",1000); 
-          function waktu(){
-            var tanggal=new Date(); 
-            setTimeout("waktu()",1000); 
-            var jam = tanggal.getHours().toString().padStart(2, '0');
-            var menit = tanggal.getMinutes().toString().padStart(2, '0');
-            var detik = tanggal.getSeconds().toString().padStart(2, '0');
-            document.getElementById("jam").innerHTML = jam + ":" + menit + ":" + detik;
-          }
-        </script> 
-        
-        <script language="JavaScript"> 
-          var tanggallengkap=new String(); 
-          var namahari=("Minggu Senin Selasa Rabu Kamis Jumat Sabtu"); 
-          namahari=namahari.split(" "); 
-          var namabulan=("Januari Februari Maret April Mei Juni Juli Agustus September Oktober November Desember"); 
-          namabulan=namabulan.split(" "); 
-          var tgl=new Date(); 
-          var hari=tgl.getDay(); 
-          var tanggal=tgl.getDate(); 
-          var bulan=tgl.getMonth(); 
-          var tahun=tgl.getFullYear(); 
-          tanggallengkap=namahari[hari] + ", " +tanggal + " " + namabulan[bulan] + " " + tahun; 
-        </script>       
-
-        <center>
-          <div class="animated-time">
-            <script language='JavaScript'>document.write(tanggallengkap);</script> | <span id='jam'></span>
-          </div>
-        </center>
-        
-        <div class="input_group">
-          <i class="fa fa-user"></i>
-          <input class="input_text" type="text" name="luci_username" placeholder="Username" autocomplete="off" value="<%=duser%>" />
-        </div>
-        <div class="input_group">
-          <i class="fa fa-unlock-alt"></i>
-          <input class="input_text" type="password" name="luci_password" placeholder="Password" autocomplete="off"/>
-        </div>
-        <div class="button_group" id="login_button">
-            <center><input type="submit" value="<%:Login%>" />
-		    </center>
-        </div>
+    <!-- Notifikasi Error dengan Animasi -->
+    <div id="errorNotification" class="error-notification" style="display: none;">
+      <div id="errorText"></div>
     </div>
 
-<script type="text/javascript">//<![CDATA[
-  var input = document.getElementsByName('luci_password')[0];
-  if (input)
-    input.focus();
-//]]></script>
+    <form method="post" action="<%=pcdata(FULL_REQUEST_URI)%>">
+      <%- if fuser then %>
+        <div class="alert-message warning">
+          <center><p><%:Username Atau Sandi Salah%><br><%:Silahkan Ingat Kembali%></p></center>
+        </div>
+      <% end -%>
+      
+      <div class="login_form_container">
+        <div class="login_form" id="loginForm">
+          <h2 class="animated-title">⚝𝚇𝙸𝙳𝚉-𝚆𝚁𝚃⚝</h2>
+          
+          <center>
+            <div class="animated-time">
+              <span id="tanggalLengkap"></span> | <span id='jam'></span>
+            </div>
+          </center>
+          
+          <div class="input_group">
+            <i class="fa fa-user"></i>
+            <input class="input_text" type="text" name="luci_username" placeholder="Username" autocomplete="off" value="<%=duser%>" />
+          </div>
+          <div class="input_group">
+            <i class="fa fa-unlock-alt"></i>
+            <input class="input_text" type="password" name="luci_password" placeholder="Password" autocomplete="off"/>
+          </div>
+          <div class="button_group" id="login_button">
+              <center><input type="submit" value="<%:Login%>" />
+          </center>
+          </div>
+        </div>
+      </div>
+    </form>
 
-<%
-local uci  = require "luci.model.uci".cursor()
-local fs  = require "nixio.fs"
-local https_key = uci:get("uhttpd", "main", "key")
-local https_port = uci:get("uhttpd", "main", "listen_https")
-if type(https_port) == "table" then
-  https_port = https_port[1]
-end
+    <!-- Script untuk jam dan tanggal yang diperbaiki -->
+    <script type="text/javascript">
+      // Fungsi untuk update jam
+      function updateJam() {
+        var sekarang = new Date();
+        var jam = sekarang.getHours().toString().padStart(2, '0');
+        var menit = sekarang.getMinutes().toString().padStart(2, '0');
+        var detik = sekarang.getSeconds().toString().padStart(2, '0');
+        
+        document.getElementById("jam").innerHTML = jam + ":" + menit + ":" + detik;
+      }
 
-if https_port and fs.access(https_key) then
-  https_port = https_port:match("(%d+)$")
-%>
+      // Fungsi untuk update tanggal
+      function updateTanggal() {
+        var sekarang = new Date();
+        var namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        var namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        
+        var hari = namaHari[sekarang.getDay()];
+        var tanggal = sekarang.getDate();
+        var bulan = namaBulan[sekarang.getMonth()];
+        var tahun = sekarang.getFullYear();
+        
+        var tanggalLengkap = hari + ", " + tanggal + " " + bulan + " " + tahun;
+        document.getElementById("tanggalLengkap").innerHTML = tanggalLengkap;
+      }
 
-<script type="text/javascript">//<![CDATA[
-  if (document.location.protocol != 'https:') {
-    var url = 'https://' + window.location.hostname + ':' + '<%=https_port%>' + window.location.pathname;
-    var img=new Image;
-    img.onload=function(){window.location = url};
-    img.src='https://' + window.location.hostname + ':' + '<%=https_port%>' + '<%=resource%>/icons/loading.gif?' + Math.random();
-    setTimeout(function(){
-      img.src=''
-    }, 600);
-  }
-//]]></script>
+      // Fungsi untuk update waktu dan tanggal
+      function updateWaktu() {
+        updateJam();
+        updateTanggal();
+      }
 
-<% end %>
+      // Jalankan fungsi pertama kali
+      updateWaktu();
+
+      // Update setiap detik untuk jam, setiap menit untuk tanggal
+      setInterval(updateJam, 1000);
+      setInterval(updateTanggal, 60000); // Update tanggal setiap menit
+
+      // Update tanggal saat pergantian hari (setiap detik cek apakah sudah ganti hari)
+      var tanggalSebelumnya = new Date().getDate();
+      setInterval(function() {
+        var tanggalSekarang = new Date().getDate();
+        if (tanggalSekarang !== tanggalSebelumnya) {
+          updateTanggal();
+          tanggalSebelumnya = tanggalSekarang;
+        }
+      }, 1000);
+    </script>
+
+    <!-- Script untuk Error Notification dengan Tulisan Bergerak -->
+    <script type="text/javascript">
+      function showErrorNotification(message) {
+        var notification = document.getElementById('errorNotification');
+        var errorText = document.getElementById('errorText');
+        var loginForm = document.getElementById('loginForm');
+        
+        // Buat teks bergerak
+        var words = message.split(' ');
+        var movingHTML = '';
+        
+        words.forEach(function(word, index) {
+          var letters = word.split('');
+          letters.forEach(function(letter, letterIndex) {
+            var delay = (index * letters.length + letterIndex) * 0.1;
+            movingHTML += '<span class="moving-text" style="animation-delay: ' + delay + 's;">' + letter + '</span>';
+          });
+          if (index < words.length - 1) {
+            movingHTML += '<span class="moving-text">&nbsp;</span>';
+          }
+        });
+        
+        errorText.innerHTML = movingHTML;
+        
+        // Tambahkan efek shake pada form
+        loginForm.classList.add('shake-form');
+        
+        // Tampilkan notifikasi
+        notification.style.display = 'block';
+        notification.classList.add('show');
+        
+        // Hapus efek shake setelah animasi selesai
+        setTimeout(function() {
+          loginForm.classList.remove('shake-form');
+        }, 600);
+        
+        // Sembunyikan notifikasi setelah 3 detik
+        setTimeout(function() {
+          notification.classList.add('hide');
+          setTimeout(function() {
+            notification.style.display = 'none';
+            notification.classList.remove('show', 'hide');
+          }, 500);
+        }, 3000);
+      }
+
+      // Cek jika ada error login
+      <%- if fuser then %>
+        document.addEventListener('DOMContentLoaded', function() {
+          showErrorNotification('✘ Username | Password Salah ! Silahkan Coba Lagi');
+        });
+      <% end -%>
+    </script>
+
+    <!-- Script untuk focus password -->
+    <script type="text/javascript">
+      var input = document.getElementsByName('luci_password')[0];
+      if (input) {
+        input.focus();
+      }
+    </script>
+
+    <!-- Script untuk HTTPS redirect -->
+    <%
+    local uci  = require "luci.model.uci".cursor()
+    local fs  = require "nixio.fs"
+    local https_key = uci:get("uhttpd", "main", "key")
+    local https_port = uci:get("uhttpd", "main", "listen_https")
+    if type(https_port) == "table" then
+      https_port = https_port[1]
+    end
+
+    if https_port and fs.access(https_key) then
+      https_port = https_port:match("(%d+)$")
+    %>
+
+    <script type="text/javascript">
+      if (document.location.protocol != 'https:') {
+        var url = 'https://' + window.location.hostname + ':' + '<%=https_port%>' + window.location.pathname;
+        var img=new Image;
+        img.onload=function(){window.location = url};
+        img.src='https://' + window.location.hostname + ':' + '<%=https_port%>' + '<%=resource%>/icons/loading.gif?' + Math.random();
+        setTimeout(function(){
+          img.src=''
+        }, 300);
+      }
+    </script>
+
+    <% end %>
 
     <script src="login.js"></script>
   </body>
