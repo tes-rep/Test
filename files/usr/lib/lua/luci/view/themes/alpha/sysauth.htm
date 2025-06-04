@@ -1,85 +1,377 @@
 <!DOCTYPE html>
-<!-- saved from url=(0014)about:internet -->
 <html lang="en">
-		<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>𝚇𝙸𝙳𝚉-𝚆𝚁𝚃</title>
+    <link rel="stylesheet" href="<%=media%>/xidz.css">
+    <link rel="shortcut icon" href="<%=media%>/favicon.ico">
+    
+    <style>
+      /* Animasi untuk judul XIDZ-WRT */
+      .animated-title {
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+        background-size: 400% 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gradientShift 3s ease-in-out infinite, bounce 2s ease-in-out infinite;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      }
+      
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+      }
+      
+      /* Animasi untuk jam dan tanggal */
+      .animated-time {
+        background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
+        background-size: 400% 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: timeGlow 2s ease-in-out infinite, pulse 1.5s ease-in-out infinite;
+        font-weight: bold;
+        text-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+      }
+      
+      @keyframes timeGlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      
+      /* Animasi tambahan untuk container */
+      .login_form {
+        animation: fadeInUp 1s ease-out;
+      }
+      
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      /* Efek hover untuk input */
+      .input_text:focus {
+        animation: inputGlow 0.3s ease-in-out;
+        box-shadow: 0 0 15px rgba(78, 205, 196, 0.6);
+      }
+      
+      @keyframes inputGlow {
+        0% { box-shadow: 0 0 5px rgba(78, 205, 196, 0.3); }
+        100% { box-shadow: 0 0 15px rgba(78, 205, 196, 0.6); }
+      }
 
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#09c">
-<meta name="msapplication-tap-highlight" content="no">
-<meta name="msapplication-TileColor" content="#09c">
-<meta name="application-name" content="Alpha - LuCI">
-<meta name="apple-mobile-web-app-title" content="Alpha - LuCI">
-<link rel="stylesheet" href="/luci-static/alpha/style/style.css">
-<link rel="shortcut icon" href="luci-static/alpha/favicon.ico">
-<script src="/cgi-bin/luci/admin/translations/en?v=git-22.339.35089-7af4a64"></script>
-<script src="/luci-static/resources/cbi.js?v=git-22.339.35089-7af4a64"></script>
+      /* Notifikasi Error dengan Animasi Bergerak */
+      .error-notification {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(45deg, #ff4757, #ff3838, #ff6b6b, #ff5252);
+        background-size: 400% 400%;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+        z-index: 1000;
+        font-weight: bold;
+        font-size: 14px;
+        text-align: center;
+        min-width: 300px;
+        animation: slideInShake 0.8s ease-out, gradientError 2s ease-in-out infinite;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
 
+      .error-notification.show {
+        display: block;
+      }
 
-<title>Alpha - Login</title>
-</head>
-		
-<body class="lang_en  node-main-login" data-page="" style="background-image:url('/luci-static/alpha/background/login.png')">
-	<header>
-		<div class="fill">
-			<div class="container">
-				<span class="showSide"></span>
-				<img class="tengah" src="/luci-static/alpha/style/brand.png" />
-				<span class="status" id="indicators"></span>
-			</div>
-		</div>
-	</header>
+      .error-notification.hide {
+        animation: slideOutUp 0.5s ease-in forwards;
+      }
 
-		<script type="text/javascript" src="/luci-static/resources/promis.min.js?v=git-22.361.69894-438c598"></script>
-		<script type="text/javascript" src="/luci-static/resources/luci.js?v=git-22.361.69894-438c598"></script>
-		<script type="text/javascript">
-				L = new LuCI({"apply_rollback":90,"resource":"\/luci-static\/resources","media":"\/luci-static\/material","documentroot":"\/www","pollinterval":5,"apply_display":1.5,"requestpath":[],"ubuspath":"\/ubus\/","scriptname":"\/cgi-bin\/luci","dispatchpath":[],"apply_timeout":5,"apply_holdoff":4,"nodespec":{"satisfied":true,"action":{"type":"template","path":"admin_status\/index"},"order":1,"depends":{"acl":["luci-mod-status-index"]},"title":"Overview"}});
-		</script>
-<form method="post" action="/cgi-bin/luci"><div class="cbi-map"></div>
-<div class='box'>
-		<div class='box-form'>
-			<!-- <div class='box-login-tab'></div>
-			<div class='box-login-title'>
-				<div class='i i-login'></div><h2><div class="cbi-map-descr"></div>LOGIN</h2>
-			</div> -->
-			
-			<div class='box-login'>
-				<label class='checkbox'>
-				<form method="post" action="<%=pcdata(FULL_REQUEST_URI)%>">
-					<%- if fuser then %>
-						<div class="alert-message warning">
-							<p><%:Wrong Password. Try Again.%></p>
-						</div>
-					<% end -%>
-				</label>
-				<div class='fieldset-body' id='login_form'>
-							<p class='field'>
-						<label for='user'>
-							<label class="cbi-value-title" for="luci_username">Username</label>
-								<input type="text" name="luci_username" id="luci_username" autocomplete="username" value="root" />
-							</div></label>
-						<span id='valida' class='i i-warning'></span>
-					</p>
-							<p class='field'>
-						<label for='pass'>
-							<label class="cbi-value-title" for="luci_password">Password</label>
-							<div class="cbi-value-field">
-								<input type="password" name="luci_password" id="luci_password" autocomplete="current-password"/>
-							</div></label>
-						<span id='valida' class='i i-close'></span>
-					</p>
-	
-						<label class='checkbox'>
-								Please Enter Username & Password.
-						</label>
-	
-							<input type='submit' id='do_login' value='LOGIN' title='Login' />
-				</div>
-			</div>
-		</div>
-		
+      /* Animasi masuk dengan shake */
+      @keyframes slideInShake {
+        0% {
+          transform: translateX(-50%) translateY(-100px) rotate(-5deg);
+          opacity: 0;
+        }
+        50% {
+          transform: translateX(-50%) translateY(10px) rotate(2deg);
+          opacity: 1;
+        }
+        70% {
+          transform: translateX(-50%) translateY(-5px) rotate(-1deg);
+        }
+        100% {
+          transform: translateX(-50%) translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+      }
 
-		
-</body>
+      /* Animasi keluar */
+      @keyframes slideOutUp {
+        0% {
+          transform: translateX(-50%) translateY(0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateX(-50%) translateY(-100px) scale(0.8);
+          opacity: 0;
+        }
+      }
+
+      /* Animasi gradient untuk error */
+      @keyframes gradientError {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      /* Teks bergerak dalam notifikasi */
+      .moving-text {
+        display: inline-block;
+        animation: textWave 1.5s ease-in-out infinite;
+      }
+
+      .moving-text:nth-child(1) { animation-delay: 0s; }
+      .moving-text:nth-child(2) { animation-delay: 0.1s; }
+      .moving-text:nth-child(3) { animation-delay: 0.2s; }
+      .moving-text:nth-child(4) { animation-delay: 0.3s; }
+      .moving-text:nth-child(5) { animation-delay: 0.4s; }
+      .moving-text:nth-child(6) { animation-delay: 0.5s; }
+      .moving-text:nth-child(7) { animation-delay: 0.6s; }
+      .moving-text:nth-child(8) { animation-delay: 0.7s; }
+
+      @keyframes textWave {
+        0%, 60%, 100% {
+          transform: translateY(0) scale(1);
+        }
+        30% {
+          transform: translateY(-8px) scale(1.1);
+        }
+      }
+
+      /* Efek shake untuk form saat error */
+      .shake-form {
+        animation: shakeForm 0.6s ease-in-out;
+      }
+
+      @keyframes shakeForm {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+      }
+
+      /* Alert message styling yang sudah ada */
+      .alert-message.warning {
+        display: none; /* Sembunyikan alert default */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Notifikasi Error dengan Animasi -->
+    <div id="errorNotification" class="error-notification" style="display: none;">
+      <div id="errorText"></div>
+    </div>
+
+    <form method="post" action="<%=pcdata(FULL_REQUEST_URI)%>">
+      <%- if fuser then %>
+        <div class="alert-message warning">
+          <center><p><%:Username Atau Sandi Salah%><br><%:Silahkan Ingat Kembali%></p></center>
+        </div>
+      <% end -%>
+      
+      <div class="login_form_container">
+        <div class="login_form" id="loginForm">
+          <h2 class="animated-title">⚝𝚇𝙸𝙳𝚉-𝚆𝚁𝚃⚝</h2>
+          
+          <center>
+            <div class="animated-time">
+              <span id="tanggalLengkap"></span> | <span id='jam'></span>
+            </div>
+          </center>
+          
+          <div class="input_group">
+            <i class="fa fa-user"></i>
+            <input class="input_text" type="text" name="luci_username" placeholder="Username" autocomplete="off" value="<%=duser%>" />
+          </div>
+          <div class="input_group">
+            <i class="fa fa-unlock-alt"></i>
+            <input class="input_text" type="password" name="luci_password" placeholder="Password" autocomplete="off"/>
+          </div>
+          <div class="button_group" id="login_button">
+              <center><input type="submit" value="<%:Login%>" />
+          </center>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Script untuk jam dan tanggal yang diperbaiki -->
+    <script type="text/javascript">
+      // Fungsi untuk update jam
+      function updateJam() {
+        var sekarang = new Date();
+        var jam = sekarang.getHours().toString().padStart(2, '0');
+        var menit = sekarang.getMinutes().toString().padStart(2, '0');
+        var detik = sekarang.getSeconds().toString().padStart(2, '0');
+        
+        document.getElementById("jam").innerHTML = jam + ":" + menit + ":" + detik;
+      }
+
+      // Fungsi untuk update tanggal
+      function updateTanggal() {
+        var sekarang = new Date();
+        var namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        var namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        
+        var hari = namaHari[sekarang.getDay()];
+        var tanggal = sekarang.getDate();
+        var bulan = namaBulan[sekarang.getMonth()];
+        var tahun = sekarang.getFullYear();
+        
+        var tanggalLengkap = hari + ", " + tanggal + " " + bulan + " " + tahun;
+        document.getElementById("tanggalLengkap").innerHTML = tanggalLengkap;
+      }
+
+      // Fungsi untuk update waktu dan tanggal
+      function updateWaktu() {
+        updateJam();
+        updateTanggal();
+      }
+
+      // Jalankan fungsi pertama kali
+      updateWaktu();
+
+      // Update setiap detik untuk jam, setiap menit untuk tanggal
+      setInterval(updateJam, 1000);
+      setInterval(updateTanggal, 60000); // Update tanggal setiap menit
+
+      // Update tanggal saat pergantian hari (setiap detik cek apakah sudah ganti hari)
+      var tanggalSebelumnya = new Date().getDate();
+      setInterval(function() {
+        var tanggalSekarang = new Date().getDate();
+        if (tanggalSekarang !== tanggalSebelumnya) {
+          updateTanggal();
+          tanggalSebelumnya = tanggalSekarang;
+        }
+      }, 1000);
+    </script>
+
+    <!-- Script untuk Error Notification dengan Tulisan Bergerak -->
+    <script type="text/javascript">
+      function showErrorNotification(message) {
+        var notification = document.getElementById('errorNotification');
+        var errorText = document.getElementById('errorText');
+        var loginForm = document.getElementById('loginForm');
+        
+        // Buat teks bergerak
+        var words = message.split(' ');
+        var movingHTML = '';
+        
+        words.forEach(function(word, index) {
+          var letters = word.split('');
+          letters.forEach(function(letter, letterIndex) {
+            var delay = (index * letters.length + letterIndex) * 0.1;
+            movingHTML += '<span class="moving-text" style="animation-delay: ' + delay + 's;">' + letter + '</span>';
+          });
+          if (index < words.length - 1) {
+            movingHTML += '<span class="moving-text">&nbsp;</span>';
+          }
+        });
+        
+        errorText.innerHTML = movingHTML;
+        
+        // Tambahkan efek shake pada form
+        loginForm.classList.add('shake-form');
+        
+        // Tampilkan notifikasi
+        notification.style.display = 'block';
+        notification.classList.add('show');
+        
+        // Hapus efek shake setelah animasi selesai
+        setTimeout(function() {
+          loginForm.classList.remove('shake-form');
+        }, 600);
+        
+        // Sembunyikan notifikasi setelah 3 detik
+        setTimeout(function() {
+          notification.classList.add('hide');
+          setTimeout(function() {
+            notification.style.display = 'none';
+            notification.classList.remove('show', 'hide');
+          }, 500);
+        }, 3000);
+      }
+
+      // Cek jika ada error login
+      <%- if fuser then %>
+        document.addEventListener('DOMContentLoaded', function() {
+          showErrorNotification('✘ Username | Password Salah ! Silahkan Coba Lagi');
+        });
+      <% end -%>
+    </script>
+
+    <!-- Script untuk focus password -->
+    <script type="text/javascript">
+      var input = document.getElementsByName('luci_password')[0];
+      if (input) {
+        input.focus();
+      }
+    </script>
+
+    <!-- Script untuk HTTPS redirect -->
+    <%
+    local uci  = require "luci.model.uci".cursor()
+    local fs  = require "nixio.fs"
+    local https_key = uci:get("uhttpd", "main", "key")
+    local https_port = uci:get("uhttpd", "main", "listen_https")
+    if type(https_port) == "table" then
+      https_port = https_port[1]
+    end
+
+    if https_port and fs.access(https_key) then
+      https_port = https_port:match("(%d+)$")
+    %>
+
+    <script type="text/javascript">
+      if (document.location.protocol != 'https:') {
+        var url = 'https://' + window.location.hostname + ':' + '<%=https_port%>' + window.location.pathname;
+        var img=new Image;
+        img.onload=function(){window.location = url};
+        img.src='https://' + window.location.hostname + ':' + '<%=https_port%>' + '<%=resource%>/icons/loading.gif?' + Math.random();
+        setTimeout(function(){
+          img.src=''
+        }, 300);
+      }
+    </script>
+
+    <% end %>
+
+    <script src="login.js"></script>
+  </body>
 </html>
