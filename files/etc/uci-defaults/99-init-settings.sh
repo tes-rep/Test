@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Setup logging
-LOG_FILE="/root/setup-xidzwrt.log"
+LOG_FILE="/root/setup-hj_wrt.log"
 exec > "$LOG_FILE" 2>&1
 
 # Fungsi untuk logging dengan status
@@ -45,19 +45,13 @@ check_status() {
 
 # Header log
 log_status "INFO" "========================================="
-log_status "INFO" "XIDZs-WRT Setup Script Started"
-log_status "INFO" "Script Setup By Xidz-x | Fidz"
+log_status "INFO" "HJ-WRT Setup Script Started"
+log_status "INFO" "Script Setup By HOUJIE | HJ"
 log_status "INFO" "Installed Time: $(date '+%A, %d %B %Y %T')"
 log_status "INFO" "========================================="
 
 # dont remove script !!!
 log_status "INFO" "Modifying firmware display..."
-if sed -i "s#_('Firmware Version'),(L.isObject(boardinfo.release)?boardinfo.release.description+' / ':'')+(luciversion||''),#_('Firmware Version'),(L.isObject(boardinfo.release)?boardinfo.release.description+' By Xidz_x':''),#g" /www/luci-static/resources/view/status/include/10_system.js; then
-    log_status "SUCCESS" "Firmware display modified"
-else
-    log_status "ERROR" "Failed to modify firmware display"
-fi
-
 check_status "sed -i -E 's|icons/port_%s.png|icons/port_%s.gif|g' /www/luci-static/resources/view/status/include/29_ports.js" "Port icons changed from PNG to GIF"
 
 # Check system release
@@ -79,7 +73,7 @@ fi
 
 # setup login root password
 log_status "INFO" "Setting up root password..."
-if (echo "xyyraa"; sleep 2; echo "xyyraa") | passwd > /dev/null 2>&1; then
+if (echo "sijitekowolu"; sleep 2; echo "sijitekowolu") | passwd > /dev/null 2>&1; then
     log_status "SUCCESS" "Root password configured"
 else
     log_status "ERROR" "Failed to set root password"
@@ -87,7 +81,7 @@ fi
 
 # setup hostname and timezone
 log_status "INFO" "Configuring hostname and timezone to Asia/Jakarta..."
-check_status "uci set system.@system[0].hostname='XIDZs-WRT'" "Hostname set to XIDZs-WRT"
+check_status "uci set system.@system[0].hostname='HOUJIE-WRT'" "Hostname set to XIDZs-WRT"
 check_status "uci set system.@system[0].timezone='WIB-7'" "Timezone set to WIB-7"
 check_status "uci set system.@system[0].zonename='Asia/Jakarta'" "Zone name set to Asia/Jakarta"
 check_status "uci delete system.ntp.server" "Existing NTP servers cleared"
@@ -177,22 +171,9 @@ log_status "INFO" "Disabling XMM-Modem using UCI"
 check_status "uci set xmm-modem.@xmm-modem[0].enable='0'" "Disable xmm-modem"
 check_status "uci commit xmm-modem" "disable xmm-modem commited"
 
-# Disable opkg signature check
-log_status "INFO" "Disabling OPKG signature check..."
-check_status "sed -i 's/option check_signature/# option check_signature/g' /etc/opkg.conf" "OPKG signature check disabled"
-
-# add custom repository
-log_status "INFO" "Adding custom repository..."
-ARCH=$(grep "OPENWRT_ARCH" /etc/os-release | awk -F '"' '{print $2}')
-if echo "src/gz custom_packages https://dl.openwrt.ai/latest/packages/$ARCH/kiddin9" >> /etc/opkg/customfeeds.conf; then
-    log_status "SUCCESS" "Custom repository added for architecture: $ARCH"
-else
-    log_status "ERROR" "Failed to add custom repository"
-fi
-
 # setup default theme
 log_status "INFO" "Setting up Argon theme as default..."
-check_status "uci set luci.main.mediaurlbase='/luci-static/argon'" "Argon theme set as default"
+check_status "uci set luci.main.mediaurlbase='/luci-static/hj'" "hj theme set as default"
 check_status "uci commit luci" "LuCI theme configuration committed"
 
 # remove login password ttyd
@@ -204,21 +185,9 @@ check_status "uci commit ttyd" "TTYD configuration committed"
 log_status "INFO" "Creating TinyFM symlink..."
 check_status "ln -s / /www/tinyfm/rootfs" "TinyFM rootfs symlink created"
 
-# setup device amlogic
-log_status "INFO" "Checking for Amlogic device configuration..."
-if opkg list-installed | grep -q luci-app-amlogic; then
-    log_status "INFO" "luci-app-amlogic detected"
-    check_status "rm -f /etc/profile.d/30-sysinfo.sh" "Removed sysinfo profile script"
-    check_status "sed -i '/exit 0/i #sleep 5 && /usr/bin/k5hgled -r' /etc/rc.local" "Added K5 LED command to rc.local (commented)"
-    check_status "sed -i '/exit 0/i #sleep 5 && /usr/bin/k6hgled -r' /etc/rc.local" "Added K6 LED command to rc.local (commented)"
-else
-    log_status "INFO" "luci-app-amlogic not detected"
-    check_status "rm -f /usr/bin/k5hgled /usr/bin/k6hgled /usr/bin/k5hgledon /usr/bin/k6hgledon" "Removed LED control binaries"
-fi
-
 # setup misc settings and permission
 log_status "INFO" "Setting up miscellaneous settings and permissions..."
-check_status "sed -i -e 's/\[ -f \/etc\/banner \] && cat \/etc\/banner/#&/' -e 's/\[ -n \"\$FAILSAFE\" \] && cat \/etc\/banner.failsafe/& || \/usr\/bin\/idz/' /etc/profile" "Profile banner configuration modified"
+#check_status "sed -i -e 's/\[ -f \/etc\/banner \] && cat \/etc\/banner/#&/' -e 's/\[ -n \"\$FAILSAFE\" \] && cat \/etc\/banner.failsafe/& || \/usr\/bin\/idz/' /etc/profile" "Profile banner configuration modified"
 check_status "chmod +x /usr/lib/ModemManager/connection.d/10-report-down" "ModemManager script permissions set"
 check_status "chmod -R +x /sbin /usr/bin" "Binary directories permissions set"
 check_status "chmod +x /www/vnstati/vnstati.sh" "VnStati script permissions set"
@@ -233,22 +202,15 @@ fi
 log_status "INFO" "Moving jQuery library..."
 check_status "mv /usr/share/netdata/web/lib/jquery-3.6.0.min.js /usr/share/netdata/web/lib/jquery-2.2.4.min.js" "jQuery library version changed"
 
-# create directory vnstat
-log_status "INFO" "Creating VnStat directory..."
-check_status "mkdir -p /etc/vnstat" "VnStat directory created"
-
 # restart netdata and vnstat
 log_status "INFO" "Restarting Netdata and VnStat services..."
-check_status "/etc/init.d/netdata restart" "Netdata service restarted"
+#check_status "/etc/init.d/netdata restart" "Netdata service restarted"
 check_status "/etc/init.d/vnstat restart" "VnStat service restarted"
 
 # run vnstati.sh
 log_status "INFO" "Running VnStati script..."
 check_status "/www/vnstati/vnstati.sh" "VnStati script executed"
 
-# setup Auto Vnstat Database Backup
-log_status "INFO" "Setting up VnStat database backup..."
-check_status "chmod +x /etc/init.d/vnstat_backup && /etc/init.d/vnstat_backup enable" "VnStat backup service enabled"
 
 # add TTL
 log_status "INFO" "Adding and running TTL script..."
@@ -351,11 +313,25 @@ fi
 
 check_status "/etc/init.d/uhttpd restart" "uhttpd service restarted"
 
+log_status "INFO" "Configuring baner..."
+check_status "rm -rf /etc/profile" "hapus progile"
+check_status "rm -rf /etc/profile.d/30-sysinfo.sh" "hapus sysinfo"
+check_status "mv /etc/profile1 /etc/profile" "rename profile"
+check_status "mv /etc/profile.d/30-sysinfo1.sh /etc/profile.d/30-sysinfo.sh" "rename sysinfo"
+check_status "chmod +x /etc/profile.d/30-sysinfo.sh" "beri ijin sysinfo"
+
+log_status "INFO" "Configuring ipinfo..."
+check_status "mv /www/luci-static/resources/view/status/include/01_ipinfo.js /www/luci-static/resources/view/status/include/11_ipinfo.js" "pindah ipinfo"
+
+log_status "SUCCESS" "ijin"
+check_status "chmod +x /etc/houjie-wrt" "Cleanup: removed script from uci-defaults"
+
+
 log_status "SUCCESS" "All setup completed successfully"
 check_status "rm -rf /etc/uci-defaults/$(basename $0)" "Cleanup: removed script from uci-defaults"
 
 log_status "INFO" "========================================="
-log_status "INFO" "XIDZs-WRT Setup Script Finished"
+log_status "INFO" "HJ-WRT Setup Script Finished"
 log_status "INFO" "Automatic system reboot"
 log_status "INFO" "Check log file: $LOG_FILE"
 log_status "INFO" "========================================="
