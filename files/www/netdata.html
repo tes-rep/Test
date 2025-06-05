@@ -36,11 +36,15 @@
     }
 
     body {
-      background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
-      font-family: 'Roboto', sans-serif;
-      color: #ffffff;
-      min-height: 100vh;
-      overflow-x: hidden;
+      display: flex; 
+			flex-direction: column; 
+			justify-content: center;
+			min-height: 0vh; 
+			color: black; 
+			background-image:url(img/background.jpg);
+			background-size: 80%;
+			-webkit-background-size: 100%;
+			background-repeat: no-repeat;
     }
 
     /* Animated Background */
@@ -75,11 +79,14 @@
       text-align: center;
       margin-bottom: 40px;
       padding: 30px 0;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
+      background-image: linear-gradient(180deg, red, yellow, green);
+      background-position: 100%;
+      background-size: 400%;
+      transition: background 30ms ease-in-out;
       border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      opacity: 0,5;
     }
 
     .header h1 {
@@ -116,16 +123,20 @@
     }
 
     .status-item {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
+    #  background: rgba(255, 255, 255, 0.1);
+     # backdrop-filter: blur(10px);
       padding: 15px 25px;
       border-radius: 15px;
       border: 1px solid rgba(255, 255, 255, 0.2);
       text-align: center;
       min-width: 160px;
-      transition: all 0.3s ease;
+   #   transition: all 0.3s ease;
       flex: 1;
       max-width: 250px;
+      background-image: linear-gradient(180deg, red, yellow, green);
+      background-position: 100%;
+      background-size: 400%;
+      transition: background 30ms ease-in-out;
     }
 
     .status-item:hover {
@@ -143,12 +154,12 @@
       font-family: 'Orbitron', monospace;
       font-size: clamp(1.2rem, 3vw, 1.5rem);
       font-weight: 700;
-      color: #00ff88;
+      color: #121EF6;
     }
 
     .status-label {
       font-size: clamp(0.8rem, 2vw, 0.9rem);
-      color: #a0a0a0;
+      color: #121EF6;
       margin-top: 5px;
     }
 
@@ -220,7 +231,7 @@
       font-family: 'Orbitron', monospace;
       font-size: clamp(0.8rem, 2vw, 0.9rem); /* Diperbesar font */
       font-weight: 700;
-      color: #ffffff;
+      color: #00d4ff;
       text-align: center;
       margin-bottom: 10px; /* Diperbesar margin */
       text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
@@ -682,7 +693,8 @@
     <div class="status-bar">
       <div class="status-item">
         <i class="fas fa-clock"></i>
-        <div class="status-value" id="MyClockDisplay">--:--:--</div>
+        <div class="status-value" id="time">--:--:--</div>
+        <div class="status-value" id="nama">--:--:--</div>
         <div class="status-label">Current Time</div>
       </div>
       <div class="status-item">
@@ -694,57 +706,79 @@
 
     <!-- Network Interfaces Section - 3 Charts Sejajar TANPA BORDER -->
     <div class="section">
+    	<div class="header">
       <h2 class="section-title"><i class="fas fa-ethernet"></i> Network Interfaces</h2>
       <div class="network-grid">
         <div class="chart-container">
-          <div class="chart-title">WAN 1</div>
+          <div class="chart-title">WAN Connection</div>
           <div class="chart-content">
             <div data-netdata="net.usb0"
                  data-title=""
-                 data-chart-library="easypiechart"
+                 data-chart-library="gauge"
                  data-after="-100"
                  data-width="100%" 
                  data-height="100%"
                  data-points="720"
-                 data-colors="#ff4757">
+                 data-gauge-generate-gradient="[0,10,60,100]"
+			     data-gauge-gradient-percent-color-0="#870115"
+			     data-gauge-gradient-percent-color-10="#870115"
+			     data-gauge-gradient-percent-color-60="#f5df1d"
+			     data-gauge-gradient-percent-color-100="#207305"
+			     data-colors="#002b49">	
             </div>
           </div>
         </div>
+        
+        
         
         <div class="chart-container">
           <div class="chart-title">LAN Network</div>
           <div class="chart-content">
             <div data-netdata="net.br-lan"
                  data-title=""
-                 data-chart-library="easypiechart"
-                 data-after="-150"
-                 data-width="100%" 
-                 data-height="100%"
-                 data-points="720"
-                 data-colors="#00d4ff">
-            </div>
-          </div>
-        </div>
-        
-        <div class="chart-container">
-          <div class="chart-title">WAN 2</div>
-          <div class="chart-content">
-            <div data-netdata="net.eth1"
-                 data-title=""
-                 data-chart-library="easypiechart"
+                 data-chart-library="gauge"
                  data-after="-100"
                  data-width="100%" 
                  data-height="100%"
                  data-points="720"
-                 data-colors="#2ed573">
+                 data-gauge-generate-gradient="[0,10,60,100]"
+			     data-gauge-gradient-percent-color-0="#870115"
+			     data-gauge-gradient-percent-color-10="#870115"
+			     data-gauge-gradient-percent-color-60="#f5df1d"
+			     data-gauge-gradient-percent-color-100="#207305"
+			     data-colors="#002b49">	
+            </div>
+          </div>
+        </div>
+        
+        
+        <div class="chart-container">
+          <div class="chart-title">MODEM</div>
+          <div class="chart-content">
+            <div data-netdata="net.eth1"
+                 data-title=""
+                 data-chart-library="gauge"
+                 data-after="-100"
+                 data-width="100%" 
+                 data-height="100%"
+                 data-points="720"
+                 data-gauge-generate-gradient="[0,10,60,100]"
+			     data-gauge-gradient-percent-color-0="#870115"
+			     data-gauge-gradient-percent-color-10="#870115"
+			     data-gauge-gradient-percent-color-60="#f5df1d"
+			     data-gauge-gradient-percent-color-100="#207305"
+			     data-colors="#002b49">	
             </div>
           </div>
         </div>
       </div>
     </div>
+    </div>
+    
 
     <!-- System Resources Section - 3 Charts Sejajar + 1 Chart Baris Kedua TANPA BORDER -->
     <div class="section">
+    	<div class="header">
       <h2 class="section-title"><i class="fas fa-server"></i> System Resources</h2>
       <div class="system-grid">
         <div class="chart-container">
@@ -815,9 +849,11 @@
         </div>
       </div>
     </div>
+    </div>
 
     <!-- Network Statistics Section with Tabs - TETAP DENGAN BORDER -->
     <div class="section">
+    	<div class="header">
       <h2 class="section-title"><i class="fas fa-chart-line"></i> Network Statistics</h2>
       <div class="stats-section">
         <!-- Tab Navigation -->
@@ -846,8 +882,12 @@
             <i class="fas fa-calendar"></i>
             <span>Yearly</span>
           </button>
+          <button class="tab-button" data-tab="top_25">
+            <i class="fas fa-calendar"></i>
+            <span>top 25</span>
+          </button>
         </div>
-
+</div>
         <!-- Tab Contents -->
         <div class="tab-content active" id="summary">
           <div class="stats-grid">
@@ -902,6 +942,14 @@
             </div>
           </div>
         </div>
+        <div class="tab-content" id="top_25">
+          <div class="stats-grid">
+            <div class="stats-card">
+              <div class="stats-card-title">top 25 Network Statistics</div>
+              <img src="/vnstati/br-lan_vnstat_t.png" alt="top 25" id="top-img">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -909,20 +957,39 @@
   <!-- Scripts -->
   <script type="text/javascript">
     function showTime(){
-      var date = new Date();
-      var h = date.getHours();
-      var m = date.getMinutes();
-      var s = date.getSeconds();
-      
-      h = (h < 10) ? "0" + h : h;
-      m = (m < 10) ? "0" + m : m;
-      s = (s < 10) ? "0" + s : s;
-      
-      var time = h + ":" + m + ":" + s;
-      document.getElementById("MyClockDisplay").innerText = time;
-      setTimeout(showTime, 1000);
-    }
-    showTime();
+      var a_p = "";
+			var today = new Date();
+			var curr_hour = today.getHours();
+			var curr_minute = today.getMinutes();
+			var curr_second = today.getSeconds();
+
+			if (curr_hour<12) {
+				a_p = "(sugeng Enjing houjie)";
+			}else {
+				a_p = "(sugeng dalu houjie)";
+			}
+
+			if (curr_hour == 0) {
+				curr_hour=24;
+			}
+			if (curr_hour == 24) {
+				curr_hour=curr_hour-24;
+			}
+			curr_hour = checkTime(curr_hour);
+			curr_minute = checkTime(curr_minute);
+			curr_second = checkTime(curr_second);
+
+			document.getElementById('time').innerHTML= curr_hour+":"+curr_minute+":"+curr_second;
+			document.getElementById('nama').innerHTML= a_p;
+		}
+
+		function checkTime(i){
+			if (i<10) {
+				i = "0"+i;
+			}
+			return i;
+		}
+		setInterval(showTime,100);
   </script>
 
   <script>
