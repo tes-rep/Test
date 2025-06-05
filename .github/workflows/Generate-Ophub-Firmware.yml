@@ -184,7 +184,7 @@ jobs:
             ## XIDZs-WRT - INFORMATION ##
             - Default IP: 192.168.1.1
             - Default username: root
-            - Default password: sijitekowolu
+            - Default password: xyyraa
             - Default WIFI name: XIDZs-WRT | XIDZs-WRT_5G
             - Default WIFI password: none
             - Disarankan !!! Reboot Device Setelah Booting Atau Masuk Luci
@@ -572,7 +572,7 @@ jobs:
           
       - name: Mod SDCard
         id: modsdcard
-        if: steps.re.outputs.status == 'success'
+        if: steps.repack.outputs.status == 'success'
         run: |
           cd ${WORKING_DIR}
           chmod +x scripts/MODSDCARD.sh
@@ -581,7 +581,7 @@ jobs:
           
       - name: Before Upload
         id: beforeupload
-        if: steps.repack.outputs.status == 'success'
+        if: steps.modsdcard.outputs.status == 'success'
         run: |
           cd ${{ env.WORKING_DIR }}
           chmod +x scripts/RENAMEFW.sh
@@ -598,4 +598,3 @@ jobs:
           name: ${{ env.RELEASE_NAME }}
           files: ${{ env.WORKING_DIR }}/compiled_images/*.img.gz
           prerelease: ${{ github.ref_name == 'dev' }}
-          
