@@ -171,28 +171,7 @@ jobs:
           fi
           echo "status=success" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        if: steps.setupenv.outputs.status == 'success'
-        uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.setupenv.outputs.release_tag }}
-          name: ${{ steps.setupenv.outputs.release_name }}
-          prerelease: ${{ github.ref_name == 'dev' }}
-          body: |
-            # 🚀 RTA-WRT - Release Information
-            ## 📥 Download Statistics
-            ![GitHub Downloads](https://img.shields.io/github/downloads/${{ github.repository }}/${{ steps.setupenv.outputs.release_tag }}/total?style=for-the-badge&logo=Openwrt)
-            ## 📢 Support Channels
-            [![Channel](https://img.shields.io/badge/Telegram-Channel-%23059dfa?style=for-the-badge&logo=Telegram)](https://t.me/rtawrt)
-            [![Group](https://img.shields.io/badge/Telegram-Group-%23059dfa?style=for-the-badge&logo=Telegram)](https://t.me/backup_rtawrt)
-            [![Personal](https://img.shields.io/badge/Telegram-Personal-%23059dfa?style=for-the-badge&logo=Telegram)](https://t.me/RizkiKotet)
-            ## NOTES
-            `Amlogic s905x Support Mod SDCard`
-            ## 📝 Changelog Firmware
-            [**Changelog Firmware**](https://github.com/rizkikotet-dev/RTA-WRT/blob/${{ github.ref_name }}/CHANGELOG.md "**Changelog Firmware**")
-          generate_release_notes: true
+      
 
   build-firmware:
     name: Build ${{ matrix.target }} Firmware
@@ -555,7 +534,7 @@ jobs:
         uses: ncipollo/release-action@main
         if: steps.beforeupload.outputs.status == 'success'
         with:
-          tag: HOUJIE-Wrt_${{ env.RELEASES_TAG2 }}-${{ github.ref_name }}
+          tag: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
           artifacts: ${{ env.WORKING_DIR }}/compiled_images/*.img.gz
           allowUpdates: true
           removeArtifacts: false
