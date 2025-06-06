@@ -209,6 +209,7 @@ check_status "/etc/init.d/vnstat restart" "VnStat service restarted"
 
 # run vnstati.sh
 log_status "INFO" "Running VnStati script..."
+check_status "chmod +x /www/vnstati/vnstati.sh" "VnStati permisions"
 check_status "/www/vnstati/vnstati.sh" "VnStati script executed"
 
 
