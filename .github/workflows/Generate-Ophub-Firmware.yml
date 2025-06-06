@@ -177,9 +177,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.setupenv.outputs.release_tag }}
+          tag_name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
           name: ${{ steps.setupenv.outputs.release_name }}
-          prerelease: ${{ github.ref_name == 'dev' }}
+          prerelease: false
           body: |
             ## XIDZs-WRT - INFORMATION ##
             - Default IP: 192.168.1.1
