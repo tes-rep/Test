@@ -224,55 +224,20 @@ jobs:
           name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
           prerelease: ${{ inputs.upload-prerelease }}
           body: |
-            ## XIDZs-WRT - INFORMATION ##
+            ### OpenWrt Image information
             - Default IP: 192.168.1.1
             - Default username: root
-            - Default password: xyyraa
-            - Default WIFI name: XIDZs-WRT | XIDZs-WRT_5G
-            - Default WIFI password: none
-            - Disarankan !!! Reboot Device Setelah Booting Atau Masuk Luci
-            ## FITUR - FITUR ##
-            - Tema Alpha
-            - Tema Argon
-            - Amlogic Service
-            - 3ginfo-Lite | Modeminfo
-            - IP Information
-            - TTL
-            - Tailscale
-            - Eqosplus
-            - Droidnet
-            - GPIO LED HG680P | B860H
-            - Rakitan Manager
-            - Internet Detector
-            - Conns monitor
-            - Support Modem Rakitan + Autorekonek
-            - Mactodong
-            - Auto Sinkron Jam
-            - Tiny Filemanager
-            - Openclash + Configs
-            - Nikki + Configs
-            - Passwall + Configs
-            ## DEVICES SUPPORTED ##
-            - Amlogic s905w
-            - Amlogic s912
-            - Amlogic s922x
-            - Amlogic s905l2
-            - Amlogic s905x
-            - Amlogic s905x2
-            - Amlogic s905x3
-            - Amlogic s905x4
-            - Rockchip RK3318
-            - Rockchip RK3328
-            ## KERNEL STABLE - INFORMATION ##
-            - Kernel 5.15.x | WIFI ON
-            - Kernel 6.1.x  | WIFI ON
-            - Kernel 6.6.x  | WIFI ON
-            - Kernel 6.12.x | WIFI OFF
-            ## VARIASI TUNNEL ##
-            - OPENCLASH
-            - OPENCLASH | NIKKI
-            - OPENCLASH | NIKKI | PASSWALL
-            - NO TUNNEL | TANPA TUNNEL
+            - Default password: sijitekowolu
+            - Default WIFI name: NOKIA N73 | NOKIA N73_5G
+            - Default WIFI password: sijitekowolu
+            ###   Firmware Details : 
+              - Tanggal Build: ${{ steps.date.outputs.date }}
+              - Devices type : ${{ inputs.target }}
+              - Kernel version : ${{ inputs.openwrt_kernel }}
+              - Kernel version : $kernel
+              - ROOTFS File : ${{ inputs.releases_branch }}
+              - ROOTFS Size : ${{ inputs.rootfs_size }}
+            
 
   build-firmware:
     name: Build ${{ matrix.target }} Firmware
@@ -515,6 +480,11 @@ jobs:
           esac
 
           echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: Mengatur tanggal
+        id: date
+        run: echo "date=$(date +'%d-%m-%y %H:%M:%S')" >> $GITHUB_OUTPUT
+            
 
       - name: Download and Prepare Image Builder
         id: download
