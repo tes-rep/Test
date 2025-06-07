@@ -231,7 +231,7 @@ jobs:
             - Default WIFI name: NOKIA N73 | NOKIA N73_5G
             - Default WIFI password: sijitekowolu
             ###   Firmware Details : 
-              - Tanggal Build: ${{ steps.date.outputs.date }}
+              - Tanggal Build: ${{ needs.prebuild.outputs.datetime }}
               - Devices type : ${{ inputs.target }}
               - Kernel version : ${{ inputs.openwrt_kernel }}
               - Kernel version : $kernel
@@ -481,11 +481,7 @@ jobs:
 
           echo "status=success" >> $GITHUB_OUTPUT
 
-      - name: Mengatur tanggal
-        id: date
-        run: echo "date=$(date +'%d-%m-%y %H:%M:%S')" >> $GITHUB_OUTPUT
-            
-
+      
       - name: Download and Prepare Image Builder
         id: download
         if: steps.variables.outputs.status == 'success'
