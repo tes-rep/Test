@@ -224,13 +224,19 @@ jobs:
           name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
           prerelease: ${{ inputs.upload-prerelease }}
           body: |
-            ## XIDZs-WRT - INFORMATION ##
+            ### OpenWrt Image information
             - Default IP: 192.168.1.1
             - Default username: root
-            - Default password: xyyraa
-            - Default WIFI name: XIDZs-WRT | XIDZs-WRT_5G
-            - Default WIFI password: none
-            - Disarankan !!! Reboot Device Setelah Booting Atau Masuk Luci
+            - Default password: sijitekowolu
+            - Default WIFI name: NOKIA N73 | NOKIA N73_5G
+            - Default WIFI password: sijitekowolu
+            ###   Firmware Details : 
+              - Tanggal Build: ${{ needs.prebuild.outputs.datetime }}
+              - Devices type : ${{ inputs.target }}
+              - Kernel version : ${{ inputs.openwrt_kernel }}
+              - Kernel version : $kernel
+              - ROOTFS File : ${{ inputs.releases_branch }}
+              - ROOTFS Size : ${{ inputs.rootfs_size }}
             
 
   build-firmware:
@@ -475,6 +481,7 @@ jobs:
 
           echo "status=success" >> $GITHUB_OUTPUT
 
+      
       - name: Download and Prepare Image Builder
         id: download
         if: steps.variables.outputs.status == 'success'
@@ -583,7 +590,7 @@ jobs:
           
       - name: Before Upload
         id: beforeupload
-        if: steps.modsdcard.outputs.status == 'success'
+        if: steps.repack.outputs.status == 'success'
         run: |
           cd ${{ env.WORKING_DIR }}
           chmod +x scripts/RENAMEFW.sh
@@ -599,5 +606,5 @@ jobs:
           tag_name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
           name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
           prerelease: ${{ inputs.upload-prerelease }}
-          files: ${{ env.WORKING_DIR }}/compiled_images/*.img.gz
+          files: ${{ env.WORKING_DIR }}/compiled_images/*
           
