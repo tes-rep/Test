@@ -579,26 +579,28 @@ jobs:
           ./scripts/REPACKWRT.sh "ophub" "$TARGET_BUILD" "$KERNEL" "${{ env.TUNNEL }}"
           echo "status=success" >> $GITHUB_OUTPUT
           
-      - name: Mod SDCard
-        id: modsdcard
-        if: steps.repack.outputs.status == 'success'
-        run: |
-          cd ${WORKING_DIR}
-          chmod +x scripts/MODSDCARD.sh
-          ./scripts/MODSDCARD.sh
-          echo "status=success" >> $GITHUB_OUTPUT
-          
+
       - name: Before Upload
         id: beforeupload
-        if: steps.modsdcard.outputs.status == 'success'
+        if: steps.repack.outputs.status == 'success'
         run: |
           cd ${{ env.WORKING_DIR }}
           chmod +x scripts/RENAMEFW.sh
           ./scripts/RENAMEFW.sh
           echo "status=success" >> "$GITHUB_OUTPUT"
 
-      - name: Create Release
+      - name: Mod SDCard
+        id: modsdcard
         if: steps.beforeupload.outputs.status == 'success'
+        run: |
+          cd ${WORKING_DIR}
+          chmod +x scripts/MODSDCARD.sh
+          ./scripts/MODSDCARD.sh
+          echo "status=success" >> $GITHUB_OUTPUT
+               
+
+      - name: Create Release
+        if: steps.modsdcard.outputs.status == 'success'
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
