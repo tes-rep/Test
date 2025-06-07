@@ -170,7 +170,7 @@ rename_firmware() {
                     new_name="${OP_BASE}-${BRANCH}-${replace}-${TUNNEL}-Build-By-Fidz_Xidz-X.img.gz"
                 fi
                 echo -e "${INFO} Renaming: $file → $new_name"
-                mv "$file" "$new_name" || {
+                mv "$file" "../mod/${new_name}" || {
                     echo -e "${WARN} Failed to rename $file"
                     continue
                 }
