@@ -148,7 +148,7 @@ build_mod_sdcard() {
 
     local kernel
     kernel=$(grep -oP 'k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)?' <<<"${file_name}")
-    local new_name="${OP_BASE}-${BRANCH}-${suffix}-${kernel}-${TUNNEL}-MODSDCARD-Build-By-Fidz_Xidz-X.img.gz"
+    local new_name="${OP_BASE}-${BRANCH}-${suffix}-${kernel}-${TUNNEL}-MODSDCARD.img.gz"
 
     mv "${file_name}.gz" "../${new_name}" || {
         error_msg "Failed to rename image file"
@@ -194,17 +194,17 @@ main() {
     local builds=()
     if [[ "$MATRIXTARGET" == "Amlogic s905x HG680P" ]]; then
         builds=(
-            "_s905x_k5.15.184:meson-gxl-s905x-p212.dtb:HG680P"
-            "_s905x_k6.1.66:meson-gxl-s905x-p212.dtb:HG680P"
-            "_s905x_k6.6.89:meson-gxl-s905x-p212.dtb:HG680P"
-            "_s905x_k6.12.30:meson-gxl-s905x-p212.dtb:HG680P"
+            "_s905x_k5.15.*:meson-gxl-s905x-p212.dtb:HG680P"
+            "_s905x_k6.1.*:meson-gxl-s905x-p212.dtb:HG680P"
+            "_s905x_k6.6.*:meson-gxl-s905x-p212.dtb:HG680P"
+            "_s905x_k6.12.*:meson-gxl-s905x-p212.dtb:HG680P"
         )
     elif [[ "$MATRIXTARGET" == "Amlogic s905x B860H" ]]; then
         builds=(
-            "_s905x-b860h_k5.15.184:meson-gxl-s905x-b860h.dtb:B860H"
-            "_s905x-b860h_k6.1.66:meson-gxl-s905x-b860h.dtb:B860H"
-            "_s905x-b860h_k6.6.89:meson-gxl-s905x-b860h.dtb:B860H"
-            "_s905x-b860h_k6.12.30:meson-gxl-s905x-b860h.dtb:B860H"
+            "_s905x-b860h_k5.15.*:meson-gxl-s905x-b860h.dtb:B860H"
+            "_s905x-b860h_k6.1.*:meson-gxl-s905x-b860h.dtb:B860H"
+            "_s905x-b860h_k6.6.*:meson-gxl-s905x-b860h.dtb:B860H"
+            "_s905x-b860h_k6.12.*:meson-gxl-s905x-b860h.dtb:B860H"
         )
     fi
     
