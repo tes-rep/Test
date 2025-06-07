@@ -49,7 +49,7 @@ on:
       tunnel:
         description: "Select Tunnel VPN"
         required: true
-        default: "openclash"
+        default: "openclash-nikki"
         type: choice
         options:
           - openclash
