@@ -608,5 +608,5 @@ jobs:
           tag_name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
           name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
           prerelease: ${{ inputs.upload-prerelease }}
-          files: ${{ env.WORKING_DIR }}/compiled_images/*
+          files: ${{ env.WORKING_DIR }}/compiled_images/mod/*
           
