@@ -579,26 +579,26 @@ jobs:
           ./scripts/REPACKWRT.sh "ophub" "$TARGET_BUILD" "$KERNEL" "${{ env.TUNNEL }}"
           echo "status=success" >> $GITHUB_OUTPUT
           
-      - name: Mod SDCard
-        id: modsdcard
-        if: steps.repack.outputs.status == 'success'
-        run: |
-          cd ${WORKING_DIR}
-          chmod +x scripts/MODSDCARD.sh
-          ./scripts/MODSDCARD.sh
-          echo "status=success" >> $GITHUB_OUTPUT
-          
       - name: Before Upload
         id: beforeupload
-        if: steps.modsdcard.outputs.status == 'success'
+        if: steps.repack.outputs.status == 'success'
         run: |
           cd ${{ env.WORKING_DIR }}
           chmod +x scripts/RENAMEFW.sh
           ./scripts/RENAMEFW.sh
           echo "status=success" >> "$GITHUB_OUTPUT"
 
-      - name: Create Release
+      - name: Mod SDCard
+        id: modsdcard
         if: steps.beforeupload.outputs.status == 'success'
+        run: |
+          cd ${WORKING_DIR}
+          chmod +x scripts/MODSDCARD.sh
+          ./scripts/MODSDCARD.sh
+          echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        if: steps.modsdcard.outputs.status == 'success'
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -606,5 +606,5 @@ jobs:
           tag_name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
           name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
           prerelease: ${{ inputs.upload-prerelease }}
-          files: ${{ env.WORKING_DIR }}/compiled_images/*
+          files: ${{ env.WORKING_DIR }}/compiled_images/mod/*
           
