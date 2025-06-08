@@ -231,7 +231,7 @@ jobs:
             - Default WIFI name: NOKIA N73 | NOKIA N73_5G
             - Default WIFI password: sijitekowolu
             ###   Firmware Details : 
-              - Tanggal Build: ${{ needs.prebuild.outputs.datetime }}
+              - Tanggal Build: ${DATE}
               - Devices type : ${{ inputs.target }}
               - Kernel version : ${{ inputs.openwrt_kernel }}
               - Kernel version : $kernel
