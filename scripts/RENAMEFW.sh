@@ -165,9 +165,9 @@ rename_firmware() {
                 fi
                 local new_name
                 if [[ -n "$kernel" ]]; then
-                    new_name="${OP_BASE}-${BRANCH}-${replace}-${kernel}-${TUNNEL}-Build-By-Fidz_Xidz-X.img.gz"
+                    new_name="HOUJIE-${OP_BASE}-${BRANCH}-${replace}-${kernel}-${TUNNEL}.img.gz"
                 else
-                    new_name="${OP_BASE}-${BRANCH}-${replace}-${TUNNEL}-Build-By-Fidz_Xidz-X.img.gz"
+                    new_name="HOUJIE-${OP_BASE}-${BRANCH}-${replace}-${TUNNEL}.img.gz"
                 fi
                 echo -e "${INFO} Renaming: $file → $new_name"
                 cp "$file" "${firmware_dir}/mod/${new_name}" || {
@@ -179,7 +179,7 @@ rename_firmware() {
         for file in *"${search}"*.tar.gz; do
             if [[ -f "$file" ]]; then
                 local new_name
-                new_name="${OP_BASE}-${BRANCH}-${replace}-${TUNNEL}-Build-By-Fidz_Xidz-X.img.gz"
+                new_name="HOUJIE-${OP_BASE}-${BRANCH}-${replace}-${TUNNEL}.img.gz"
                 echo -e "${INFO} Renaming: $file → $new_name"
                 mv "$file" "$new_name" || {
                     echo -e "${WARN} Failed to rename $file"

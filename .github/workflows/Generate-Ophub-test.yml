@@ -231,7 +231,8 @@ jobs:
             - Default WIFI name: NOKIA N73 | NOKIA N73_5G
             - Default WIFI password: sijitekowolu
             ###   Firmware Details : 
-              - Tanggal Build: ${{ needs.prebuild.outputs.datetime }}
+<<
+              - Tanggal Build: ${DATE}
               - Devices type : ${{ inputs.target }}
               - Kernel version : ${{ inputs.openwrt_kernel }}
               - Kernel version : $kernel
@@ -561,7 +562,8 @@ jobs:
           # Move and rename output files
           for file in bin/targets/"${TARGET_SYSTEM}"/*-rootfs.tar.gz; do
             if [ -f "$file" ]; then
-              new_name="XIDZ-WRT_$(basename "$file" -rootfs.tar.gz)_${{ env.TUNNEL }}-rootfs.tar.gz"
+
+              new_name="HJ-WRT_$(basename "$file" -rootfs.tar.gz)_${{ env.TUNNEL }}-rootfs.tar.gz"
               mv "$file" compiled_images/$new_name
             fi
           done
