@@ -113,15 +113,14 @@ env:
   TARGET: ${{ github.event.inputs.target }}
   TUNNEL: ${{ github.event.inputs.tunnel }}
   CLEAN: ${{ github.event.inputs.clean }}
-  BASE: ${{ needs.prebuild.outputs.base }}
-  BRANCH: ${{ needs.prebuild.outputs.branch }}
-  VEROP: ${{ needs.prebuild.outputs.verop }}
-  DOWNLOAD_BASE: ${{ needs.prebuild.outputs.download_base }}
-  DATE: ${{ needs.prebuild.outputs.date }}
-  DATETIME: ${{ needs.prebuild.outputs.datetime }}
-  DATEMONTH: ${{ needs.prebuild.outputs.datemonth }}
-  RELEASE_NAME: ${{ needs.prebuild.outputs.release_name }}
-  RELEASE_TAG: ${{ needs.prebuild.outputs.release_tag }}
+  BASE: ${{ steps.setupenv.base }}
+  BRANCH: ${{ steps.setupenv.outputs.branch }}
+  VEROP: ${{ steps.setupenv.outputs.verop }}
+  DATE: ${{ steps.setupenv.outputs.date }}
+  DATETIME: ${{ steps.setupenv.outputs.datetime }}
+  DATEMONTH: ${{ steps.setupenv.outputs.datemonth }}
+  RELEASE_NAME: ${{ steps.setupenv.outputs.release_name }}
+  RELEASE_TAG: ${{ steps.setupenv.outputs.release_tag }}
 
 jobs:
   prebuild:
