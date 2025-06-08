@@ -71,7 +71,7 @@ PACKAGES+=" luci-theme-argon luci-theme-alpha luci-theme-edge luci-theme-hj luci
 PACKAGES+=" php8 php8-fastcgi php8-fpm php8-mod-session php8-mod-ctype php8-mod-fileinfo php8-mod-zip php8-mod-iconv php8-mod-mbstring"
 
 # Custom Packages And More
-PACKAGES+=" htop lolcat python3-pip zram-swap luci-app-rakitanmanager luci-app-poweroffdevice \
+PACKAGES+=" htop lolcat python3-pip zram-swap luci-app-poweroffdevice \
 luci-app-ramfree luci-app-ttyd luci-app-lite-watchdog luci-app-ipinfo luci-app-droidnet luci-app-mactodong"
 
 # Handle_profile
