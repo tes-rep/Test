@@ -547,7 +547,7 @@ jobs:
         if: steps.customize.outputs.status == 'success'
         run: |
           cd ${WORKING_DIR}
-          mkdir -p compiled_images
+          mkdir -p compiled_images/mod
           chmod +x make-image.sh
 
           # Clean if requested
