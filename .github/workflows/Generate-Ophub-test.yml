@@ -220,8 +220,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
-          name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
+          tag_name: HOUJIE-Wrt_${{ env.BRANCH }}-${{ github.ref_name }}
+          name: HOUJIE-Wrt_${{ env.BRANCH }}-${{ github.ref_name }}
           prerelease: ${{ inputs.upload-prerelease }}
           body: |
             ### OpenWrt Image information
@@ -235,7 +235,7 @@ jobs:
               - Devices type : ${{ inputs.target }}
               - Kernel version : ${{ inputs.openwrt_kernel }}
               - Kernel version : $kernel
-              - ROOTFS File : ${{ inputs.releases_branch }}
+              - ROOTFS File : ${{ env.RELEASE_NAME }}
               - ROOTFS Size : ${{ inputs.rootfs_size }}
             
 
