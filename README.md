@@ -15,7 +15,7 @@
 
 ---
 
-## XIDZs-WRT Builder
+## houjie-WRT Builder
 
 XIDZs-WRT Builder adalah tool yang mendukung berbagai device untuk custom build OpenWrt/ImmortalWrt dengan mudah dan efisien.
 

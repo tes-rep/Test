@@ -1,4 +1,4 @@
-name: Generate Ophub tes
+name: Generate Ophub Firmware2
 
 on:
   workflow_dispatch:
@@ -49,56 +49,13 @@ on:
       tunnel:
         description: "Select Tunnel VPN"
         required: true
-        default: "openclash-nikki"
+        default: "openclash"
         type: choice
         options:
           - openclash
           - openclash-nikki
           - openclash-nikki-passwall
           - no-tunnel
-      rootfs_size:
-        description: "ROOTFS Size, (512, 640, 756, 1024)"
-        required: true
-        default: "1024"
-      openwrt_kernel:
-        description: "Select kernel version"
-        required: false
-        default: "6.6.y_6.12.y"
-        type: choice
-        options:
-          - 5.4.y
-          - 5.10.y
-          - 5.15.y
-          - 6.1.y
-          - 6.6.y
-          - 6.12.y
-          - 6.1.y_6.6.y
-          - 5.15.y_5.10.y
-          - 6.6.y_6.12.y
-      kernel_repo:
-        description: "Set the kernel repository"
-        required: false
-        default: "tes-rep/kernel"
-        type: choice
-        options:
-          - ophub/kernel
-          - Houjie80/kernel2
-          - tes-rep/kernel
-      kernel_usage:
-        description: "Set the tags of the stable kernel."
-        required: false
-        default: "stable"
-        type: choice
-        options:
-          - stable
-          - flippy
-          - dev
-          - s905x4
-      upload-prerelease:
-        description: "Upload as pre-release"
-        required: false
-        default: "false"
-        type: boolean    
       clean:
         description: "Do 'make clean' for each run"
         required: false
@@ -214,31 +171,7 @@ jobs:
           fi
           echo "status=success" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        if: steps.setupenv.outputs.status == 'success'
-        uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
-          name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
-          prerelease: ${{ inputs.upload-prerelease }}
-          body: |
-            ### OpenWrt Image information
-            - Default IP: 192.168.1.1
-            - Default username: root
-            - Default password: sijitekowolu
-            - Default WIFI name: NOKIA N73 | NOKIA N73_5G
-            - Default WIFI password: sijitekowolu
-            ###   Firmware Details : 
-<<
-              - Tanggal Build: ${DATE}
-              - Devices type : ${{ inputs.target }}
-              - Kernel version : ${{ inputs.openwrt_kernel }}
-              - Kernel version : $kernel
-              - ROOTFS File : ${{ inputs.releases_branch }}
-              - ROOTFS Size : ${{ inputs.rootfs_size }}
-            
+      
 
   build-firmware:
     name: Build ${{ matrix.target }} Firmware
@@ -318,25 +251,25 @@ jobs:
           case "$MATRIXTARGET" in
             "Amlogic s905x HG680P")
               TARGET_BUILD="s905x"
-              KERNEL="${{ inputs.openwrt_kernel }}"
+              KERNEL="5.15.y_6.1.y_6.6.y_6.12.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
             "Amlogic s905x B860H")
               TARGET_BUILD="s905x-b860h"
-              KERNEL="${{ inputs.openwrt_kernel }}"
+              KERNEL="5.15.y_6.1.y_6.6.y_6.12.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
             "Amlogic s922x GT-King-Pro")
               TARGET_BUILD="s922x"
-              KERNEL="${{ inputs.openwrt_kernel }}"
+              KERNEL="5.15.y_6.6.y_6.12.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
             "Amlogic s912 Nexbox-A1-A95X")
               TARGET_BUILD="s912-nexbox-a1"
-              KERNEL="${{ inputs.openwrt_kernel }}"
+              KERNEL="5.15.y_6.6.y_6.12.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
@@ -378,13 +311,13 @@ jobs:
               ;;
             "Amlogic s905x2 B860Hv5")
               TARGET_BUILD="s905x2-b860h-v5"
-              KERNEL="${{ inputs.openwrt_kernel }}"
+              KERNEL="5.15.y_6.1.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
             "Amlogic s905x2 HG680-FJ")
               TARGET_BUILD="s905x2-hg680-fj"
-              KERNEL="${{ inputs.openwrt_kernel }}"
+              KERNEL="5.15.y_6.6.y_6.12.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
@@ -420,7 +353,7 @@ jobs:
               ;;
             "Amlogic s905x4 Advan")
               TARGET_BUILD="s905x4-advan"
-              KERNEL="${{ inputs.openwrt_kernel }}"
+              KERNEL="6.6.y_6.12.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
@@ -482,7 +415,6 @@ jobs:
 
           echo "status=success" >> $GITHUB_OUTPUT
 
-      
       - name: Download and Prepare Image Builder
         id: download
         if: steps.variables.outputs.status == 'success'
@@ -548,7 +480,7 @@ jobs:
         if: steps.customize.outputs.status == 'success'
         run: |
           cd ${WORKING_DIR}
-          mkdir -p compiled_images/mod
+          mkdir -p compiled_images
           chmod +x make-image.sh
 
           # Clean if requested
@@ -562,8 +494,7 @@ jobs:
           # Move and rename output files
           for file in bin/targets/"${TARGET_SYSTEM}"/*-rootfs.tar.gz; do
             if [ -f "$file" ]; then
-
-              new_name="HJ-WRT_$(basename "$file" -rootfs.tar.gz)_${{ env.TUNNEL }}-rootfs.tar.gz"
+              new_name="XIDZ-WRT_$(basename "$file" -rootfs.tar.gz)_${{ env.TUNNEL }}-rootfs.tar.gz"
               mv "$file" compiled_images/$new_name
             fi
           done
@@ -581,6 +512,15 @@ jobs:
           ./scripts/REPACKWRT.sh "ophub" "$TARGET_BUILD" "$KERNEL" "${{ env.TUNNEL }}"
           echo "status=success" >> $GITHUB_OUTPUT
           
+      - name: Mod SDCard
+        id: modsdcard
+        if: steps.re.outputs.status == 'success'
+        run: |
+          cd ${WORKING_DIR}
+          chmod +x scripts/MODSDCARD.sh
+          ./scripts/MODSDCARD.sh
+          echo "status=success" >> $GITHUB_OUTPUT
+          
       - name: Before Upload
         id: beforeupload
         if: steps.repack.outputs.status == 'success'
@@ -590,23 +530,28 @@ jobs:
           ./scripts/RENAMEFW.sh
           echo "status=success" >> "$GITHUB_OUTPUT"
 
-      - name: Mod SDCard
-        id: modsdcard
+      - name: Upload the packaged OpenWrt
+        uses: ncipollo/release-action@main
         if: steps.beforeupload.outputs.status == 'success'
-        run: |
-          cd ${WORKING_DIR}
-          chmod +x scripts/MODSDCARD.sh
-          ./scripts/MODSDCARD.sh
-          echo "status=success" >> $GITHUB_OUTPUT
-
-      - name: Create Release
-        if: steps.modsdcard.outputs.status == 'success'
-        uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
-          name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
+          tag: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
+          artifacts: ${{ env.WORKING_DIR }}/compiled_images/*.img.gz
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
           prerelease: ${{ inputs.upload-prerelease }}
-          files: ${{ env.WORKING_DIR }}/compiled_images/mod/*
-          
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            ### OpenWrt Image information
+            - Default IP: 192.168.1.1
+            - Default username: root
+            - Default password: sijitekowolu
+            - Default WIFI name: NOKIA N73 | NOKIA N73_5G
+            - Default WIFI password: sijitekowolu
+            ###   Firmware Details : 
+              - Tanggal Build: ${{ steps.date.outputs.date }}
+              - Devices type : ${{ inputs.target }}
+              - Kernel version : ${{ inputs.openwrt_kernel }}
+              - Kernel version : $kernel
+              - ROOTFS File : ${{ inputs.releases_branch }}
+              - ROOTFS Size : ${{ inputs.rootfs_size }}
