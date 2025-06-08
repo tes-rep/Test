@@ -113,14 +113,7 @@ env:
   TARGET: ${{ github.event.inputs.target }}
   TUNNEL: ${{ github.event.inputs.tunnel }}
   CLEAN: ${{ github.event.inputs.clean }}
-  BASE: ${{ steps.setupenv.base }}
-  BRANCH: ${{ steps.setupenv.outputs.branch }}
-  VEROP: ${{ steps.setupenv.outputs.verop }}
-  DATE: ${{ steps.setupenv.outputs.date }}
-  DATETIME: ${{ steps.setupenv.outputs.datetime }}
-  DATEMONTH: ${{ steps.setupenv.outputs.datemonth }}
-  RELEASE_NAME: ${{ steps.setupenv.outputs.release_name }}
-  RELEASE_TAG: ${{ steps.setupenv.outputs.release_tag }}
+  
 
 jobs:
   prebuild:
@@ -222,30 +215,7 @@ jobs:
           fi
           echo "status=success" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        if: steps.setupenv.outputs.status == 'success'
-        uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: HOUJIE-Wrt_${{ env.BRANCH }}-${{ github.ref_name }}
-          name: HOUJIE-Wrt_${{ env.BRANCH }}-${{ github.ref_name }}
-          prerelease: ${{ inputs.upload-prerelease }}
-          body: |
-            ### OpenWrt Image information
-            - Default IP: 192.168.1.1
-            - Default username: root
-            - Default password: sijitekowolu
-            - Default WIFI name: NOKIA N73 | NOKIA N73_5G
-            - Default WIFI password: sijitekowolu
-            ###   Firmware Details : 
-              - Tanggal Build: ${{ env.DATETIME }}
-              - Devices type : ${{ inputs.target }}
-              - Kernel version : ${{ inputs.openwrt_kernel }}
-              - Kernel version : $kernel
-              - ROOTFS File : ${{ env.RELEASE_BRANCH }}
-              - ROOTFS Size : ${{ inputs.rootfs_size }}
-            
+      
 
   build-firmware:
     name: Build ${{ matrix.target }} Firmware
@@ -613,6 +583,19 @@ jobs:
         with:
           tag_name: HOUJIE-Wrt_${{ env.BRANCH }}-${{ github.ref_name }}
           name: HOUJIE-Wrt_${{ env.BRANCH }}-${{ github.ref_name }}
-          prerelease: ${{ inputs.upload-prerelease }}
           files: ${{ env.WORKING_DIR }}/compiled_images/mod/*
-          
+          prerelease: ${{ inputs.upload-prerelease }}
+          body: |
+            ### OpenWrt Image information
+            - Default IP: 192.168.1.1
+            - Default username: root
+            - Default password: sijitekowolu
+            - Default WIFI name: NOKIA N73 | NOKIA N73_5G
+            - Default WIFI password: sijitekowolu
+            ###   Firmware Details : 
+              - Tanggal Build: ${{ env.DATETIME }}
+              - Devices type : ${{ inputs.target }}
+              - Kernel version : ${{ inputs.openwrt_kernel }}
+              - Kernel version : $kernel
+              - ROOTFS File : ${{ env.RELEASE_BRANCH }}
+              - ROOTFS Size : ${{ inputs.rootfs_size }}
