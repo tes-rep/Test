@@ -195,7 +195,7 @@ jobs:
           echo "DOWNLOAD_BASE=https://downloads.${BASE}.org" >> $GITHUB_OUTPUT
 
           DATE=$(date +'%d%m%Y')
-          DATETIME=$(date +'%d.%m.%Y-%H:%M:%S')
+          DATETIME=$(date +'%H:%M:%S-%d-%m-%Y')
           DATEMONTH=$(date +"%B-%Y" | awk '{print tolower($0)}')
 
           echo "DATE=$DATE" >> $GITHUB_OUTPUT
@@ -596,6 +596,6 @@ jobs:
               - Tanggal Build: ${{ env.DATETIME }}
               - Devices type : ${{ inputs.target }}
               - Kernel version : ${{ inputs.openwrt_kernel }}
-              - Kernel version : $kernel
-              - ROOTFS File : ${{ env.RELEASE_BRANCH }}
+              - type : ${{ env.TYPE }}
+              - Openwrt version : ${{ env.RELEASE_BRANCH }}
               - ROOTFS Size : ${{ inputs.rootfs_size }}
