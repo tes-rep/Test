@@ -205,7 +205,7 @@ check_status "mv /usr/share/netdata/web/lib/jquery-3.6.0.min.js /usr/share/netda
 # restart netdata and vnstat
 log_status "INFO" "Restarting Netdata and VnStat services..."
 #check_status "/etc/init.d/netdata restart" "Netdata service restarted"
-check_status "/etc/init.d/vnstat restart" "VnStat service restarted"
+check_status "service vnstat restart" "VnStat service restarted"
 
 # run vnstati.sh
 log_status "INFO" "Running VnStati script..."
