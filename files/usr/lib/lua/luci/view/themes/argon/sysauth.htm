@@ -1,377 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>𝚇𝙸𝙳𝚉-𝚆𝚁𝚃</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XIDZs-WRT</title>
     <link rel="stylesheet" href="<%=media%>/xidz.css">
     <link rel="shortcut icon" href="<%=media%>/favicon.ico">
-    
     <style>
-      /* Animasi untuk judul XIDZ-WRT */
-      .animated-title {
-        background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
-        background-size: 400% 400%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: gradientShift 3s ease-in-out infinite, bounce 2s ease-in-out infinite;
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-      }
-      
-      @keyframes gradientShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      
-      @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-        40% { transform: translateY(-10px); }
-        60% { transform: translateY(-5px); }
-      }
-      
-      /* Animasi untuk jam dan tanggal */
-      .animated-time {
-        background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
-        background-size: 400% 400%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: timeGlow 2s ease-in-out infinite, pulse 1.5s ease-in-out infinite;
-        font-weight: bold;
-        text-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
-      }
-      
-      @keyframes timeGlow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      
-      @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-      }
-      
-      /* Animasi tambahan untuk container */
-      .login_form {
-        animation: fadeInUp 1s ease-out;
-      }
-      
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      
-      /* Efek hover untuk input */
-      .input_text:focus {
-        animation: inputGlow 0.3s ease-in-out;
-        box-shadow: 0 0 15px rgba(78, 205, 196, 0.6);
-      }
-      
-      @keyframes inputGlow {
-        0% { box-shadow: 0 0 5px rgba(78, 205, 196, 0.3); }
-        100% { box-shadow: 0 0 15px rgba(78, 205, 196, 0.6); }
-      }
+        *{margin:0;padding:0;box-sizing:border-box;transition:all .6s ease}
+        body{width:100%;height:100vh;display:flex;justify-content:center;align-items:center;font-family:system-ui;background:var(--bg);color:var(--text)}
 
-      /* Notifikasi Error dengan Animasi Bergerak */
-      .error-notification {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: linear-gradient(45deg, #ff4757, #ff3838, #ff6b6b, #ff5252);
-        background-size: 400% 400%;
-        color: white;
-        padding: 15px 25px;
-        border-radius: 10px;
-        box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
-        z-index: 1000;
-        font-weight: bold;
-        font-size: 14px;
-        text-align: center;
-        min-width: 300px;
-        animation: slideInShake 0.8s ease-out, gradientError 2s ease-in-out infinite;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-      }
+        .theme-toggle{position:fixed;top:20px;right:20px;z-index:1000}
+        .theme-btn,.login_form_container,.login_form,.input_group,input[type="submit"]{border-radius:20px;border:none}
+        .theme-btn{padding:10px 20px;cursor:pointer;font:600 12px inherit;text-transform:uppercase;letter-spacing:1px;background:var(--bg);color:var(--text);box-shadow:var(--shadow-out)}
+        .theme-btn:hover{box-shadow:var(--shadow-in);transform:scale(.95)}
 
-      .error-notification.show {
-        display: block;
-      }
+        .login_form_container{width:380px;height:480px;border-radius:30px;display:flex;align-items:center;justify-content:center;background:var(--bg);box-shadow:var(--shadow-deep)}
+        .login_form{width:calc(100% - 16px);height:calc(100% - 16px);padding:40px;border-radius:25px;background:var(--bg);box-shadow:var(--shadow-in)}
 
-      .error-notification.hide {
-        animation: slideOutUp 0.5s ease-in forwards;
-      }
+        .alert-message{padding:15px;margin-bottom:20px;border-radius:15px;background:var(--bg);color:var(--text);box-shadow:var(--shadow-out);border-left:3px solid var(--accent);animation:slideDown .5s ease}
 
-      /* Animasi masuk dengan shake */
-      @keyframes slideInShake {
-        0% {
-          transform: translateX(-50%) translateY(-100px) rotate(-5deg);
-          opacity: 0;
-        }
-        50% {
-          transform: translateX(-50%) translateY(10px) rotate(2deg);
-          opacity: 1;
-        }
-        70% {
-          transform: translateX(-50%) translateY(-5px) rotate(-1deg);
-        }
-        100% {
-          transform: translateX(-50%) translateY(0) rotate(0deg);
-          opacity: 1;
-        }
-      }
+        h2{font-size:36px;font-weight:700;text-align:center;margin-bottom:20px;color:var(--text)}
+        .date-time{text-align:center;font-size:14px;opacity:.8;margin-bottom:30px;color:var(--muted);font-weight:500}
 
-      /* Animasi keluar */
-      @keyframes slideOutUp {
-        0% {
-          transform: translateX(-50%) translateY(0) scale(1);
-          opacity: 1;
-        }
-        100% {
-          transform: translateX(-50%) translateY(-100px) scale(0.8);
-          opacity: 0;
-        }
-      }
+        .input_group{margin-bottom:20px;background:var(--bg);box-shadow:var(--shadow-in);padding:2px}
+        .input_text{width:100%;height:46px;border:none;outline:none;border-radius:13px;font-size:16px;padding:0 20px;background:transparent;color:var(--input)}
+        .input_text:focus{transform:scale(1.02)}
+        ::placeholder{color:var(--muted);opacity:.6}
 
-      /* Animasi gradient untuk error */
-      @keyframes gradientError {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
+        input[type="submit"]{width:100%;height:50px;font:600 18px inherit;letter-spacing:2px;cursor:pointer;margin-top:20px;background:var(--bg);color:var(--accent);box-shadow:var(--shadow-out)}
+        input[type="submit"]:hover{box-shadow:var(--shadow-in);color:var(--input);transform:scale(.98)}
 
-      /* Teks bergerak dalam notifikasi */
-      .moving-text {
-        display: inline-block;
-        animation: textWave 1.5s ease-in-out infinite;
-      }
+        /* Theme Variables */
+        :root{--bg:#2d3436;--text:#ddd;--accent:#ffd700;--input:#00fa9a;--muted:#bbb;--shadow-out:8px 8px 16px #1e2123,-8px -8px 16px #3c4649;--shadow-in:inset 4px 4px 8px #1e2123,inset -4px -4px 8px #3c4649;--shadow-deep:20px 20px 40px #1e2123,-20px -20px 40px #3c4649}
+        .light{--bg:#f0f2f5;--text:#4a5568;--accent:#6366f1;--input:#2d3748;--muted:#718096;--shadow-out:6px 6px 12px #d0d4d8,-6px -6px 12px #ffffff;--shadow-in:inset 3px 3px 6px #d0d4d8,inset -3px -3px 6px #ffffff;--shadow-deep:15px 15px 30px #d0d4d8,-15px -15px 30px #ffffff}
+        .neon{--bg:#1a1a1a;--text:#d4af37;--accent:#ffd700;--input:#b8860b;--muted:#cd853f;--shadow-out:0 0 15px rgba(255,215,0,.3);--shadow-in:inset 0 0 10px rgba(255,215,0,.15);--shadow-deep:0 0 25px rgba(255,215,0,.4)}
+        .rose{--bg:#1a1a2e;--text:#e94560;--accent:#e94560;--input:#ff6b9d;--muted:#c73650;--shadow-out:8px 8px 16px #0f0f1a,-8px -8px 16px #252542;--shadow-in:inset 4px 4px 8px #0f0f1a,inset -4px -4px 8px #252542;--shadow-deep:20px 20px 40px #0f0f1a,-20px -20px 40px #252542}
 
-      .moving-text:nth-child(1) { animation-delay: 0s; }
-      .moving-text:nth-child(2) { animation-delay: 0.1s; }
-      .moving-text:nth-child(3) { animation-delay: 0.2s; }
-      .moving-text:nth-child(4) { animation-delay: 0.3s; }
-      .moving-text:nth-child(5) { animation-delay: 0.4s; }
-      .moving-text:nth-child(6) { animation-delay: 0.5s; }
-      .moving-text:nth-child(7) { animation-delay: 0.6s; }
-      .moving-text:nth-child(8) { animation-delay: 0.7s; }
+        /* Glass Theme - Complete Transparency */
+        .glass{--bg:transparent;--text:#fff;--accent:#fff;--input:#fff;--muted:rgba(255,255,255,.9);--shadow-out:0 8px 32px rgba(0,0,0,.1);--shadow-in:0 2px 16px rgba(255,255,255,.1);--shadow-deep:0 25px 45px rgba(0,0,0,.1)}
+        body.glass{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}
+        .glass *{backdrop-filter:blur(20px)}
+        .glass .theme-btn{background:rgba(255,255,255,.15);box-shadow:0 4px 15px rgba(0,0,0,.1)}
+        .glass .login_form_container{background:rgba(255,255,255,.08);box-shadow:0 25px 45px rgba(0,0,0,.1)}
+        .glass .login_form{background:transparent;box-shadow:none}
+        .glass .input_group{background:rgba(255,255,255,.12);box-shadow:none}
+        .glass input[type="submit"]{background:rgba(255,255,255,.18);box-shadow:0 4px 15px rgba(0,0,0,.1)}
+        .glass input[type="submit"]:hover{background:rgba(255,255,255,.22)}
+        
+        /* Glass Alert Message - Pure Transparent */
+        .glass .alert-message{background:transparent !important;backdrop-filter:none !important;box-shadow:none !important;border:none !important;padding:8px 0;margin-bottom:15px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.5);font-size:14px;font-weight:600}
+        .glass .alert-message p{background:transparent !important;margin:0;line-height:1.3;opacity:.95}
+        .glass .alert-message center{background:transparent !important}
+        
+        /* Glass Text - Perfect Transparency */
+        .glass h2{background:transparent;text-shadow:0 2px 4px rgba(0,0,0,.3)}
+        .glass .date-time{background:transparent;text-shadow:0 1px 2px rgba(0,0,0,.2)}
 
-      @keyframes textWave {
-        0%, 60%, 100% {
-          transform: translateY(0) scale(1);
-        }
-        30% {
-          transform: translateY(-8px) scale(1.1);
-        }
-      }
+        .rgb{--bg:#222;--text:#ddd;--accent:#ff6b9d;--input:#6bcf7f;--muted:#aaa;--shadow-out:8px 8px 16px #111,-8px -8px 16px #333;--shadow-in:inset 4px 4px 8px #111,inset -4px -4px 8px #333;--shadow-deep:20px 20px 40px #111,-20px -20px 40px #333}
+        @keyframes moderateRGB{0%{border-color:#cc4444;box-shadow:0 0 8px rgba(204,68,68,.4)}25%{border-color:#44cc44;box-shadow:0 0 8px rgba(68,204,68,.4)}50%{border-color:#4488cc;box-shadow:0 0 8px rgba(68,136,204,.4)}75%{border-color:#cc44cc;box-shadow:0 0 8px rgba(204,68,204,.4)}100%{border-color:#cc4444;box-shadow:0 0 8px rgba(204,68,68,.4)}}
+        .rgb .login_form_container,.rgb .input_group,.rgb input[type="submit"]{border:2px solid #cc4444;animation:moderateRGB 4s ease-in-out infinite}
 
-      /* Efek shake untuk form saat error */
-      .shake-form {
-        animation: shakeForm 0.6s ease-in-out;
-      }
-
-      @keyframes shakeForm {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
-      }
-
-      /* Alert message styling yang sudah ada */
-      .alert-message.warning {
-        display: none; /* Sembunyikan alert default */
-      }
+        @media (max-width:768px){.login_form_container{width:90vw;height:70vh;max-width:350px}.login_form{padding:30px}}
+        @keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+        .fade-out{animation:slideUp .3s ease forwards}
+        @keyframes slideUp{to{opacity:0;transform:translateY(-20px)}}
     </style>
-  </head>
-  <body>
-    <!-- Notifikasi Error dengan Animasi -->
-    <div id="errorNotification" class="error-notification" style="display: none;">
-      <div id="errorText"></div>
+</head>
+<body>
+    <div class="theme-toggle">
+        <button class="theme-btn" id="b">DARK</button>
     </div>
 
     <form method="post" action="<%=pcdata(FULL_REQUEST_URI)%>">
-      <%- if fuser then %>
-        <div class="alert-message warning">
-          <center><p><%:Username Atau Sandi Salah%><br><%:Silahkan Ingat Kembali%></p></center>
-        </div>
-      <% end -%>
-      
-      <div class="login_form_container">
-        <div class="login_form" id="loginForm">
-          <h2 class="animated-title">⚝𝚇𝙸𝙳𝚉-𝚆𝚁𝚃⚝</h2>
-          
-          <center>
-            <div class="animated-time">
-              <span id="tanggalLengkap"></span> | <span id='jam'></span>
+        <%- if fuser then %>
+            <div class="alert-message" id="a">
+                <center><p><%:Username Atau Sandi Salah%><br><%:Masukan Dengan Benar%></p></center>
             </div>
-          </center>
-          
-          <div class="input_group">
-            <i class="fa fa-user"></i>
-            <input class="input_text" type="text" name="luci_username" placeholder="Username" autocomplete="off" value="<%=duser%>" />
-          </div>
-          <div class="input_group">
-            <i class="fa fa-unlock-alt"></i>
-            <input class="input_text" type="password" name="luci_password" placeholder="Password" autocomplete="off"/>
-          </div>
-          <div class="button_group" id="login_button">
-              <center><input type="submit" value="<%:Login%>" />
-          </center>
-          </div>
+        <% end-%>
+
+        <div class="login_form_container">
+            <div class="login_form">
+                <h2>XIDZs-WRT</h2>
+                <div class="date-time">
+                    <span id="d"></span> | <span id="t"></span>
+                </div>
+
+                <div class="input_group">
+                    <input class="input_text" type="text" name="luci_username" placeholder="Username" value="<%=duser%>">
+                </div>
+                
+                <div class="input_group">
+                    <input class="input_text" type="password" name="luci_password" placeholder="Password">
+                </div>
+
+                <input type="submit" value="LOGIN">
+            </div>
         </div>
-      </div>
     </form>
 
-    <!-- Script untuk jam dan tanggal yang diperbaiki -->
-    <script type="text/javascript">
-      // Fungsi untuk update jam
-      function updateJam() {
-        var sekarang = new Date();
-        var jam = sekarang.getHours().toString().padStart(2, '0');
-        var menit = sekarang.getMinutes().toString().padStart(2, '0');
-        var detik = sekarang.getSeconds().toString().padStart(2, '0');
-        
-        document.getElementById("jam").innerHTML = jam + ":" + menit + ":" + detik;
-      }
-
-      // Fungsi untuk update tanggal
-      function updateTanggal() {
-        var sekarang = new Date();
-        var namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-        var namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", 
-                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-        
-        var hari = namaHari[sekarang.getDay()];
-        var tanggal = sekarang.getDate();
-        var bulan = namaBulan[sekarang.getMonth()];
-        var tahun = sekarang.getFullYear();
-        
-        var tanggalLengkap = hari + ", " + tanggal + " " + bulan + " " + tahun;
-        document.getElementById("tanggalLengkap").innerHTML = tanggalLengkap;
-      }
-
-      // Fungsi untuk update waktu dan tanggal
-      function updateWaktu() {
-        updateJam();
-        updateTanggal();
-      }
-
-      // Jalankan fungsi pertama kali
-      updateWaktu();
-
-      // Update setiap detik untuk jam, setiap menit untuk tanggal
-      setInterval(updateJam, 1000);
-      setInterval(updateTanggal, 60000); // Update tanggal setiap menit
-
-      // Update tanggal saat pergantian hari (setiap detik cek apakah sudah ganti hari)
-      var tanggalSebelumnya = new Date().getDate();
-      setInterval(function() {
-        var tanggalSekarang = new Date().getDate();
-        if (tanggalSekarang !== tanggalSebelumnya) {
-          updateTanggal();
-          tanggalSebelumnya = tanggalSekarang;
-        }
-      }, 1000);
+    <script>
+        const T=['dark','light','glass','neon','rose','rgb'],B=document.getElementById('b'),D=document.body;
+        let C=localStorage.theme||'dark';D.className=C;B.textContent=C.toUpperCase();
+        B.onclick=()=>{C=T[(T.indexOf(C)+1)%6];D.className=C;B.textContent=C.toUpperCase();localStorage.theme=C};
+        const U=()=>{const N=new Date();document.getElementById('t').textContent=N.toLocaleTimeString('id');if(!document.getElementById('d').textContent)document.getElementById('d').textContent=N.toLocaleDateString('id',{weekday:'long',day:'numeric',month:'short',year:'numeric'})};
+        U();setInterval(U,1000);
+        const A=document.getElementById('a');if(A)setTimeout(()=>A.classList.add('fade-out'),3000);
+        setTimeout(()=>document.getElementsByName('luci_password')[0]?.focus(),500);
     </script>
 
-    <!-- Script untuk Error Notification dengan Tulisan Bergerak -->
-    <script type="text/javascript">
-      function showErrorNotification(message) {
-        var notification = document.getElementById('errorNotification');
-        var errorText = document.getElementById('errorText');
-        var loginForm = document.getElementById('loginForm');
-        
-        // Buat teks bergerak
-        var words = message.split(' ');
-        var movingHTML = '';
-        
-        words.forEach(function(word, index) {
-          var letters = word.split('');
-          letters.forEach(function(letter, letterIndex) {
-            var delay = (index * letters.length + letterIndex) * 0.1;
-            movingHTML += '<span class="moving-text" style="animation-delay: ' + delay + 's;">' + letter + '</span>';
-          });
-          if (index < words.length - 1) {
-            movingHTML += '<span class="moving-text">&nbsp;</span>';
-          }
-        });
-        
-        errorText.innerHTML = movingHTML;
-        
-        // Tambahkan efek shake pada form
-        loginForm.classList.add('shake-form');
-        
-        // Tampilkan notifikasi
-        notification.style.display = 'block';
-        notification.classList.add('show');
-        
-        // Hapus efek shake setelah animasi selesai
-        setTimeout(function() {
-          loginForm.classList.remove('shake-form');
-        }, 600);
-        
-        // Sembunyikan notifikasi setelah 3 detik
-        setTimeout(function() {
-          notification.classList.add('hide');
-          setTimeout(function() {
-            notification.style.display = 'none';
-            notification.classList.remove('show', 'hide');
-          }, 500);
-        }, 3000);
-      }
-
-      // Cek jika ada error login
-      <%- if fuser then %>
-        document.addEventListener('DOMContentLoaded', function() {
-          showErrorNotification('✘ Username | Password Salah ! Silahkan Coba Lagi');
-        });
-      <% end -%>
-    </script>
-
-    <!-- Script untuk focus password -->
-    <script type="text/javascript">
-      var input = document.getElementsByName('luci_password')[0];
-      if (input) {
-        input.focus();
-      }
-    </script>
-
-    <!-- Script untuk HTTPS redirect -->
-    <%
-    local uci  = require "luci.model.uci".cursor()
-    local fs  = require "nixio.fs"
-    local https_key = uci:get("uhttpd", "main", "key")
-    local https_port = uci:get("uhttpd", "main", "listen_https")
-    if type(https_port) == "table" then
-      https_port = https_port[1]
-    end
-
-    if https_port and fs.access(https_key) then
-      https_port = https_port:match("(%d+)$")
-    %>
-
-    <script type="text/javascript">
-      if (document.location.protocol != 'https:') {
-        var url = 'https://' + window.location.hostname + ':' + '<%=https_port%>' + window.location.pathname;
-        var img=new Image;
-        img.onload=function(){window.location = url};
-        img.src='https://' + window.location.hostname + ':' + '<%=https_port%>' + '<%=resource%>/icons/loading.gif?' + Math.random();
-        setTimeout(function(){
-          img.src=''
-        }, 900);
-      }
-    </script>
-
+    <% local uci = require "luci.model.uci".cursor(); local fs = require "nixio.fs"; local https_key = uci:get("uhttpd","main","key"); local https_port = uci:get("uhttpd","main","listen_https"); if type(https_port) == "table" then https_port = https_port[1] end; if https_port and fs.access(https_key) then https_port = https_port:match("(%d+)$") %>
+        <script>if (document.location.protocol !== 'https:') { const url = `https://${window.location.hostname}:<%=https_port%>${window.location.pathname}`; const img = new Image(); img.onload = () => window.location = url; img.src = `https://${window.location.hostname}:<%=https_port%>/<%=resource%>/icons/loading.gif?${Math.random()}`; setTimeout(() => img.src = '', 240); }</script>
     <% end %>
-
-    <script src="login.js"></script>
-  </body>
+</body>
 </html>

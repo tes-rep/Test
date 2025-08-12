@@ -167,7 +167,6 @@
              <td><a href='/cgi-bin/luci/admin/services/openclash'><img src="<%=media%>/navbar/openclash.png" width="35" height="35"></a></td>
              <td><a href='/cgi-bin/luci/admin/services/nikki'><img src="<%=media%>/navbar/nikki.png" width="35" height="35"></a></td>
              <td><a href='/cgi-bin/luci/admin/services/passwall'><img src="<%=media%>/navbar/passwall.png" width="35" height="35"></a></td>
-             <td><a href='/cgi-bin/luci/admin/modem/rakitan'><img src="<%=media%>/navbar/rakitanmanager.png" width="35" height="35"></a></td>
              <td><a href='/cgi-bin/luci/admin/services/droidnet'><img src="<%=media%>/navbar/droidnet.png" width="35" height="35"></a></td>
              <td><a href='/cgi-bin/luci/admin/modem/3ginfo-lite'><img src="<%=media%>/navbar/modem.png" width="35" height="35"></a></td>
       </tr>
@@ -180,16 +179,78 @@
 function updatemenu(){1==document.getElementById("responsive-menu").checked?(document.getElementById("menu").style.borderBottomRightRadius="0",document.getElementById("menu").style.borderBottomLeftRadius="0"):document.getElementById("menu").style.borderRadius="0px"}
 </script>
 <nav id='menu'>
-  <input type='checkbox' id='responsive-menu' onclick='updatemenu()'><label></label>
-  <ul>
-    <li><a href='/cgi-bin/luci/admin/services/ttyd'>Terminal</a></li>
-    <li><a href='/cgi-bin/luci/admin/status/netmon'>Netmon</a></li>
-	<li><a id="zash" target='_blank'>Zash</a></li>
-	<script type="text/javascript">document.getElementById("zash").setAttribute("href", "http://" + window.location.hostname + ":9090/ui/zashboard/",);</script>
-	<li><a id="yacd" target='_blank'>Yacd</a></li>
-	<script type="text/javascript">document.getElementById("yacd").setAttribute("href", "http://" + window.location.hostname + ":9090/ui/yacd/",);</script>
-  </ul>
+    <input type='checkbox' id='responsive-menu' onclick='updatemenu()'>
+    <label></label>
+    <ul>
+        <li><a href='/cgi-bin/luci/admin/services/ttyd'>Terminal</a></li>
+        <li><a href='/cgi-bin/luci/admin/status/netmon'>Netmon</a></li>
+        <li><a id="zash" href="#" target='_blank'>Zash</a></li>
+        <li><a id="yacd" href="#" target='_blank'>Yacd</a></li>
+    </ul>
 </nav>
+<script>
+  (function(){
+    'use strict';
+
+    const { hostname } = window.location;
+    const baseUrl = `http://${hostname}:9090`;
+
+    const elements = {
+      zash: document.getElementById('zash'),
+      yacd: document.getElementById('yacd')
+    };
+
+    if(!elements.zash || !elements.yacd) return;
+
+    const urls = {
+      nikki: `${baseUrl}/ui/Nikki/`,
+      zashboard: `${baseUrl}/ui/zashboard/`,
+      yacd: `${baseUrl}/ui/yacd/`
+    };
+
+    elements.yacd.href = urls.yacd;
+
+    function checkFavicon(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(url);
+        img.onerror = () => reject(url);
+        img.src = `${url}favicon.ico?${Date.now()}`;
+      });
+    }
+
+    function setZash(url, color, text) {
+      elements.zash.href = url;
+      elements.zash.style.color = color;
+      elements.zash.textContent = text;
+    }
+
+    async function detectUI() {
+      try {
+        const nikkiUrl = await checkFavicon(urls.nikki);
+        setZash(`${nikkiUrl}?host=${hostname}&hostname=${hostname}&port=9090`, '#00ff00', 'Nikki');
+        console.log('Nikki detected');
+      }
+      catch {
+        try {
+          const zashUrl = await checkFavicon(urls.zashboard);
+          setZash(zashUrl, '#00ff00', 'Openclash');
+          console.log('Zashboard detected');
+        }
+        catch {
+          setZash(urls.zashboard, '#fff', 'Zash');
+          console.log('No Nikki or Zashboard detected; fallback to default');
+        }
+      }
+    }
+
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', detectUI);
+    } else {
+      detectUI();
+    }
+  })();
+</script>
 			</header>
 <br>
 			<div class="darkMask"></div>

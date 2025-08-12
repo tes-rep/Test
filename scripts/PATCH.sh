@@ -13,19 +13,15 @@ init_environment() {
 
 # Apply distribution-specific patches
 apply_distro_patches() {
-    case "${BASE}" in
-        "openwrt")
-            log "INFO" "Applying OpenWrt specific patches"
-            ;;
-        "immortalwrt")
-            log "INFO" "Applying ImmortalWrt specific patches"
-            # Remove redundant default packages
-            sed -i "/luci-app-cpufreq/d" include/target.mk
-            ;;
-        *)
-            log "INFO" "Unknown distribution: ${BASE}"
-            ;;
-    esac
+    if [[ "${BASE}" == "openwrt" ]]; then
+        log "INFO" "Applying OpenWrt specific patches"
+    elif [[ "${BASE}" == "immortalwrt" ]]; then
+        log "INFO" "Applying ImmortalWrt specific patches"
+        # Remove redundant default packages
+        sed -i "/luci-app-cpufreq/d" include/target.mk
+    else
+        log "INFO" "Unknown distribution: ${BASE}"
+    fi
 }
 
 # Patch package signature checking
@@ -61,14 +57,35 @@ configure_amlogic() {
     fi
 }
 
-# Apply x86_64-specific configurations
+# apply x86_64
 configure_x86_64() {
-    if [ "${ARCH_2}" == "x86_64" ]; then
-        log "INFO" "Applying x86_64-specific configurations"
+    if [[ "${ARCH_2}" == "x86_64" ]]; then
+        log "INFO" "Applying x86_64 configurations"
         # Disable ISO images generation
         sed -i "s/CONFIG_ISO_IMAGES=y/# CONFIG_ISO_IMAGES is not set/" .config
         # Disable VHDX images generation
         sed -i "s/CONFIG_VHDX_IMAGES=y/# CONFIG_VHDX_IMAGES is not set/" .config
+    fi
+}
+
+# apply raspi 1
+configure_raspi1() {
+    if [[ "${ARCH_2}" == "arm" ]]; then
+        log "INFO" "Applying Raspberry Pi 1 configurations"        
+        # Disable x86-specific image formats
+        sed -i "s/CONFIG_ISO_IMAGES=y/# CONFIG_ISO_IMAGES is not set/" .config
+        sed -i "s/CONFIG_VHDX_IMAGES=y/# CONFIG_VHDX_IMAGES is not set/" .config
+        sed -i "s/CONFIG_VDI_IMAGES=y/# CONFIG_VDI_IMAGES is not set/" .config
+        sed -i "s/CONFIG_VMDK_IMAGES=y/# CONFIG_VMDK_IMAGES is not set/" .config
+        
+        # Enable basic rootfs formats
+        sed -i "s/# CONFIG_TARGET_ROOTFS_EXT4FS is not set/CONFIG_TARGET_ROOTFS_EXT4FS=y/" .config
+        sed -i "s/# CONFIG_TARGET_ROOTFS_SQUASHFS is not set/CONFIG_TARGET_ROOTFS_SQUASHFS=y/" .config
+        
+        # Reduce build complexity
+        sed -i "s/CONFIG_ALL_KMODS=y/# CONFIG_ALL_KMODS is not set/" .config
+        
+        log "INFO" "Raspberry Pi 1 configurations applied"
     fi
 }
 
@@ -81,6 +98,7 @@ main() {
     configure_partitions
     configure_amlogic
     configure_x86_64
+    configure_raspi1
     log "INFO" "Builder patch completed successfully!"
 }
 

@@ -12,8 +12,8 @@ openclash_core=$(curl -s "https://api.github.com/repos/MetaCubeX/mihomo/releases
 
 # Openclash IPK
 openclash_file_ipk="luci-app-openclash"
-openclash_file_ipk_down=$(curl -s "https://api.github.com/repos/tes-rep/OpenClash/releases" | grep "browser_download_url" | grep -oE "https.*${openclash_file_ipk}.*.ipk" | head -n 1)
-# openclash_file_ipk_down="https://raw.githubusercontent.com/tes-rep/OpenClash/package/dev/luci-app-openclash_0.46.085_all.ipk"
+openclash_file_ipk_down=$(curl -s "https://api.github.com/repos/vernesong/OpenClash/releases" | grep "browser_download_url" | grep -oE "https.*${openclash_file_ipk}.*.ipk" | head -n 1)
+# openclash_file_ipk_down="https://raw.githubusercontent.com/vernesong/OpenClash/package/dev/luci-app-openclash_0.46.085_all.ipk"
 #curl -L -o luci-app-openclash_0.46.085_all.ipk "$openclash_file_ipk_down"
 # passwall_core URL generation
 passwall_file_ipk="luci-24.10_luci-app-passwall"
@@ -23,7 +23,7 @@ passwall_core_file_zip_down=$(curl -s "https://api.github.com/repos/xiaorouji/op
 
 # Nikki URL generation
 nikki_file_ipk="nikki_${ARCH_3}-openwrt-${VEROP}"
-nikki_file_ipk_down=$(curl -s "https://api.github.com/repos/rizkikotet-dev/OpenWrt-nikki-Mod/releases" | grep "browser_download_url" | grep -oE "https.*${nikki_file_ipk}.*.tar.gz" | head -n 1)
+nikki_file_ipk_down=$(curl -s "https://api.github.com/repos/nikkinikki-org/OpenWrt-nikki/releases" | grep "browser_download_url" | grep -oE "https.*${nikki_file_ipk}.*.tar.gz" | head -n 1)
 
 # Function to download and setup OpenClash
 setup_openclash() {

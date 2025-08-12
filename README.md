@@ -1,36 +1,23 @@
-<h2 align="center">CUSTOM BUILD DEVICES</h2>
 <h3 align="center">OpenWrt | ImmortalWrt</h3>
-<h4 align="center">23.05.5 | 24.10.1</h4>
+<h4 align="center">23.05.5 | 24.10.2</h4>
 <p align="center"><em>ImageBuilder | UloBuilder</em></p>
 
 ---
 
-## Credits
-
-* [RTA-WrtBuilder By RizkiKotet-Dev](https://github.com/rizkikotet-dev/RTA-WRT)
-* [friWrt-MyWrtBuilder By frizkyiman](https://github.com/frizkyiman/friWrt-MyWrtBuilder)
-* [MyWrtBuilder By Revincx](https://github.com/Revincx/MyWrtBuilder)
-* [ULO Builder By DBAI](https://github.com/armarchindo/ULO-Builder/blob/main/ulo)
-* [XIDZs-WRT Builder By Fidz](https://t.me/xidz_x)
-
----
-
-## houjie-WRT Builder
-
-XIDZs-WRT Builder adalah tool yang mendukung berbagai device untuk custom build OpenWrt/ImmortalWrt dengan mudah dan efisien.
-
-### Device Support
+### Devices Support
 - **Orange Pi** - Support untuk berbagai varian Orange Pi
 - **Raspberry Pi** - Kompatibel dengan Raspberry Pi series
 - **Nano Pi** - Support untuk FriendlyARM NanoPi series
 - **Amlogic** - Support untuk device berbasis chipset Amlogic
-- **x86/x64** - Support untuk platform PC dan Virtual Machine
+- **Rockchip** - Support untuk device berbasis chipset Rockchip
+- **x86/x64** - Support untuk platform PC
 
 ---
 
 ## FITUR - FITUR
 
 ### Theme & UI
+- **Tema Material** - Interface simple dan Smooth
 - **Tema Alpha** - Interface modern dan clean
 - **Tema Argon** - Theme elegant dengan design responsive
 
@@ -50,7 +37,6 @@ XIDZs-WRT Builder adalah tool yang mendukung berbagai device untuk custom build 
 ### Hardware Support
 - **Amlogic Service** - Service khusus untuk device Amlogic
 - **GPIO LED HG680P | B860H** - Control LED untuk STB tertentu
-- **Rakitan Manager** - Management tools untuk modem rakitan
 
 ### System Tools
 - **Auto Sinkron Jam** - Automatic time synchronization
@@ -65,5 +51,22 @@ XIDZs-WRT Builder adalah tool yang mendukung berbagai device untuk custom build 
 ---
 
 <p align="center">
-<strong>Happy Building!</strong>
+<strong>XIDZs-WRT | 2025</strong>
+</p>
+
+---
+
+<p align="center"><small><strong>License - Credits</strong></small></p>
+
+<p align="center">
+<small>
+<a href="https://github.com/de-quenx/XIDZs-WRT/blob/main/LICENSE">LICENSE</a><br>
+<a href="https://github.com/rizkikotet-dev/RTA-WRT">RTA-WrtBuilder By RizkiKotet-Dev</a><br>
+<a href="https://github.com/frizkyiman/friWrt-MyWrtBuilder">friWrt-MyWrtBuilder By frizkyiman</a><br>
+<a href="https://github.com/Revincx/MyWrtBuilder">MyWrtBuilder By Revincx</a><br>
+<a href="https://github.com/armarchindo/ULO-Builder/blob/main/ulo">ULO Builder By DBAI</a><br>
+<a href="https://t.me/xidz_x">XIDZs-WrtBuilder By Fidz</a><br>
+<a href="https://github.com/ophub">Ophub</a><br>
+<a href="https://github.com/Dirgha80">Dirgha</a><br>
+</small>
 </p>

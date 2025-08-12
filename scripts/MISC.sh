@@ -16,7 +16,6 @@ setup_base_config() {
     case "${BASE}" in
         "openwrt")
             log "INFO" "Configuring OpenWrt specific settings"
-            sed -i '/# setup misc settings/ a\mv \/www\/luci-static\/resources\/view\/status\/include\/29_temp.js \/www\/luci-static\/resources\/view\/status\/include\/17_temp.js' files/etc/uci-defaults/99-init-settings.sh
             ;;
         "immortalwrt")
             log "INFO" "Configuring ImmortalWrt specific settings"
@@ -68,6 +67,7 @@ configure_amlogic_permissions() {
             "/lib/netifd/proto/dhcp.sh"
             "/lib/netifd/proto/dhcpv6.sh"
             "/lib/netifd/proto/ncm.sh"
+            "/lib/netifd/proto/atc.sh"
             "/lib/netifd/proto/wwan.sh"
             "/lib/netifd/wireless/mac80211.sh"
             "/lib/netifd/dhcp-get-server.sh"
@@ -97,6 +97,9 @@ download_custom_scripts() {
     
     local scripts=(
         "https://raw.githubusercontent.com/frizkyiman/fix-read-only/main/install2.sh|files/root"
+        "https://raw.githubusercontent.com/de-quenx/x-founds/main/xidz/indowrt.sh|files/root"
+        "https://raw.githubusercontent.com/de-quenx/x-founds/main/xidz/nikki-x.sh|files/root"
+        "https://raw.githubusercontent.com/de-quenx/x-founds/main/xidz/rules.sh|files/root"
     )
     
     for script in "${scripts[@]}"; do

@@ -6,18 +6,12 @@ on:
       release_branch:
         description: "Select the release branch:"
         required: true
-        default: "openwrt:24.10.1"
+        default: "openwrt:24.10.2"
         type: choice
         options:
-          - openwrt:24.10.1
           - openwrt:24.10.2
-          - openwrt:24.10.3
-          - openwrt:24.10.4
           - openwrt:23.05.5
-          - immortalwrt:24.10.1
           - immortalwrt:24.10.2
-          - immortalwrt:24.10.3
-          - immortalwrt:24.10.4
           - immortalwrt:23.05.4
       target:
         description: "Select device board"
@@ -26,17 +20,18 @@ on:
         type: choice
         options:
           - all-device
+          - Nanopi-r2s
+          - Nanopi-r3s
+          - Orangepi Pc 2
+          - Orangepi R1 Plus
+          - Orangepi R1 Plus LTS
+          - Orangepi Zero 2
+          - Orangepi Zero 3
+          - Orangepi Zero Plus
+          - Raspberry Pi 2B
           - Raspberry Pi 3B
           - Raspberry Pi 4B
           - X86-64
-          - Nanopi-r2s
-          - Nanopi-r3s
-          - Orangepi R1 Plus
-          - Orangepi R1 Plus LTS
-          - Orangepi Pc 2
-          - Orangepi Zero Plus
-          - Orangepi Zero 2
-          - Orangepi Zero 3
       tunnel:
         description: "Select Tunnel VPN"
         required: true
@@ -91,17 +86,18 @@ jobs:
           TARGET_JSON=$(cat << 'EOJ'
           {
             "target": [
-              "Raspberry Pi 3B",
-              "Raspberry Pi 4B",
-              "X86-64",
               "Nanopi-r2s",
               "Nanopi-r3s",
+              "Orangepi Pc 2",
               "Orangepi R1 Plus",
               "Orangepi R1 Plus LTS",
-              "Orangepi Pc 2",
-              "Orangepi Zero Plus",
               "Orangepi Zero 2",
-              "Orangepi Zero 3"
+              "Orangepi Zero 3",
+              "Orangepi Zero Plus",
+              "Raspberry Pi 2B",
+              "Raspberry Pi 3B",
+              "Raspberry Pi 4B",
+              "X86-64"
             ]
           }
           EOJ
@@ -121,35 +117,35 @@ jobs:
           sudo timedatectl set-timezone "${{ env.TZ }}"
 
           TYPE="NON-AMLOGIC"
-          echo "TYPE=$TYPE" >> $GITHUB_OUTPUT
+          echo "type=$TYPE" >> $GITHUB_OUTPUT
 
           BASE="${RELEASE_BRANCH%:*}"
           BRANCH="${RELEASE_BRANCH#*:}"
           VEROP="$(echo "${BRANCH}" | awk -F. '{print $1"."$2}')"
 
-          echo "BASE=$BASE" >> $GITHUB_OUTPUT
-          echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
-          echo "VEROP=$VEROP" >> $GITHUB_OUTPUT
-          echo "DOWNLOAD_BASE=https://downloads.${BASE}.org" >> $GITHUB_OUTPUT
+          echo "base=$BASE" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "verop=$VEROP" >> $GITHUB_OUTPUT
+          echo "download_base=https://downloads.${BASE}.org" >> $GITHUB_OUTPUT
 
           DATE=$(date +'%d%m%Y')
           DATETIME=$(date +'%d.%m.%Y-%H:%M:%S')
           DATEMONTH=$(date +"%B-%Y" | awk '{print tolower($0)}')
 
-          echo "DATE=$DATE" >> $GITHUB_OUTPUT
-          echo "DATETIME=$DATETIME" >> $GITHUB_OUTPUT
-          echo "DATEMONTH=$DATEMONTH" >> $GITHUB_OUTPUT
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+          echo "datetime=$DATETIME" >> $GITHUB_OUTPUT
+          echo "datemonth=$DATEMONTH" >> $GITHUB_OUTPUT
 
           if [ "${BASE}" == "openwrt" ]; then
             RELEASE_NAME="OpenWRT-Official-${BRANCH}-${DATE}"
             RELEASE_TAG="openwrt-Official-${BRANCH}-${DATE}"
-            echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_OUTPUT
-            echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
+            echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
+            echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
           elif [ "${BASE}" == "immortalwrt" ]; then
             RELEASE_NAME="ImmortalWRT-Official-${BRANCH}-${DATE}"
             RELEASE_TAG="immortalwrt-Official-${BRANCH}-${DATE}"
-            echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_OUTPUT
-            echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
+            echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
+            echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
           fi
           echo "status=success" >> $GITHUB_OUTPUT
 
@@ -168,37 +164,38 @@ jobs:
             - Default username: root
             - Default password: xyyraa
             - Default WIFI name: XIDZs-WRT | XIDZs-WRT_5G
-            - Default WIFI password: none
-            ## FITUR - FITUR ##
-            - Tema Alpha
-            - Tema Argon
-            - 3ginfo-Lite | Modeminfo
-            - IP Information
-            - TTL
-            - Tailscale
-            - Eqosplus
-            - Droidnet
-            - Rakitan Manager
-            - Internet Detector
-            - Conns monitor
-            - Support Modem Rakitan + Autorekonek
-            - Mactodong
-            - Auto Sinkron Jam
-            - Tiny Filemanager
-            - Openclash + Configs
-            - Nikki + Configs
-            - Passwall + Configs
-            - Zashboard Default Openclash | Nikki
-            ## DEVICES SUPPORTED ##
-            - Raspberry Pi
-            - Orange Pi
-            - Nano Pi
-            - X86_64
-            ## VARIASI TUNNEL ##
-            - OPENCLASH
-            - OPENCLASH | NIKKI
-            - OPENCLASH | NIKKI | PASSWALL
-            - NO TUNNEL | TANPA TUNNEL
+            - Default WIFI password: XIDZs2025
+            - Disarankan Reboot Devices Setelah Succes Boot
+            ## SUPPORTED DEVICES ##
+            ### Raspberry Pi Series
+            - **BCM2709**: Raspberry Pi 2B
+            - **BCM2710**: Raspberry Pi 3B
+            - **BCM2711**: Raspberry Pi 4B
+            ### NanoPi Series
+            - **RK3328**: Nanopi-r2s
+            - **RK3566**: Nanopi-r3s
+            ### Orange Pi Series
+            - **RK3328**: Orangepi R1 Plus, Orangepi R1 Plus LTS
+            - **H5**: Orangepi Pc 2, Orangepi Zero Plus
+            - **H616**: Orangepi Zero 2
+            - **H618**: Orangepi Zero 3
+            ### x86 Series
+            - **x86-64**: Generic PC
+            ## FEATURES ##
+            - Tema Alpha ⨯ Tema Argon ⨯ Tema Material
+            - Droidnet ⨯ Modeminfo
+            - 3ginfo-Lite ⨯ IP Information
+            - FIX TTL ⨯ Tailscale
+            - Eqosplus ⨯ Mactodong
+            - Internet Detector ⨯ Connection Monitor
+            - Support Modem Rakitan ⨯ Auto Reconnect
+            - Auto Time Sync ⨯ File Manager
+            - Config Openclash ⨯ Nikki ⨯ Passwall
+            ## TUNNEL OPTIONS ##
+            - OpenClash
+            - OpenClash + Nikki
+            - OpenClash + Nikki + Passwall
+            - No Tunnel
             
   build-firmware:
     name: Build ${{ matrix.target }} Firmware
@@ -217,6 +214,7 @@ jobs:
       RELEASE_TAG: ${{ needs.prebuild.outputs.release_tag }}
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         target: ${{ fromJSON(needs.prebuild.outputs.target) }}
 
@@ -268,38 +266,6 @@ jobs:
 
           # Target system configurations
           case "$MATRIXTARGET" in
-            "Raspberry Pi 3B")
-              echo "PROFILE=rpi-3" >> $GITHUB_ENV
-              echo "TARGET_SYSTEM=bcm27xx/bcm2710" >> $GITHUB_ENV
-              echo "TARGET_NAME=bcm27xx-bcm2710" >> $GITHUB_ENV
-              echo "ARCH_1=armv7" >> $GITHUB_ENV
-              echo "ARCH_2=aarch64" >> $GITHUB_ENV
-              echo "ARCH_3=aarch64_cortex-a53" >> $GITHUB_ENV
-              ;;
-            "Raspberry Pi 4B")
-              echo "PROFILE=rpi-4" >> $GITHUB_ENV
-              echo "TARGET_SYSTEM=bcm27xx/bcm2711" >> $GITHUB_ENV
-              echo "TARGET_NAME=bcm27xx-bcm2711" >> $GITHUB_ENV
-              echo "ARCH_1=arm64" >> $GITHUB_ENV
-              echo "ARCH_2=aarch64" >> $GITHUB_ENV
-              echo "ARCH_3=aarch64_cortex-a72" >> $GITHUB_ENV
-              ;;
-            "Raspberry Pi 5")
-              echo "PROFILE=rpi-5" >> $GITHUB_ENV
-              echo "TARGET_SYSTEM=bcm27xx/bcm2712" >> $GITHUB_ENV
-              echo "TARGET_NAME=bcm27xx-bcm2712" >> $GITHUB_ENV
-              echo "ARCH_1=arm64" >> $GITHUB_ENV
-              echo "ARCH_2=aarch64" >> $GITHUB_ENV
-              echo "ARCH_3=aarch64_cortex-a76" >> $GITHUB_ENV
-              ;;
-            "X86-64")
-              echo "PROFILE=generic" >> $GITHUB_ENV
-              echo "TARGET_SYSTEM=x86/64" >> $GITHUB_ENV
-              echo "TARGET_NAME=x86-64" >> $GITHUB_ENV
-              echo "ARCH_1=amd64" >> $GITHUB_ENV
-              echo "ARCH_2=x86_64" >> $GITHUB_ENV
-              echo "ARCH_3=x86_64" >> $GITHUB_ENV
-              ;;
             "Nanopi-r2s")
               echo "PROFILE=friendlyarm_nanopi-r2s" >> $GITHUB_ENV
               echo "TARGET_SYSTEM=rockchip/armv8" >> $GITHUB_ENV
@@ -340,13 +306,13 @@ jobs:
               echo "ARCH_2=aarch64" >> $GITHUB_ENV
               echo "ARCH_3=aarch64_generic" >> $GITHUB_ENV
               ;;
-            "Firefly_Roc-RK3328")
-              echo "PROFILE=firefly_roc-rk3328" >> $GITHUB_ENV
-              echo "TARGET_SYSTEM=rockchip/armv8" >> $GITHUB_ENV
-              echo "TARGET_NAME=rockchip-armv8" >> $GITHUB_ENV
+            "Orangepi Pc 2")
+              echo "PROFILE=xunlong_orangepi-pc2" >> $GITHUB_ENV
+              echo "TARGET_SYSTEM=sunxi/cortexa53" >> $GITHUB_ENV
+              echo "TARGET_NAME=sunxi-cortexa53" >> $GITHUB_ENV
               echo "ARCH_1=arm64" >> $GITHUB_ENV
               echo "ARCH_2=aarch64" >> $GITHUB_ENV
-              echo "ARCH_3=aarch64_generic" >> $GITHUB_ENV
+              echo "ARCH_3=aarch64_cortex-a53" >> $GITHUB_ENV
               ;;
             "Orangepi R1 Plus")
               echo "PROFILE=xunlong_orangepi-r1-plus" >> $GITHUB_ENV
@@ -364,22 +330,6 @@ jobs:
               echo "ARCH_2=aarch64" >> $GITHUB_ENV
               echo "ARCH_3=aarch64_generic" >> $GITHUB_ENV
               ;;
-            "Orangepi Pc 2")
-              echo "PROFILE=xunlong_orangepi-pc2" >> $GITHUB_ENV
-              echo "TARGET_SYSTEM=sunxi/cortexa53" >> $GITHUB_ENV
-              echo "TARGET_NAME=sunxi-cortexa53" >> $GITHUB_ENV
-              echo "ARCH_1=arm64" >> $GITHUB_ENV
-              echo "ARCH_2=aarch64" >> $GITHUB_ENV
-              echo "ARCH_3=aarch64_cortex-a53" >> $GITHUB_ENV
-              ;;
-            "Orangepi Zero Plus")
-              echo "PROFILE=xunlong_orangepi-zero-plus" >> $GITHUB_ENV
-              echo "TARGET_SYSTEM=sunxi/cortexa53" >> $GITHUB_ENV
-              echo "TARGET_NAME=sunxi-cortexa53" >> $GITHUB_ENV
-              echo "ARCH_1=arm64" >> $GITHUB_ENV
-              echo "ARCH_2=aarch64" >> $GITHUB_ENV
-              echo "ARCH_3=aarch64_cortex-a53" >> $GITHUB_ENV
-              ;;
             "Orangepi Zero 2")
               echo "PROFILE=xunlong_orangepi-zero2" >> $GITHUB_ENV
               echo "TARGET_SYSTEM=sunxi/cortexa53" >> $GITHUB_ENV
@@ -395,6 +345,62 @@ jobs:
               echo "ARCH_1=arm64" >> $GITHUB_ENV
               echo "ARCH_2=aarch64" >> $GITHUB_ENV
               echo "ARCH_3=aarch64_cortex-a53" >> $GITHUB_ENV
+              ;;
+            "Orangepi Zero Plus")
+              echo "PROFILE=xunlong_orangepi-zero-plus" >> $GITHUB_ENV
+              echo "TARGET_SYSTEM=sunxi/cortexa53" >> $GITHUB_ENV
+              echo "TARGET_NAME=sunxi-cortexa53" >> $GITHUB_ENV
+              echo "ARCH_1=arm64" >> $GITHUB_ENV
+              echo "ARCH_2=aarch64" >> $GITHUB_ENV
+              echo "ARCH_3=aarch64_cortex-a53" >> $GITHUB_ENV
+              ;;
+            "Raspberry Pi 1B")
+              echo "PROFILE=rpi" >> $GITHUB_ENV
+              echo "TARGET_SYSTEM=bcm27xx/bcm2708" >> $GITHUB_ENV
+              echo "TARGET_NAME=bcm27xx-bcm2708" >> $GITHUB_ENV
+              echo "ARCH_1=armv6" >> $GITHUB_ENV
+              echo "ARCH_2=arm" >> $GITHUB_ENV
+              echo "ARCH_3=arm_arm1176jzf-s_vfp" >> $GITHUB_ENV
+              ;;
+            "Raspberry Pi 2B")
+              echo "PROFILE=rpi-2" >> $GITHUB_ENV
+              echo "TARGET_SYSTEM=bcm27xx/bcm2709" >> $GITHUB_ENV
+              echo "TARGET_NAME=bcm27xx-bcm2709" >> $GITHUB_ENV
+              echo "ARCH_1=armv7" >> $GITHUB_ENV
+              echo "ARCH_2=arm" >> $GITHUB_ENV
+              echo "ARCH_3=arm_cortex-a7_neon-vfpv4" >> $GITHUB_ENV
+              ;;
+            "Raspberry Pi 3B")
+              echo "PROFILE=rpi-3" >> $GITHUB_ENV
+              echo "TARGET_SYSTEM=bcm27xx/bcm2710" >> $GITHUB_ENV
+              echo "TARGET_NAME=bcm27xx-bcm2710" >> $GITHUB_ENV
+              echo "ARCH_1=arm64" >> $GITHUB_ENV
+              echo "ARCH_2=aarch64" >> $GITHUB_ENV
+              echo "ARCH_3=aarch64_cortex-a53" >> $GITHUB_ENV
+              ;;
+            "Raspberry Pi 4B")
+              echo "PROFILE=rpi-4" >> $GITHUB_ENV
+              echo "TARGET_SYSTEM=bcm27xx/bcm2711" >> $GITHUB_ENV
+              echo "TARGET_NAME=bcm27xx-bcm2711" >> $GITHUB_ENV
+              echo "ARCH_1=arm64" >> $GITHUB_ENV
+              echo "ARCH_2=aarch64" >> $GITHUB_ENV
+              echo "ARCH_3=aarch64_cortex-a72" >> $GITHUB_ENV
+              ;;
+            "X86-64")
+              echo "PROFILE=generic" >> $GITHUB_ENV
+              echo "TARGET_SYSTEM=x86/64" >> $GITHUB_ENV
+              echo "TARGET_NAME=x86-64" >> $GITHUB_ENV
+              echo "ARCH_1=amd64" >> $GITHUB_ENV
+              echo "ARCH_2=x86_64" >> $GITHUB_ENV
+              echo "ARCH_3=x86_64" >> $GITHUB_ENV
+              ;;
+            "X86-32")
+              echo "PROFILE=generic" >> $GITHUB_ENV
+              echo "TARGET_SYSTEM=x86/generic" >> $GITHUB_ENV
+              echo "TARGET_NAME=x86-generic" >> $GITHUB_ENV
+              echo "ARCH_1=386" >> $GITHUB_ENV
+              echo "ARCH_2=i386" >> $GITHUB_ENV
+              echo "ARCH_3=i386_pentium4" >> $GITHUB_ENV
               ;;
           esac
 
@@ -507,3 +513,16 @@ jobs:
           name: ${{ env.RELEASE_NAME }}
           files: ${{ env.WORKING_DIR }}/compiled_images/*.img.gz
           prerelease: ${{ github.ref_name == 'dev' }}
+      
+      - name: Wait before next build
+        if: steps.beforeupload.outputs.status == 'success'
+        run: |
+          echo "Build and upload completed for ${{ matrix.target }}"
+          echo "Waiting 8 minutes before next build starts..."
+          echo "Start time: $(date)"
+          
+          # Jeda 8 menit
+          sleep 480
+          
+          echo "Wait completed!"
+          echo "End time: $(date)"

@@ -6,18 +6,14 @@ on:
       release_branch:
         description: "Select the release branch:"
         required: true
-        default: "openwrt:24.10.1"
+        default: "openwrt:24.10.2"
         type: choice
         options:
-          - openwrt:24.10.1
           - openwrt:24.10.2
-          - openwrt:24.10.3
-          - openwrt:24.10.4
+          - openwrt:24.10.1
           - openwrt:23.05.5
-          - immortalwrt:24.10.1
           - immortalwrt:24.10.2
-          - immortalwrt:24.10.3
-          - immortalwrt:24.10.4
+          - immortalwrt:24.10.1
           - immortalwrt:23.05.4
       target:
         description: "Select device board"
@@ -26,26 +22,37 @@ on:
         type: choice
         options:
           - all-device
-          - Amlogic s905x HG680P
-          - Amlogic s905x B860H
-          - Amlogic s922x GT-King-Pro
-          - Amlogic s912 Nexbox-A1-A95X
-          - Amlogic s912 Nexbox-A95X-A2
-          - Amlogic s905w X96-Mini
+          - Amlogic s905 MXQ-Pro+
+          - Amlogic s905 Beelink-Mini
+          - Amlogic s905lb Q96-Mini
           - Amlogic s905w TX3-Mini
-          - Amlogic s905l2 MGV-M301A
+          - Amlogic s905w X96-Mini
+          - Amlogic s905l Mibox-4
+          - Amlogic s905l2 M301A
+          - Amlogic s905x B860H
+          - Amlogic s905x B860H MODSDCARD
+          - Amlogic s905x HG680P
+          - Amlogic s905x HG680P MODSDCARD
+          - Amlogic s905x2 B860Hv5
+          - Amlogic s905x2 HG680-FJ
           - Amlogic s905x2 X96Max-v2Gb
           - Amlogic s905x2 X96Max-v4Gb
-          - Amlogic s905x2 HG680-FJ
-          - Amlogic s905x2 B860Hv5
-          - Amlogic s905x3 X96Air_1Gb
-          - Amlogic s905x3 X96Air_100mb
           - Amlogic s905x3 HK1-Vontar-X3
+          - Amlogic s905x3 X96Air_100mb
+          - Amlogic s905x3 X96Air_1Gb
           - Amlogic s905x3 X96Max+_100Mb
           - Amlogic s905x3 X96Max+_1Gb
-          - Amlogic s905x4 Advan
+          - Amlogic s905x4 Advan-At01_Ax810
+          - Amlogic s912 Nexbox-A1-A95X
+          - Amlogic s912 Nexbox-A95X-A2
+          - Amlogic s922x GT-King-Pro
           - RK3318-BOX
           - Firefly-RK3328
+          - RK3528 H96-Max-M2
+          - RK3566 Panther-X2
+          - RK3568 NanoPi-R5S
+          - RK3588 Rock5B
+          - RK3399 King3399
       tunnel:
         description: "Select Tunnel VPN"
         required: true
@@ -100,26 +107,37 @@ jobs:
           TARGET_JSON=$(cat << 'EOJ'
           {
             "target": [
-              "Amlogic s905x HG680P",
-              "Amlogic s905x B860H",
-              "Amlogic s922x GT-King-Pro",
-              "Amlogic s912 Nexbox-A1-A95X",
-              "Amlogic s912 Nexbox-A95X-A2",
-              "Amlogic s905w X96-Mini",
+              "Amlogic s905 MXQ-Pro+",
+              "Amlogic s905 Beelink-Mini",
+              "Amlogic s905lb Q96-Mini",
               "Amlogic s905w TX3-Mini",
-              "Amlogic s905l2 MGV-M301A",
+              "Amlogic s905w X96-Mini",
+              "Amlogic s905l Mibox-4",
+              "Amlogic s905l2 M301A",
+              "Amlogic s905x B860H",
+              "Amlogic s905x B860H MODSDCARD",
+              "Amlogic s905x HG680P",
+              "Amlogic s905x HG680P MODSDCARD",
+              "Amlogic s905x2 B860Hv5",
+              "Amlogic s905x2 HG680-FJ",
               "Amlogic s905x2 X96Max-v2Gb",
               "Amlogic s905x2 X96Max-v4Gb",
-              "Amlogic s905x2 HG680-FJ",
-              "Amlogic s905x2 B860Hv5",
-              "Amlogic s905x3 X96Air_1Gb",
-              "Amlogic s905x3 X96Air_100mb",
               "Amlogic s905x3 HK1-Vontar-X3",
+              "Amlogic s905x3 X96Air_100mb",
+              "Amlogic s905x3 X96Air_1Gb",
               "Amlogic s905x3 X96Max+_100Mb",
               "Amlogic s905x3 X96Max+_1Gb",
-              "Amlogic s905x4 Advan",
+              "Amlogic s905x4 Advan-At01_Ax810",
+              "Amlogic s912 Nexbox-A1-A95X",
+              "Amlogic s912 Nexbox-A95X-A2",
+              "Amlogic s922x GT-King-Pro",
+              "Firefly-RK3328",
               "RK3318-BOX",
-              "Firefly-RK3328"
+              "RK3528 H96-Max-M2",
+              "RK3566 Panther-X2",
+              "RK3568 NanoPi-R5S",
+              "RK3588 Rock5B",
+              "RK3399 King3399"
             ]
           }
           EOJ
@@ -139,35 +157,35 @@ jobs:
           sudo timedatectl set-timezone "${{ env.TZ }}"
 
           TYPE="OPHUB"
-          echo "TYPE=$TYPE" >> $GITHUB_OUTPUT
+          echo "type=$TYPE" >> $GITHUB_OUTPUT
 
           BASE="${RELEASE_BRANCH%:*}"
           BRANCH="${RELEASE_BRANCH#*:}"
           VEROP="$(echo "${BRANCH}" | awk -F. '{print $1"."$2}')"
 
-          echo "BASE=$BASE" >> $GITHUB_OUTPUT
-          echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
-          echo "VEROP=$VEROP" >> $GITHUB_OUTPUT
-          echo "DOWNLOAD_BASE=https://downloads.${BASE}.org" >> $GITHUB_OUTPUT
+          echo "base=$BASE" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "verop=$VEROP" >> $GITHUB_OUTPUT
+          echo "download_base=https://downloads.${BASE}.org" >> $GITHUB_OUTPUT
 
           DATE=$(date +'%d%m%Y')
           DATETIME=$(date +'%d.%m.%Y-%H:%M:%S')
           DATEMONTH=$(date +"%B-%Y" | awk '{print tolower($0)}')
 
-          echo "DATE=$DATE" >> $GITHUB_OUTPUT
-          echo "DATETIME=$DATETIME" >> $GITHUB_OUTPUT
-          echo "DATEMONTH=$DATEMONTH" >> $GITHUB_OUTPUT
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+          echo "datetime=$DATETIME" >> $GITHUB_OUTPUT
+          echo "datemonth=$DATEMONTH" >> $GITHUB_OUTPUT
 
           if [ "${BASE}" == "openwrt" ]; then
             RELEASE_NAME="Ophub-OpenWRT-${BRANCH}-${DATE}"
             RELEASE_TAG="ophub-openwrt-${BRANCH}-${DATE}"
-            echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_OUTPUT
-            echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
+            echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
+            echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
           elif [ "${BASE}" == "immortalwrt" ]; then
             RELEASE_NAME="Ophub-ImmortalWRT-${BRANCH}-${DATE}"
             RELEASE_TAG="ophub-immortalwrt-${BRANCH}-${DATE}"
-            echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_OUTPUT
-            echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
+            echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
+            echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
           fi
           echo "status=success" >> $GITHUB_OUTPUT
 
@@ -177,59 +195,67 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: HOUJIE-Wrt_${{ env.RELEASES_TAG }}-${{ github.ref_name }}
+          tag_name: ${{ steps.setupenv.outputs.release_tag }}
           name: ${{ steps.setupenv.outputs.release_name }}
-          prerelease: false
+          prerelease: ${{ github.ref_name == 'dev' }}
           body: |
-            ## XIDZs-WRT - INFORMATION ##
+            ## XIDZs-WRT INFORMATION ##
             - Default IP: 192.168.1.1
             - Default username: root
             - Default password: xyyraa
-            - Default WIFI name: XIDZs-WRT | XIDZs-WRT_5G
-            - Default WIFI password: none
-            - Disarankan !!! Reboot Device Setelah Booting Atau Masuk Luci
-            ## FITUR - FITUR ##
-            - Tema Alpha
-            - Tema Argon
-            - Amlogic Service
-            - 3ginfo-Lite | Modeminfo
-            - IP Information
-            - TTL
-            - Tailscale
-            - Eqosplus
-            - Droidnet
-            - GPIO LED HG680P | B860H
-            - Rakitan Manager
-            - Internet Detector
-            - Conns monitor
-            - Support Modem Rakitan + Autorekonek
-            - Mactodong
-            - Auto Sinkron Jam
-            - Tiny Filemanager
-            - Openclash + Configs
-            - Nikki + Configs
-            - Passwall + Configs
-            ## DEVICES SUPPORTED ##
-            - Amlogic s905w
-            - Amlogic s912
-            - Amlogic s922x
-            - Amlogic s905l2
-            - Amlogic s905x
-            - Amlogic s905x2
-            - Amlogic s905x3
-            - Amlogic s905x4
-            - Rockchip RK3318
-            - Rockchip RK3328
-            ## KERNEL STABLE - INFORMATION ##
-            - Kernel 5.15.x | WIFI ON
-            - Kernel 6.1.x  | WIFI ON
-            - Kernel 6.6.x  | WIFI ON
-            - Kernel 6.12.x | WIFI OFF
-            ## VARIASI TUNNEL ##
-            - OPENCLASH
-            - OPENCLASH | NIKKI
-            - OPENCLASH | NIKKI | PASSWALL
-            - NO TUNNEL | TANPA TUNNEL
+            - Default WIFI: XIDZs-WRT | XIDZs-WRT_5G
+            - Default WIFI Password: XIDZs2025
+            - Disarankan Reboot Devices Setelah Succes Booting
+            - All Version Kernel Wifi ON Devices Tertentu
+            ## Supported Devices ##
+            ## Amlogic Series
+            - **S905**: MXQ-Pro+, Beelink-Mini
+            - **S905D**: Phicomm-N1
+            - **S905L**: B860AV2, Mibox-4
+            - **S905W**: TX3-Mini, X96-Mini
+            - **S905X**: B860H, HG680P (with MODSDCARD variants)
+            - **S905LB**: Q96-mini
+            - **S905L2**: M301A, MGV-M301A
+            - **S905L3**: HG680-LC
+            - **S905L3A**: B863AV3
+            - **S905L3B**: MGV2000
+            - **S912**: Nexbox-A1-A95X, Nexbox-A95X-A2
+            - **S905X2**: B860Hv5, HG680-FJ, X96Max variants
+            - **S905X3**: HK1-Vontar-X3, X96Air variants, X96Max+ variants
+            - **S905X4**: Advan AT01, Akari AX810
+            - **S922X**: GT-King-Pro
+            
+            ## Rockchip Series
+            - **RK3318**: RK3318-BOX
+            - **RK3328**: Firefly-RK3328
+            - **RK3528**: H96-Max-M2
+            - **RK3566**: Panther-X2
+            - **RK3568**: NanoPi-R5S
+            - **RK3588**: Rock5B
+            - **RK3399**: King3399
+                        
+            ## FEATURES
+            - Tema Alpha ⨯ Tema Argon ⨯ Tema Material
+            - Amlogic Service ⨯ Droidnet
+            - 3ginfo-Lite ⨯ Modeminfo ⨯ IP Information
+            - FIX TTL ⨯ Tailscale
+            - Eqosplus ⨯ Mactodong
+            - GPIO LED Support
+            - MOD-SDCARD Support
+            - Internet Detector ⨯ Connection Monitor
+            - Support Modem Rakitan ⨯ Auto Reconnect
+            - Auto Time Sync ⨯ File Manager
+            - Configurasi Openclash ⨯ Nikki ⨯ Passwall
+            ## TUNNEL OPTIONS
+            - OpenClash
+            - OpenClash + Nikki
+            - OpenClash + Nikki + Passwall
+            - No Tunnel         
+            ## KERNEL STABLE VERSION
+            - Kernel Versi 5.15.x
+            - Kernel Versi 6.1.x
+            - Kernel Versi 6.6.x
+            - Kernel Versi 6.12.x
 
   build-firmware:
     name: Build ${{ matrix.target }} Firmware
@@ -248,6 +274,7 @@ jobs:
       RELEASE_TAG: ${{ needs.prebuild.outputs.release_tag }}
     strategy:
       fail-fast: false
+      max-parallel: 1  # edit bagian sini
       matrix:
         target: ${{ fromJSON(needs.prebuild.outputs.target) }}
 
@@ -307,9 +334,81 @@ jobs:
           echo "ARCH_3=aarch64_generic" >> $GITHUB_ENV
 
           case "$MATRIXTARGET" in
-            "Amlogic s905x HG680P")
-              TARGET_BUILD="s905x"
-              KERNEL="5.15.y_6.1.y_6.6.y_6.12.y"
+            "Amlogic s905 MXQ-Pro+")
+              TARGET_BUILD="s905-mxqpro-plus"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905 Beelink-Mini")
+              TARGET_BUILD="s905-beelink-mini"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905d Phicomm-N1")
+              TARGET_BUILD="s905d"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905l B860AV2")
+              TARGET_BUILD="s905l"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905l Mibox-4")
+              TARGET_BUILD="s905l-mg101"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905l2 M301A")
+              TARGET_BUILD="s905l2"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905l2 MGV-M301A")
+              TARGET_BUILD="s905l2"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905l3 HG680-LC")
+              TARGET_BUILD="s905l3"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905l3a B863AV3")
+              TARGET_BUILD="s905l3a-m401a"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905l3b MGV2000")
+              TARGET_BUILD="s905l3b-e900v22e"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905lb Q96-Mini")
+              TARGET_BUILD="s905lb-q96-mini"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905w TX3-Mini")
+              TARGET_BUILD="s905w"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905w X96-Mini")
+              TARGET_BUILD="s905w-x96-mini"
+              KERNEL="5.15.y_6.1.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
@@ -319,51 +418,21 @@ jobs:
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
-            "Amlogic s922x GT-King-Pro")
-              TARGET_BUILD="s922x"
-              KERNEL="5.15.y_6.6.y_6.12.y"
+            "Amlogic s905x B860H MODSDCARD")
+              TARGET_BUILD="s905x-b860h"
+              KERNEL="5.15.y_6.1.y_6.6.y_6.12.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
-            "Amlogic s912 Nexbox-A1-A95X")
-              TARGET_BUILD="s912-nexbox-a1"
-              KERNEL="5.15.y_6.6.y_6.12.y"
+            "Amlogic s905x HG680P")
+              TARGET_BUILD="s905x"
+              KERNEL="5.15.y_6.1.y_6.6.y_6.12.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
-            "Amlogic s912 Nexbox-A95X-A2")
-              TARGET_BUILD="s912-nexbox-a2"
-              KERNEL="5.15.y_6.6.y_6.12.y"
-              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
-              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
-              ;;           
-            "Amlogic s905w X96-Mini")
-              TARGET_BUILD="s905w-x96-mini"
-              KERNEL="5.15.y_6.6.y_6.12.y"
-              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
-              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
-              ;;
-            "Amlogic s905w TX3-Mini")
-              TARGET_BUILD="s905w"
-              KERNEL="5.15.y_6.6.y_6.12.y"
-              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
-              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
-              ;;              
-            "Amlogic s905l2 MGV-M301A")
-              TARGET_BUILD="s905l2"
-              KERNEL="5.15.y_6.6.y_6.12.y"
-              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
-              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
-              ;;
-            "Amlogic s905x2 X96Max-v2Gb")
-              TARGET_BUILD="s905x2-x96max-2g"
-              KERNEL="5.15.y_6.6.y_6.12.y"
-              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
-              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
-              ;;
-            "Amlogic s905x2 X96Max-v4Gb")
-              TARGET_BUILD="s905x2"
-              KERNEL="5.15.y_6.6.y_6.12.y"
+            "Amlogic s905x HG680P MODSDCARD")
+              TARGET_BUILD="s905x"
+              KERNEL="5.15.y_6.1.y_6.6.y_6.12.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
@@ -375,97 +444,145 @@ jobs:
               ;;
             "Amlogic s905x2 HG680-FJ")
               TARGET_BUILD="s905x2-hg680-fj"
-              KERNEL="5.15.y_6.6.y_6.12.y"
+              KERNEL="5.15.y_6.1.y_6.6.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
-            "Amlogic s905x3 X96Air_100mb")
-              TARGET_BUILD="s905x3-x96air"
-              KERNEL="5.15.y_6.6.y_6.12.y"
+            "Amlogic s905x2 X96Max-v2Gb")
+              TARGET_BUILD="s905x2-x96max-2g"
+              KERNEL="5.15.y_6.1.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
-            "Amlogic s905x3 X96Air_1Gb")
-              TARGET_BUILD="s905x3-x96air-gb"
-              KERNEL="5.15.y_6.6.y_6.12.y"
+            "Amlogic s905x2 X96Max-v4Gb")
+              TARGET_BUILD="s905x2"
+              KERNEL="5.15.y_6.1.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
             "Amlogic s905x3 HK1-Vontar-X3")
               TARGET_BUILD="s905x3-hk1"
-              KERNEL="5.15.y_6.6.y_6.12.y"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905x3 X96Air_100mb")
+              TARGET_BUILD="s905x3-x96air"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "Amlogic s905x3 X96Air_1Gb")
+              TARGET_BUILD="s905x3-x96air-gb"
+              KERNEL="5.15.y_6.1.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
             "Amlogic s905x3 X96Max+_100Mb")
               TARGET_BUILD="s905x3"
-              KERNEL="5.15.y_6.6.y_6.12.y"
+              KERNEL="5.15.y_6.1.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
             "Amlogic s905x3 X96Max+_1Gb")
               TARGET_BUILD="s905x3-x96max"
-              KERNEL="5.15.y_6.6.y_6.12.y"
+              KERNEL="5.15.y_6.1.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
-            "Amlogic s905x4 Advan")
+            "Amlogic s905x4 Advan-At01_Ax810")
               TARGET_BUILD="s905x4-advan"
-              KERNEL="6.6.y_6.12.y"
+              KERNEL="6.1.y_6.6.y_6.12.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
-            "Orangepi 3")
-              TARGET_BUILD="orangepi-3"
-              KERNEL="6.6.y"
+            "Amlogic s912 Nexbox-A1-A95X")
+              TARGET_BUILD="s912-nexbox-a1"
+              KERNEL="5.15.y_6.1.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
-            "Orangepi Zero Plus")
-              TARGET_BUILD="orangepi-zplus"
-              KERNEL="6.6.y"
+            "Amlogic s912 Nexbox-A95X-A2")
+              TARGET_BUILD="s912-nexbox-a2"
+              KERNEL="5.15.y_6.1.y_6.6.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
-            "Orangepi Zero Plus2")
-              TARGET_BUILD="orangepi-zplus2"
-              KERNEL="6.6.y"
-              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
-              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
-              ;;
-            "Orangepi Zero2")
-              TARGET_BUILD="orangepi-zero"
-              KERNEL="6.6.y"
-              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
-              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
-              ;;
-            "Orangepi Zero3")
-              TARGET_BUILD="orangepi-zero3"
-              KERNEL="6.6.y"
+            "Amlogic s922x GT-King-Pro")
+              TARGET_BUILD="s922x"
+              KERNEL="5.15.y_6.1.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
             "Firefly-RK3328")
               TARGET_BUILD="renegade-rk3328"
-              KERNEL="5.15.y_6.6.y"
-              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
-              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
-              ;;
-            "NanoPi-R5S")
-              TARGET_BUILD="nanopi-r5s"
-              KERNEL="6.6.y"
-              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
-              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
-              ;;
-            "NanoPi-R5C")
-              TARGET_BUILD="nanopi-r5c"
-              KERNEL="6.6.y"
+              KERNEL="5.15.y_6.1.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
             "RK3318-BOX")
               TARGET_BUILD="rk3318-box"
-              KERNEL="5.15.y_6.6.y"
+              KERNEL="5.15.y_6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;            
+            "RK3528 H96-Max-M2")
+              TARGET_BUILD="h96-max-m2"
+              KERNEL="6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "RK3566 Panther-X2")
+              TARGET_BUILD="panther-x2"
+              KERNEL="6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "RK3568 NanoPi-R5S")
+              TARGET_BUILD="nanopi-r5s"
+              KERNEL="6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "RK3588 Rock5B")
+              TARGET_BUILD="rock5b"
+              KERNEL="6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "RK3399 King3399")
+              TARGET_BUILD="king3399"
+              KERNEL="6.1.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;            
+            "OrangePi3")
+              TARGET_BUILD="orangepi-3"
+              KERNEL="6.6.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "OrangePi Z Plus")
+              TARGET_BUILD="orangepi-zplus"
+              KERNEL="6.6.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "OrangePi Z Plus2")
+              TARGET_BUILD="orangepi-zplus2"
+              KERNEL="6.6.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "OrangePi Zero2")
+              TARGET_BUILD="orangepi-zero2"
+              KERNEL="6.6.y"
+              echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
+              echo "KERNEL=$KERNEL" >> $GITHUB_ENV
+              ;;
+            "OrangePi Zero3")
+              TARGET_BUILD="orangepi-zero3"
+              KERNEL="6.6.y"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
@@ -552,7 +669,7 @@ jobs:
           # Move and rename output files
           for file in bin/targets/"${TARGET_SYSTEM}"/*-rootfs.tar.gz; do
             if [ -f "$file" ]; then
-              new_name="XIDZ-WRT_$(basename "$file" -rootfs.tar.gz)_${{ env.TUNNEL }}-rootfs.tar.gz"
+              new_name="XIDZs-WRT-$(basename "$file" -rootfs.tar.gz)_${{ env.TUNNEL }}-rootfs.tar.gz"
               mv "$file" compiled_images/$new_name
             fi
           done
@@ -598,3 +715,16 @@ jobs:
           name: ${{ env.RELEASE_NAME }}
           files: ${{ env.WORKING_DIR }}/compiled_images/*.img.gz
           prerelease: ${{ github.ref_name == 'dev' }}
+      
+      - name: Wait before next build
+        if: steps.beforeupload.outputs.status == 'success'
+        run: |
+          echo "Build and upload completed for ${{ matrix.target }}"
+          echo "Waiting 5 minutes before next build starts..."
+          echo "Start time: $(date)"
+          
+          # Jeda 5 menit
+          sleep 300
+          
+          echo "Wait completed!"
+          echo "End time: $(date)"

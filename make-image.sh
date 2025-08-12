@@ -1,137 +1,150 @@
 #!/bin/bash
 
+# Source include file
 . ./scripts/INCLUDE.sh
 
 # Exit on error
 set -e
 
-# Profile info
+# Display Profile
 make info
 
-# Main configuration name
+# Validasi
 PROFILE=""
 PACKAGES=""
+MISC=""
+EXCLUDED=""
 
-# Base
-PACKAGES+=" busybox libc adb coreutils-base64 coreutils-stty coreutils-stat coreutils-sleep \
-zoneinfo-core zoneinfo-asia liblua libubus-lua libiwinfo libiwinfo-data libiwinfo-lua \
-libjson-script luci-lib-base luci-lib-ip luci-lib-ipkg luci-lib-jsonc luci-lib-nixio liblucihttp \
-liblucihttp-lua curl wget-ssl tar unzip uuidgen screen jq \
-block-mount cgi-io dnsmasq-full rpcd rpcd-mod-file rpcd-mod-iwinfo rpcd-mod-luci \
-rpcd-mod-rrdns uhttpd uhttpd-mod-ubus luci-base luci-compat luci luci-ssl \
-luci-mod-admin-full luci-mod-network luci-mod-status luci-mod-system luci-proto-ipv6 luci-proto-ppp"                                                                                   
+# Core system + Web Server + LuCI
+PACKAGES+=" libc bash block-mount coreutils-base64 coreutils-sleep coreutils-stat coreutils-stty \
+curl wget-ssl tar unzip parted losetup uhttpd uhttpd-mod-ubus luci luci-base \
+luci-mod-admin-full luci-lib-ip luci-compat luci-ssl"
 
-# Modem and UsbLAN Driver
-PACKAGES+=" kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 -kmod-usb-net-asix -kmod-usb-net-asix-ax88179"
-PACKAGES+=" kmod-mii kmod-usb-net kmod-usb-wdm kmod-usb-acm kmod-usb-net-cdc-ncm kmod-usb-net-huawei-cdc-ncm kmod-usb-net-cdc-ether \
-usb-modeswitch kmod-usb-net-rndis kmod-usb-net-sierrawireless kmod-usb-net-qmi-wwan uqmi luci-proto-qmi kmod-usb-net-cdc-mbim umbim \
-kmod-usb-serial kmod-usb-serial-option kmod-usb-serial-sierrawireless kmod-usb-serial-qualcomm kmod-usb-serial-wwan libqmi qmi-utils \
-libmbim mbim-utils luci-proto-mbim modemmanager luci-proto-modemmanager xmm-modem kmod-usb-ohci kmod-usb-uhci \
-kmod-usb2 kmod-usb-ehci kmod-usb3 kmod-usb-storage kmod-usb-storage-uas kmod-nls-utf8 kmod-macvlan usbutils"
+# USB + LAN Networking Drivers And Modem Tools
+PACKAGES+=" kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 kmod-usb-net-asix kmod-usb-net-asix-ax88179"
+PACKAGES+=" kmod-mii kmod-usb-net kmod-usb-wdm kmod-usb-net-rndis kmod-usb-net-cdc-ether kmod-usb-net-cdc-ncm kmod-usb-net-sierrawireless \
+kmod-usb-net-qmi-wwan uqmi luci-proto-qmi kmod-usb-acm kmod-usb-net-huawei-cdc-ncm kmod-usb-net-cdc-mbim umbim \
+kmod-usb-serial-option kmod-usb-serial kmod-usb-serial-wwan kmod-usb-serial-qualcomm kmod-usb-serial-sierrawireless modemmanager luci-proto-modemmanager \
+mbim-utils qmi-utils usbutils luci-proto-ncm kmod-usb-uhci kmod-usb-ohci kmod-usb2 kmod-usb3 \
+usb-modeswitch xmm-modem kmod-nls-utf8 kmod-macvlan"
 
-# Modem Tools
-# PACKAGES+=" modeminfo luci-app-modeminfo atinout modemband luci-app-modemband luci-app-mmconfig sms-tool luci-app-sms-tool-js luci-app-3ginfo-lite picocom minicom"
+# Modem Management Tools
+PACKAGES+=" modeminfo luci-app-modeminfo atinout modemband luci-app-modemband sms-tool luci-app-sms-tool-js picocom minicom"
 
-# ModemInfo
-# PACKAGES+=" modeminfo-serial-tw modeminfo-serial-dell modeminfo-serial-xmm modeminfo-serial-fibocom modeminfo-serial-sierra"
+# ModemInfo Serial Support
+PACKAGES+=" modeminfo-serial-dell modeminfo-serial-fibocom modeminfo-serial-sierra modeminfo-serial-tw modeminfo-serial-xmm"
 
-# Tunnel VPN
-OPENCLASH+="coreutils-nohup bash ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag kmod-nft-tproxy luci-app-openclash"
-NIKKI+="nikki luci-app-nikki"
-NEKO+="bash kmod-tun php8 php8-cgi luci-app-neko"
-PASSWALL+="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
+# VPN Tunnel
+OPENCLASH3="coreutils-nohup bash dnsmasq-full iptables ca-certificates ipset ip-full iptables-mod-tproxy iptables-mod-extra libcap libcap-bin ruby ruby-yaml kmod-tun luci-app-openclash"
+OPENCLASH4="coreutils-nohup bash dnsmasq-full ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag kmod-nft-tproxy luci-app-openclash"
+NIKKI="nikki luci-app-nikki"
+NEKO="bash kmod-tun php8 php8-cgi luci-app-neko"
+PASSWALL="chinadns-ng resolveip dns2socks dns2tcp ipt2socks microsocks tcping xray-core xray-plugin luci-app-passwall"
 
-# Handle_Tunnel
-handle_tunnel_option() {
-    if [[ "$1" == "openclash" ]]; then
-        PACKAGES+=" $OPENCLASH"
-    elif [[ "$1" == "openclash-nikki" ]]; then
-        PACKAGES+=" $OPENCLASH $NIKKI" 
-    elif [[ "$1" == "openclash-nikki-passwall" ]]; then
-        PACKAGES+=" $OPENCLASH $NIKKI $PASSWALL"
+# Option Tunnel
+add_tunnel_packages() {
+    local option="$1"
+    if [[ "$option" == "openclash" ]]; then
+        PACKAGES+=" $OPENCLASH4"
+    elif [[ "$option" == "openclash-nikki" ]]; then
+        PACKAGES+=" $OPENCLASH4 $NIKKI"
+    elif [[ "$option" == "openclash-nikki-passwall" ]]; then
+        PACKAGES+=" $OPENCLASH4 $NIKKI $PASSWALL"
+    elif [[ "$option" == "" ]]; then
+        # No tunnel packages
+        :
     fi
 }
 
-# Nas And Storage
-PACKAGES+=" luci-app-diskman luci-app-tinyfm"
+# Storage - NAS
+PACKAGES+=" luci-app-diskman kmod-usb-storage kmod-usb-storage-uas ntfs-3g"
 
-# Bandwidth And Network Monitoring
-PACKAGES+=" internet-detector luci-app-internet-detector"
+# Monitoring
+PACKAGES+=" internet-detector internet-detector-mod-modem-restart luci-app-internet-detector vnstat2 vnstati2 luci-app-netmonitor"
 
-# Remote Services
+# Remote Access
 PACKAGES+=" tailscale luci-app-tailscale"
 
-# Bandwidth And Speedtest
-PACKAGES+=" speedtestcli luci-app-eqosplus"
+# Bandwidth + Speedtest
+PACKAGES+=" speedtest-cli luci-app-eqosplus"
 
-# Theme
-PACKAGES+=" luci-theme-argon luci-theme-alpha luci-theme-edge luci-theme-hj luci-app-ipinfo vnstat2 vnstati2 netdata luci-app-netmonitor openssh-sftp-server"
+# Theme + UI
+PACKAGES+=" luci-theme-material luci-theme-argon luci-theme-alpha"
 
-# Php8
+# PHP8
 PACKAGES+=" php8 php8-fastcgi php8-fpm php8-mod-session php8-mod-ctype php8-mod-fileinfo php8-mod-zip php8-mod-iconv php8-mod-mbstring"
 
-# Custom Packages And More
-PACKAGES+=" htop lolcat python3-pip zram-swap luci-app-poweroffdevice \
-luci-app-ramfree luci-app-ttyd luci-app-lite-watchdog luci-app-ipinfo luci-app-droidnet luci-app-mactodong"
+# Misc Packages + Custom Packages
+MISC+=" zoneinfo-core zoneinfo-asia jq httping adb openssh-sftp-server zram-swap htop \
+screen lolcat atc-fib-l850_gl atc-fib-fm350_gl luci-proto-atc luci-app-mmconfig luci-app-droidnet luci-app-ipinfo \
+luci-app-lite-watchdog luci-app-mactodong luci-app-poweroffdevice luci-app-ramfree luci-app-tinyfm luci-app-ttyd luci-app-3ginfo-lite"
 
-# Handle_profile
-handle_profile_packages() {
-    if [ "$1" == "rpi-4" ]; then
+# Profil Name
+configure_profile_packages() {
+    local profile_name="$1"
+
+    if [[ "$profile_name" == "rpi-4" ]]; then
         PACKAGES+=" kmod-i2c-bcm2835 i2c-tools kmod-i2c-core kmod-i2c-gpio"
-    elif [ "$ARCH_2" == "x86_64" ]; then
-        PACKAGES+=" kmod-iwlwifi iw-full pciutils"
+    elif [[ "$profile_name" == "rpi-5" ]]; then
+        PACKAGES+=" kmod-i2c-bcm2835 i2c-tools kmod-i2c-core kmod-i2c-gpio"
+    elif [[ "${ARCH_2:-}" == "x86_64" ]]; then
+        PACKAGES+=" kmod-iwlwifi iw-full pciutils wireless-tools"
     fi
 
-    # Packages OPHUB | ULO
-    if [[ "${TYPE}" == "OPHUB" ]]; then
-        PACKAGES+=" btrfs-progs kmod-fs-btrfs luci-app-amlogic"
+    if [[ "${TYPE:-}" == "OPHUB" ]]; then
+        PACKAGES+=" luci-app-amlogic btrfs-progs kmod-fs-btrfs"
         EXCLUDED+=" -procd-ujail"
-    elif [[ "${TYPE}" == "ULO" ]]; then
+    elif [[ "${TYPE:-}" == "ULO" ]]; then
         PACKAGES+=" luci-app-amlogic"
         EXCLUDED+=" -procd-ujail"
     fi
 }
 
-# Handle_release
-handle_release_packages() {
-    if [ "${BASE}" == "openwrt" ]; then
-        PACKAGES+=" wpad-openssl iw iwinfo wireless-regdb kmod-cfg80211 kmod-mac80211 luci-app-temp-status"
+# Packages Base
+configure_release_packages() {
+    if [[ "${BASE:-}" == "openwrt" ]]; then
+        MISC+=" wpad-openssl iw iwinfo wireless-regdb kmod-cfg80211 kmod-mac80211 luci-app-temp-status"
         EXCLUDED+=" -dnsmasq"
-    elif [ "${BASE}" == "immortalwrt" ]; then
-        PACKAGES+=" wpad-openssl iw iwinfo wireless-regdb kmod-cfg80211 kmod-mac80211"
+    elif [[ "${BASE:-}" == "immortalwrt" ]]; then
+        MISC+=" wpad-openssl iw iwinfo wireless-regdb kmod-cfg80211 kmod-mac80211"
         EXCLUDED+=" -dnsmasq -cpusage -automount -libustream-openssl -default-settings-chn -luci-i18n-base-zh-cn"
-        if [ "$ARCH_2" == "x86_64" ]; then
+        if [[ "${ARCH_2:-}" == "x86_64" ]]; then
             EXCLUDED+=" -kmod-usb-net-rtl8152-vendor"
         fi
     fi
 }
 
-# Main Build Function
+# Build Firmware
 build_firmware() {
-    local profile=$1
-    local tunnel_option=$2
+    local target_profile="$1"
+    local tunnel_option="${2:-}"
+    local build_files="files"
 
-    log "INFO" "Starting build for profile: $profile"
-    
-    handle_profile_packages "$profile"
-    handle_tunnel_option "$tunnel_option"
-    handle_release_packages
-    
-    # Custom Files
-    FILES="files"
-    
-    make image PROFILE="$profile" PACKAGES="$PACKAGES $EXCLUDED" FILES="$FILES" 2>&1
-    
-    if [ ${PIPESTATUS[0]} -eq 0 ]; then
-        log "INFO" "Build Completed Successfully!"
+    log "INFO" "Starting build for profile '$target_profile' with tunnel option '$tunnel_option'..."
+
+    configure_profile_packages "$target_profile"
+    add_tunnel_packages "$tunnel_option"
+    configure_release_packages
+
+    # Add Misc Packages
+    PACKAGES+=" $MISC"
+
+    make image PROFILE="$target_profile" PACKAGES="$PACKAGES $EXCLUDED" FILES="$build_files"
+    local build_status=$?
+
+    if [ "$build_status" -eq 0 ]; then
+        log "SUCCESS" "Build completed successfully!"
     else
-        log "ERROR" "Build failed. Check log for details."
+        log "ERROR" "Build failed with exit code $build_status"
+        exit "$build_status"
     fi
 }
 
-# Main script execution
-if [ -z "$1" ]; then
-    log "ERROR" "Profile not specified"
+# Validasi Argumen
+if [ -z "${1:-}" ]; then
+    log "ERROR" "Profile not specified. Usage: $0 <profile> [tunnel_option]"
+    exit 1
 fi
 
-build_firmware "$1" "$2"
+# Running Build
+build_firmware "$1" "${2:-}"

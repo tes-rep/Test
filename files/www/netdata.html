@@ -1,1048 +1,710 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Network Monitor Dashboard</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Network Monitor</title>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- External Resources -->
+  <link rel="stylesheet" href="/www/netmon/css/all.min.css">
+  <script src="http://192.168.1.1:19999/dashboard.js"></script>
+  <script>var netdataTheme='white',netdataPrepCallback=function(){NETDATA.requiredCSS=[]}</script>
+
+<style>
+/* CSS Variables & Base */
+:root{
+  --p:#667eea;--s:#764ba2;--a:#f093fb;--g:#10b981;--w:#f59e0b;--d:#ef4444;
+  --sh:0 2px 4px rgba(0,0,0,.1);--shl:0 8px 16px rgba(0,0,0,.15);--shx:0 12px 24px rgba(0,0,0,.2);
+  --bg:#3F5582;--bg2:rgba(255,255,255,.95);--bg3:#fff;
+  --t1:#2d3748;--t2:#718096;--t3:#a0aec0;--b1:#e2e8f0;--b2:rgba(255,255,255,.2);
+  --radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:20px;--radius-2xl:24px;--radius-3xl:32px;
+  --font-body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  --text-xs:.75rem;--text-sm:.875rem;--text-base:1rem;--text-lg:1.125rem;--text-xl:1.25rem;--text-2xl:1.5rem;--text-3xl:1.875rem;
+  --bg-blur:blur(8px);
+}
+
+[data-theme="dark"]{
+  --bg:#1a202c;--bg2:rgba(45,55,72,.95);--bg3:#2d3748;--t1:#f7fafc;--t2:#e2e8f0;--t3:#a0aec0;--b1:#4a5568;--b2:rgba(255,255,255,.1);
+  --sh:0 2px 4px rgba(0,0,0,.3);--shl:0 8px 16px rgba(0,0,0,.4);--shx:0 12px 24px rgba(0,0,0,.5);
+  --bg-blur:blur(10px);
+}
+
+[data-theme="ocean"]{
+  --bg:#0f172a;--bg2:rgba(15,23,42,.95);--bg3:#1e293b;--t1:#e2e8f0;--t2:#94a3b8;--t3:#64748b;--b1:#334155;--b2:rgba(59,130,246,.1);
+  --sh:0 2px 4px rgba(0,0,0,.4);--shl:0 8px 16px rgba(0,0,0,.5);--shx:0 12px 24px rgba(0,0,0,.6);
+  --p:#3b82f6;--s:#06b6d4;--a:#0ea5e9;--g:#22d3ee;--w:#f59e0b;--d:#ef4444;
+  --bg-blur:blur(12px);
+}
+
+[data-theme="purple"]{
+  --bg:#1e1b4b;--bg2:rgba(30,27,75,.95);--bg3:#312e81;--t1:#f8fafc;--t2:#c7d2fe;--t3:#a5b4fc;--b1:#4338ca;--b2:rgba(139,92,246,.1);
+  --p:#8b5cf6;--s:#a855f7;--a:#c084fc;
+  --bg-blur:blur(10px);
+}
+
+/* TEMA GRADIENT BLUE */
+[data-theme="gradient"]{
+  --bg:linear-gradient(135deg, #667eea 0%, #764ba2 100%);--bg2:rgba(255,255,255,.9);--bg3:rgba(255,255,255,.95);
+  --t1:#1a202c;--t2:#4a5568;--t3:#718096;--b1:#e2e8f0;--b2:rgba(255,255,255,.15);
+  --sh:0 4px 8px rgba(102,126,234,.15);--shl:0 8px 16px rgba(102,126,234,.25);--shx:0 12px 24px rgba(102,126,234,.35);
+  --p:#667eea;--s:#764ba2;--a:#f093fb;--g:#22c55e;--w:#f59e0b;--d:#ef4444;
+  --bg-blur:blur(15px);
+}
+
+/* TEMA CYBER BLUE - CYBERPUNK STYLE */
+[data-theme="cyber"]{
+  --bg:linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 30%, #16213e 70%, #0f0f23 100%);
+  --bg2:rgba(0,150,255,.12);--bg3:rgba(0,200,255,.15);
+  --t1:#00d4ff;--t2:#0099ff;--t3:#0066cc;--b1:#0080ff;--b2:rgba(0,150,255,.15);
+  --sh:0 0 15px rgba(0,180,255,.4);--shl:0 0 25px rgba(0,180,255,.6);--shx:0 0 35px rgba(0,180,255,.8);
+  --p:#00b4ff;--s:#0099ff;--a:#0080ff;--g:#00ffaa;--w:#ffaa00;--d:#ff4466;
+  --bg-blur:blur(20px);
+}
+
+/* TEMA TRANSPARENT - ULTRA GLASSMORPHISM */
+[data-theme="transparent"]{
+  --bg:transparent;--bg2:rgba(255,255,255,.08);--bg3:rgba(255,255,255,.12);
+  --t1:#ffffff;--t2:#e2e8f0;--t3:#cbd5e0;--b1:rgba(255,255,255,.2);--b2:rgba(255,255,255,.05);
+  --sh:0 8px 32px rgba(0,0,0,.15);--shl:0 12px 40px rgba(0,0,0,.2);--shx:0 16px 48px rgba(0,0,0,.25);
+  --p:#667eea;--s:#764ba2;--a:#f093fb;--g:#10b981;--w:#f59e0b;--d:#ef4444;
+  --bg-blur:blur(25px);
+}
+
+@media(prefers-color-scheme:dark){:root:not([data-theme]){
+  --bg:#1a202c;--bg2:rgba(45,55,72,.95);--bg3:#2d3748;--t1:#f7fafc;--t2:#e2e8f0;--t3:#a0aec0;--b1:#4a5568;--b2:rgba(255,255,255,.1);
+}}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font:400 1rem/1.5 var(--font-body);background:var(--bg);min-height:100vh;color:var(--t1);
+  transition:background .3s,color .3s;position:relative;overflow-x:hidden;
+}
+
+/* BACKGROUND BLUR EFFECT */
+body::before{
+  content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background:inherit;filter:var(--bg-blur);opacity:.3;z-index:-2;
+}
+
+body::after{
+  content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background:radial-gradient(circle at 20% 80%, rgba(120,119,198,.3) 0%, transparent 50%),
+             radial-gradient(circle at 80% 20%, rgba(255,119,198,.2) 0%, transparent 50%),
+             radial-gradient(circle at 40% 40%, rgba(120,219,255,.2) 0%, transparent 50%);
+  z-index:-1;opacity:.6;
+}
+
+/* CYBER THEME SPECIAL BACKGROUND EFFECTS */
+[data-theme="cyber"] body::after{
+  background:radial-gradient(circle at 20% 80%, rgba(0,180,255,.4) 0%, transparent 60%),
+             radial-gradient(circle at 80% 20%, rgba(0,120,255,.3) 0%, transparent 60%),
+             radial-gradient(circle at 40% 40%, rgba(0,200,255,.3) 0%, transparent 50%),
+             radial-gradient(circle at 60% 10%, rgba(0,150,255,.2) 0%, transparent 70%);
+}
+
+/* TRANSPARENT THEME SPECIAL BACKGROUND */
+[data-theme="transparent"] body{
+  background:linear-gradient(135deg, 
+    rgba(102,126,234,.15) 0%, 
+    rgba(118,75,162,.12) 25%, 
+    rgba(240,147,251,.10) 50%,
+    rgba(16,185,129,.08) 75%,
+    rgba(102,126,234,.15) 100%);
+}
+
+[data-theme="transparent"] body::before{
+  background:linear-gradient(45deg,
+    rgba(255,255,255,.02) 0%,
+    rgba(102,126,234,.05) 25%,
+    rgba(118,75,162,.03) 50%,
+    rgba(240,147,251,.04) 75%,
+    rgba(255,255,255,.02) 100%);
+  filter:blur(30px);opacity:.8;
+}
+
+[data-theme="transparent"] body::after{
+  background:radial-gradient(circle at 25% 75%, rgba(102,126,234,.15) 0%, transparent 60%),
+             radial-gradient(circle at 75% 25%, rgba(240,147,251,.12) 0%, transparent 60%),
+             radial-gradient(circle at 50% 50%, rgba(118,75,162,.10) 0%, transparent 50%),
+             radial-gradient(circle at 10% 10%, rgba(16,185,129,.08) 0%, transparent 70%),
+             radial-gradient(circle at 90% 90%, rgba(245,158,11,.06) 0%, transparent 80%);
+  opacity:.9;
+}
+
+.container{max-width:1400px;margin:0 auto;padding:12px;position:relative;z-index:1}
+
+/* SIMPLE BLUR OVERLAY */
+.blur-overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;backdrop-filter:var(--bg-blur);
+  background:rgba(0,0,0,0.3);z-index:998;opacity:0;visibility:hidden;
+  transition:opacity .3s,visibility .3s;
+}
+.blur-overlay.active{opacity:1;visibility:visible}
+
+body.stats-open .main-content{filter:blur(4px);transition:filter .3s}
+
+/* Controls */
+.top-ctrl{position:fixed;top:15px;right:15px;z-index:1001;display:flex;gap:6px}
+.btn{
+  background:var(--bg3);border:2px solid var(--b1);border-radius:25px;padding:8px 12px;
+  cursor:pointer;box-shadow:var(--sh);color:var(--t1);font:600 .75rem var(--font-body);
+  transition:all .2s;backdrop-filter:blur(10px);
+}
+.btn:hover{background:var(--p);color:#fff;border-color:var(--p)}
+.btn.rst:hover{background:var(--d);border-color:var(--d)}
+.btn.stats:hover,.btn.stats.active{background:var(--g);color:#fff;border-color:var(--g)}
+
+/* Toast */
+.toast{
+  position:fixed;top:65px;right:15px;z-index:2000;background:var(--bg3);
+  border-radius:var(--radius-md);padding:10px 14px;box-shadow:var(--shx);
+  border:1px solid var(--b1);font:600 .75rem var(--font-body);
+  transform:translateX(300px);opacity:0;transition:all .3s;min-width:200px;
+  backdrop-filter:blur(15px);
+}
+.toast.show{transform:translateX(0);opacity:1}
+.toast.success{border-color:var(--g);color:var(--g)}
+.toast.error{border-color:var(--d);color:var(--d)}
+
+/* HEADER */
+.header{
+  text-align:center;margin-bottom:8px;padding:5px 8px;background:var(--bg2);
+  border-radius:var(--radius-sm);box-shadow:var(--sh);border:1px solid var(--b2);
+  backdrop-filter:blur(20px);
+}
+.header h1{
+  font:600 .95rem var(--font-body);margin-bottom:2px;
+  background:linear-gradient(135deg,var(--p),var(--s));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.header .subtitle{font-size:.7rem;color:var(--t2)}
+
+/* SECTION */
+.section{
+  background:var(--bg2);border-radius:var(--radius-md);padding:12px;
+  margin-bottom:12px;box-shadow:var(--shx);border:1px solid var(--b2);
+  backdrop-filter:blur(25px);
+}
+.title{
+  text-align:center;font:600 1rem var(--font-body);color:var(--t1);margin-bottom:14px;
+}
+.subtitle{color:var(--t2);font-size:1rem;text-align:center}
+
+/* SIMPLE STATS MODAL */
+.stats-modal{
+  position:fixed;top:70px;left:50%;transform:translateX(-50%);
+  width:min(95vw,1200px);max-height:80vh;overflow-y:auto;
+  background:var(--bg2);border-radius:var(--radius-2xl);padding:25px;
+  box-shadow:var(--shx);border:1px solid var(--b2);z-index:999;
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;
+  backdrop-filter:blur(30px);
+}
+.stats-modal.show{opacity:1;visibility:visible}
+
+/* Close Button */
+.close-btn{
+  position:absolute;top:12px;right:16px;background:none;border:none;
+  font-size:1.1rem;color:var(--t2);cursor:pointer;padding:6px;
+  border-radius:50%;transition:all .2s;
+}
+.close-btn:hover{color:var(--d);background:rgba(239,68,68,0.1)}
+
+/* Grids */
+.grid-info{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.grid-charts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+
+/* SIMPLE CHARTS2 CONTAINER */
+.charts2-container{
+  position:relative;margin-bottom:8px;
+  background:rgba(255,255,255,.05);border-radius:var(--radius-sm);
+  padding:4px;border:1px solid var(--b2);
+}
+
+/* DESKTOP: SIMPLE SCROLLABLE WITH SNAP */
+.grid-charts2{
+  display:flex;overflow-x:auto;gap:6px;padding:2px;
+  scroll-behavior:smooth;scroll-snap-type:x mandatory;
+}
+
+/* Simple scrollbar styling */
+.grid-charts2::-webkit-scrollbar{height:3px}
+.grid-charts2::-webkit-scrollbar-track{background:transparent}
+.grid-charts2::-webkit-scrollbar-thumb{background:var(--p);border-radius:2px}
+
+.grid-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+
+/* Charts & Info */
+.chart{
+  background:var(--bg3);border-radius:var(--radius-md);padding:6px;
+  box-shadow:var(--sh);border:1px solid var(--b1);min-height:110px;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(15px);
+}
+
+/* CHART UNTUK GRID-CHARTS2 - Simple with snap */
+.grid-charts2 .chart{
+  min-height:70px;padding:4px;flex:0 0 calc(25% - 4.5px);
+  scroll-snap-align:start;
+}
+
+.info{
+  background:var(--bg3);border-radius:var(--radius-sm);padding:8px;
+  box-shadow:var(--sh);border:1px solid var(--b1);min-height:65px;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;position:relative;backdrop-filter:blur(15px);
+}
+.info::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--p),var(--a));
+}
+.info-title{
+  font:600 .65rem var(--font-body);color:var(--t2);text-transform:uppercase;
+  letter-spacing:.05em;margin-bottom:3px;
+}
+.info-value{font:600 .75rem var(--font-body);color:var(--t1)}
+
+/* Buttons */
+.chart-btn{
+  background:linear-gradient(135deg,var(--p),var(--s));color:#fff;border:none;
+  padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;
+  font:600 .75rem var(--font-body);text-transform:uppercase;
+  letter-spacing:.05em;box-shadow:var(--sh);transition:all .2s;
+}
+.chart-btn:hover{box-shadow:var(--shl)}
+.chart-btn.active{background:linear-gradient(135deg,#4facfe,#43e97b)}
+
+/* Image Container */
+.img-cnt{
+  position:relative;width:100%;background:var(--bg3);border-radius:var(--radius-lg);
+  box-shadow:var(--sh);border:1px solid var(--b1);padding:16px;margin:0 auto;
+  backdrop-filter:blur(20px);
+}
+.chart-img{display:none;width:100%;height:auto;border-radius:var(--radius-sm)}
+.img-cnt::before{
+  content:'';position:absolute;top:50%;left:50%;width:25px;height:25px;
+  margin:-12.5px 0 0 -12.5px;border:2px solid rgba(102,126,234,.3);
+  border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite;
+  opacity:0;z-index:2;
+}
+.img-cnt.loading::before{opacity:1}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* DESKTOP - 4 charts visible + scrollbar */
+@media(min-width:769px){
+  .img-cnt{max-width:850px}
+}
+
+/* TABLET - Mobile Mode mulai dari 768px ke bawah */
+@media(max-width:768px){
+  .container{padding:10px}
+  .header{padding:4px 6px;border-radius:var(--radius-sm);margin-bottom:6px}
+  .header h1{font-size:.85rem}
+  .header .subtitle{font-size:.6rem}
+  .section{padding:10px;border-radius:var(--radius-md)}
+  .stats-modal{width:95vw;padding:18px;border-radius:var(--radius-lg)}
+  .title{font-size:.9rem;margin-bottom:12px}
+  .grid-info{gap:4px;margin-bottom:10px;grid-template-columns:repeat(3,1fr)}
+  .grid-charts{gap:4px;margin-bottom:10px;grid-template-columns:repeat(2,1fr)}
+  .info{padding:6px;min-height:55px}
+  .info-title{font-size:.55rem}
+  .info-value{font-size:.65rem}
+  .grid-btns{gap:6px}
   
-  <!-- Netdata Script -->
-  <script type="text/javascript" defer>
-      var netdataHost = window.location.hostname;
-      var script = document.createElement("script");
-      script.src = "http://" + netdataHost + ":19999/dashboard.js";
-      document.head.appendChild(script);
-  </script>
+  /* MOBILE: GRID LAYOUT - NO SCROLL */
+  .grid-charts2{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:0;
+    overflow:visible;scroll-snap-type:none;
+  }
   
-  <script>
-    var netdataTheme='slate';
-    var netdataPrepCallback=function(){
-      NETDATA.requiredCSS=[];
-    };
-  </script>
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      display: flex; 
-			flex-direction: column; 
-			justify-content: center;
-			min-height: 0vh; 
-			color: black; 
-			background-image:url(img/background.jpg);
-			background-size: 80%;
-			-webkit-background-size: 100%;
-			background-repeat: no-repeat;
-    }
-
-    /* Animated Background */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-      z-index: -1;
-      animation: backgroundShift 20s ease-in-out infinite;
-    }
-
-    @keyframes backgroundShift {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.8; }
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    /* Header */
-    .header {
-      text-align: center;
-      margin-bottom: 40px;
-      padding: 30px 0;
-      background-image: linear-gradient(180deg, red, yellow, green);
-      background-position: 100%;
-      background-size: 400%;
-      transition: background 30ms ease-in-out;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      opacity: 0,5;
-    }
-
-    .header h1 {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 900;
-      background: linear-gradient(45deg, #00d4ff, #ff00ff, #00ff88);
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: gradientShift 3s ease-in-out infinite;
-      text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-    }
-
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-
-    .header .subtitle {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
-      color: #a0a0a0;
-      margin-top: 10px;
-      font-weight: 300;
-    }
-
-    /* Status Info */
-    .status-bar {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-    }
-
-    .status-item {
-    #  background: rgba(255, 255, 255, 0.1);
-     # backdrop-filter: blur(10px);
-      padding: 15px 25px;
-      border-radius: 15px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      text-align: center;
-      min-width: 160px;
-   #   transition: all 0.3s ease;
-      flex: 1;
-      max-width: 250px;
-      background-image: linear-gradient(180deg, red, yellow, green);
-      background-position: 100%;
-      background-size: 400%;
-      transition: background 30ms ease-in-out;
-    }
-
-    .status-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    }
-
-    .status-item i {
-      font-size: 1.5rem;
-      margin-bottom: 8px;
-      color: #00d4ff;
-    }
-
-    .status-value {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(1.2rem, 3vw, 1.5rem);
-      font-weight: 700;
-      color: #121EF6;
-    }
-
-    .status-label {
-      font-size: clamp(0.8rem, 2vw, 0.9rem);
-      color: #121EF6;
-      margin-top: 5px;
-    }
-
-    /* Network Charts Section */
-    .section {
-      margin-bottom: 50px;
-    }
-
-    .section-title {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(1.4rem, 4vw, 1.8rem);
-      text-align: center;
-      margin-bottom: 30px;
-      color: #00d4ff;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    /* Network Grid - 3 chart sejajar ke samping tanpa border-box */
-    .network-grid {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 25px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-      max-width: 100%;
-    }
-
-    /* System Grid - 3 chart sejajar ke samping tanpa border-box */
-    .system-grid {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 25px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-      max-width: 100%;
-    }
-
-    /* Chart Container - UKURAN DIPERBESAR untuk 3 sejajar */
-    .chart-container {
-      position: relative;
-      width: 220px;  /* Diperbesar dari 150px */
-      height: 220px; /* Diperbesar dari 150px */
-      /* Hapus semua styling border-box */
-      background: transparent;
-      backdrop-filter: none;
-      border-radius: 0;
-      border: none;
-      box-shadow: none;
-      transition: all 0.3s ease;
-      padding: 10px; /* Diperbesar dari 8px */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      flex-shrink: 0;
-      box-sizing: border-box;
-      flex: 0 0 auto;
-      margin-bottom: 20px; /* Diperbesar dari 15px */
-    }
-
-    .chart-container:hover {
-      transform: translateY(-3px);
-    }
-
-    .chart-title {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(0.8rem, 2vw, 0.9rem); /* Diperbesar font */
-      font-weight: 700;
-      color: #00d4ff;
-      text-align: center;
-      margin-bottom: 10px; /* Diperbesar margin */
-      text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-      text-transform: uppercase;
-      height: 18px; /* Diperbesar height */
-      line-height: 18px;
-      flex-shrink: 0;
-    }
-
-    /* Chart Content Area - Disesuaikan dengan ukuran baru */
-    .chart-content {
-      width: 100%;
-      height: calc(100% - 28px); /* Disesuaikan dengan padding dan title baru */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-sizing: border-box;
-    }
-
-    /* Netdata Chart Styling - Ukuran diperbesar */
-    .chart-content > div {
-      width: 100% !important;
-      height: 100% !important;
-      max-width: 180px !important; /* Diperbesar dari 110px */
-      max-height: 180px !important; /* Diperbesar dari 110px */
-      border-radius: 50%;
-      box-sizing: border-box;
-    }
-
-    /* Override Netdata default styles */
-    .chart-container .netdata-container {
-      background: transparent !important;
-      border: none !important;
-      width: 100% !important;
-      height: 100% !important;
-      box-sizing: border-box;
-    }
-
-    .chart-container .netdata-container-with-legend {
-      width: 100% !important;
-      height: 100% !important;
-      box-sizing: border-box;
-    }
-
-    /* EasyPieChart specific styling - Ukuran diperbesar */
-    .easypiechart-container {
-      width: 100% !important;
-      height: 100% !important;
-      max-width: 180px !important; /* Diperbesar dari 110px */
-      max-height: 180px !important; /* Diperbesar dari 110px */
-      margin: 0 auto !important;
-      box-sizing: border-box;
-    }
-
-    .easypiechart-container canvas {
-      width: 100% !important;
-      height: 100% !important;
-      max-width: 180px !important; /* Diperbesar dari 110px */
-      max-height: 180px !important; /* Diperbesar dari 110px */
-      box-sizing: border-box;
-    }
-
-    /* Memastikan maksimal 3 chart per baris dengan ukuran baru */
-    .network-grid .chart-container,
-    .system-grid .chart-container {
-      flex: 0 0 calc(33.333% - 17px);
-      max-width: 220px;
-    }
-
-    /* Untuk system grid, chart ke-4 akan wrap ke baris baru dan di-center */
-    .system-grid .chart-container:nth-child(4) {
-      flex: 0 0 calc(33.333% - 17px);
-      margin-left: calc(16.666% + 8px); /* Center the 4th chart */
-    }
-
-    /* Statistics Section with Tabs - TETAP DENGAN BORDER */
-    .stats-section {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    /* Tab Navigation */
-    .tab-navigation {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 30px;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
-
-    .tab-button {
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      color: #ffffff;
-      padding: 12px 20px;
-      border-radius: 15px;
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(0.8rem, 2vw, 0.9rem);
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      min-width: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .tab-button:hover {
-      background: rgba(0, 212, 255, 0.2);
-      border-color: rgba(0, 212, 255, 0.5);
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
-    }
-
-    .tab-button.active {
-      background: linear-gradient(45deg, #00d4ff, #0099cc);
-      border-color: #00d4ff;
-      color: #000000;
-      box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
-    }
-
-    .tab-button i {
-      font-size: 1rem;
-    }
-
-    /* Tab Content */
-    .tab-content {
-      display: none;
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .stats-grid {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 30px;
-    }
-
-    .stats-card {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 15px;
-      padding: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      transition: all 0.3s ease;
-      width: 100%;
-      max-width: 600px;
-      text-align: center;
-    }
-
-    .stats-card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      border-color: rgba(0, 212, 255, 0.3);
-    }
-
-    .stats-card img {
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s ease;
-      width: 100%;
-      height: auto;
-      max-width: 550px;
-    }
-
-    .stats-card img:hover {
-      transform: scale(1.05);
-      filter: brightness(1.1);
-    }
-
-    .stats-card-title {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
-      color: #00d4ff;
-      margin-bottom: 15px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    /* Loading State */
-    .loading-state {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 300px;
-      font-size: 1.2rem;
-      color: #a0a0a0;
-    }
-
-    .loading-spinner {
-      width: 30px;
-      height: 30px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: #00d4ff;
-      animation: spin 1s ease-in-out infinite;
-      margin-right: 15px;
-    }
-
-    /* Mobile Responsive - Update untuk ukuran baru */
-    @media (max-width: 1200px) {
-      .network-grid, .system-grid {
-        gap: 20px;
-        justify-content: center;
-      }
-      
-      .chart-container {
-        width: 190px;
-        height: 190px;
-        padding: 8px;
-      }
-      
-      .chart-content > div {
-        max-width: 150px !important;
-        max-height: 150px !important;
-      }
-
-      .easypiechart-container {
-        max-width: 150px !important;
-        max-height: 150px !important;
-      }
-
-      .easypiechart-container canvas {
-        max-width: 150px !important;
-        max-height: 150px !important;
-      }
-    }
-
-    @media (max-width: 900px) {
-      .network-grid, .system-grid {
-        gap: 15px;
-      }
-      
-      .chart-container {
-        width: 160px;
-        height: 160px;
-        padding: 6px;
-        flex: 0 0 calc(33.333% - 10px);
-        max-width: 160px;
-      }
-      
-      .chart-content > div {
-        max-width: 125px !important;
-        max-height: 125px !important;
-      }
-
-      .easypiechart-container {
-        max-width: 125px !important;
-        max-height: 125px !important;
-      }
-
-      .easypiechart-container canvas {
-        max-width: 125px !important;
-        max-height: 125px !important;
-      }
-
-      .system-grid .chart-container:nth-child(4) {
-        margin-left: calc(16.666% + 5px);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        padding: 15px;
-      }
-
-      /* Pada mobile, tetap 3 per baris tapi lebih kecil */
-      .network-grid, .system-grid {
-        gap: 10px;
-        justify-content: center;
-      }
-
-      .chart-container {
-        width: 130px;
-        height: 130px;
-        padding: 5px;
-        flex: 0 0 calc(33.333% - 7px);
-        max-width: 130px;
-      }
-
-      .chart-content > div {
-        max-width: 100px !important;
-        max-height: 100px !important;
-      }
-
-      .easypiechart-container {
-        max-width: 100px !important;
-        max-height: 100px !important;
-      }
-
-      .easypiechart-container canvas {
-        max-width: 100px !important;
-        max-height: 100px !important;
-      }
-
-      .chart-title {
-        font-size: 0.6rem;
-        height: 14px;
-        line-height: 14px;
-        margin-bottom: 5px;
-      }
-
-      .status-bar {
-        gap: 15px;
-      }
-
-      .status-item {
-        min-width: 140px;
-        padding: 12px 20px;
-      }
-
-      .stats-grid {
-        gap: 20px;
-      }
-
-      .stats-card {
-        padding: 15px;
-      }
-
-      .tab-navigation {
-        gap: 8px;
-      }
-
-      .tab-button {
-        padding: 10px 15px;
-        min-width: 80px;
-        font-size: 0.8rem;
-      }
-
-      .system-grid .chart-container:nth-child(4) {
-        margin-left: calc(16.666% + 3px);
-      }
-    }
-
-    @media (max-width: 480px) {
-      /* Pada layar sangat kecil, buat 2 per baris */
-      .network-grid, .system-grid {
-        gap: 8px;
-      }
-
-      .chart-container {
-        width: 110px;
-        height: 110px;
-        padding: 4px;
-        flex: 0 0 calc(50% - 4px);
-        max-width: 110px;
-      }
-
-      .chart-content > div {
-        max-width: 80px !important;
-        max-height: 80px !important;
-      }
-
-      .easypiechart-container {
-        max-width: 80px !important;
-        max-height: 80px !important;
-      }
-
-      .easypiechart-container canvas {
-        max-width: 80px !important;
-        max-height: 80px !important;
-      }
-
-      .chart-title {
-        font-size: 0.5rem;
-        height: 12px;
-        line-height: 12px;
-        margin-bottom: 4px;
-      }
-
-      .status-bar {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .status-item {
-        width: 100%;
-        max-width: 300px;
-      }
-
-      .tab-navigation {
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .tab-button {
-        width: 100%;
-        max-width: 200px;
-        margin: 0 auto;
-      }
-
-      .system-grid .chart-container:nth-child(4) {
-        margin-left: 0;
-      }
-    }
-
-    /* Loading Animation */
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: #00d4ff;
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Custom Netdata Color Overrides */
-    .chart-container svg {
-      filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.3));
-    }
-
-    /* Hide Netdata branding and unnecessary elements */
-    .netdata-chart-actions,
-    .netdata-legend,
-    .netdata-message,
-    .netdata-chart-title {
-      display: none !important;
-    }
-
-    /* Force chart sizing */
-    .netdata-container > div {
-      width: 100% !important;
-      height: 100% !important;
-      box-sizing: border-box !important;
-    }
-  </style>
+  .grid-charts2 .chart{
+    flex:none;width:auto;min-height:55px;padding:2px;scroll-snap-align:none;
+  }
+  
+  /* Hide scrollbar on mobile */
+  .grid-charts2::-webkit-scrollbar{display:none}
+  
+  .chart{padding:4px;min-height:70px}
+  .chart-btn{padding:8px 10px;font-size:.65rem}
+  .img-cnt{padding:10px}
+}
+
+/* MOBILE - Small screens */
+@media(max-width:480px){
+  .top-ctrl{top:10px;right:10px;gap:4px}
+  .btn{padding:6px 8px;font-size:.65rem}
+  .toast{top:55px;right:10px;padding:8px 10px;font-size:.65rem;min-width:160px}
+  .stats-modal{padding:14px}
+  .close-btn{top:10px;right:12px;font-size:1rem}
+  .header{padding:3px 5px;margin-bottom:5px}
+  .header h1{font-size:.75rem}
+  .header .subtitle{font-size:.55rem}
+  .title{font-size:.85rem;margin-bottom:10px}
+  .info-title{font-size:.5rem}
+  .info-value{font-size:.6rem}
+  
+  .charts2-container{padding:3px}
+  .grid-charts2{gap:3px}
+  .grid-charts2 .chart{min-height:50px;padding:1px}
+  .chart-btn{padding:6px 8px;font-size:.6rem}
+  .img-cnt{padding:8px}
+}
+
+/* TINY SCREENS */
+@media(max-width:320px){
+  .container{padding:8px}
+  .header{padding:2px 4px;margin-bottom:4px}
+  .header h1{font-size:.7rem;margin-bottom:1px}
+  .header .subtitle{font-size:.5rem}
+  .section{padding:8px;border-radius:var(--radius-sm)}
+  .title{font-size:.8rem;margin-bottom:8px}
+  .stats-modal{padding:10px}
+  .grid-info{gap:3px;margin-bottom:8px;grid-template-columns:repeat(3,1fr)}
+  .grid-charts{gap:3px;margin-bottom:8px;grid-template-columns:repeat(2,1fr)}
+  .info{padding:5px;min-height:50px}
+  .info-title{font-size:.45rem}
+  .info-value{font-size:.55rem}
+  .grid-charts,.grid-btns{gap:2px}
+  .chart{padding:3px;min-height:60px}
+  
+  .charts2-container{padding:2px}
+  .grid-charts2{gap:2px}
+  .grid-charts2 .chart{min-height:45px;padding:1px}
+  .chart-btn{padding:6px 8px;font-size:.6rem}
+  .img-cnt{padding:8px}
+}
+</style>
 </head>
 
 <body>
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <h1><i class="fas fa-network-wired"></i> NETWORK MONITOR</h1>
-      <div class="subtitle">Real-time Network Performance Dashboard</div>
-    </div>
+  <div class="blur-overlay" id="blurOverlay"></div>
 
-    <!-- Status Bar -->
-    <div class="status-bar">
-      <div class="status-item">
-        <i class="fas fa-clock"></i>
-        <div class="status-value" id="time">--:--:--</div>
-        <div class="status-value" id="nama">--:--:--</div>
-        <div class="status-label">Current Time</div>
+  <div class="main-content">
+    <div class="container">
+      <div class="top-ctrl">
+        <button class="btn" id="themeBtn"><span id="themeText">Light</span></button>
+        <button class="btn stats" id="statsBtn">Statistics</button>
+        <button class="btn rst" id="resetBtn">Reset</button>
       </div>
-      <div class="status-item">
-        <i class="fas fa-globe"></i>
-        <div class="status-value" id="wimi-ipv4">Loading...</div>
-        <div class="status-label">Public IP</div>
+
+      <div class="toast" id="toast">
+        <span id="toastMsg"></span>
       </div>
-    </div>
 
-    <!-- Network Interfaces Section - 3 Charts Sejajar TANPA BORDER -->
-    <div class="section">
-    	<div class="header">
-      <h2 class="section-title"><i class="fas fa-ethernet"></i> Network Interfaces</h2>
-      <div class="network-grid">
-        <div class="chart-container">
-          <div class="chart-title">WAN Connection</div>
-          <div class="chart-content">
-            <div data-netdata="net.usb0"
-                 data-title=""
-                 data-chart-library="gauge"
-                 data-after="-100"
-                 data-width="100%" 
-                 data-height="100%"
-                 data-points="720"
-                 data-gauge-generate-gradient="[0,10,60,100]"
-			     data-gauge-gradient-percent-color-0="#870115"
-			     data-gauge-gradient-percent-color-10="#870115"
-			     data-gauge-gradient-percent-color-60="#f5df1d"
-			     data-gauge-gradient-percent-color-100="#207305"
-			     data-colors="#002b49">	
-            </div>
+      <header class="header">
+        <h1>Network Monitor</h1>
+        <p class="subtitle">Real-time Performance Dashboard</p>
+      </header>
+
+      <section class="section">
+        <h2 class="title">Network Performance Metrics</h2>
+        
+        <!-- GRID-INFO: DATE - TIME - DAY -->
+        <div class="grid-info">
+          <div class="info">
+            <div class="info-title">Date</div>
+            <div id="currentDate" class="info-value">Loading...</div>
+          </div>
+          <div class="info">
+            <div class="info-title">Time</div>
+            <div id="currentTime" class="info-value">Loading...</div>
+          </div>
+          <div class="info">
+            <div class="info-title">Day</div>
+            <div id="currentDay" class="info-value">Loading...</div>
           </div>
         </div>
         
-        
-        
-        <div class="chart-container">
-          <div class="chart-title">LAN Network</div>
-          <div class="chart-content">
-            <div data-netdata="net.br-lan"
-                 data-title=""
-                 data-chart-library="gauge"
-                 data-after="-100"
-                 data-width="100%" 
-                 data-height="100%"
-                 data-points="720"
-                 data-gauge-generate-gradient="[0,10,60,100]"
-			     data-gauge-gradient-percent-color-0="#870115"
-			     data-gauge-gradient-percent-color-10="#870115"
-			     data-gauge-gradient-percent-color-60="#f5df1d"
-			     data-gauge-gradient-percent-color-100="#207305"
-			     data-colors="#002b49">	
-            </div>
+        <!-- GRID-CHARTS: ETH1, WWAN0, USB0, LAN -->
+        <div class="grid-charts">
+          <div class="chart">
+            <div data-netdata="net.eth1" data-title="MODEM" data-chart-library="gauge" data-after="-100" data-width="100%" data-points="720" data-gauge-generate-gradient="[0,5,10,60,100]" data-gauge-gradient-percent-color-0="#fa709a" data-gauge-gradient-percent-color-5="#fa709a" data-gauge-gradient-percent-color-10="#f093fb" data-gauge-gradient-percent-color-60="#4facfe" data-gauge-gradient-percent-color-100="#43e97b" data-colors="#667eea"></div>
           </div>
-        </div>
-        
-        
-        <div class="chart-container">
-          <div class="chart-title">MODEM</div>
-          <div class="chart-content">
-            <div data-netdata="net.eth1"
-                 data-title=""
-                 data-chart-library="gauge"
-                 data-after="-100"
-                 data-width="100%" 
-                 data-height="100%"
-                 data-points="720"
-                 data-gauge-generate-gradient="[0,10,60,100]"
-			     data-gauge-gradient-percent-color-0="#870115"
-			     data-gauge-gradient-percent-color-10="#870115"
-			     data-gauge-gradient-percent-color-60="#f5df1d"
-			     data-gauge-gradient-percent-color-100="#207305"
-			     data-colors="#002b49">	
-            </div>
+          <div class="chart">
+            <div data-netdata="net.wwan0" data-title="RAKITAN" data-chart-library="gauge" data-after="-100" data-width="100%" data-points="720" data-gauge-generate-gradient="[0,5,10,60,100]" data-gauge-gradient-percent-color-0="#fa709a" data-gauge-gradient-percent-color-5="#fa709a" data-gauge-gradient-percent-color-10="#f093fb" data-gauge-gradient-percent-color-60="#4facfe" data-gauge-gradient-percent-color-100="#43e97b" data-colors="#f093fb"></div>
           </div>
-        </div>
-      </div>
-    </div>
-    </div>
-    
-
-    <!-- System Resources Section - 3 Charts Sejajar + 1 Chart Baris Kedua TANPA BORDER -->
-    <div class="section">
-    	<div class="header">
-      <h2 class="section-title"><i class="fas fa-server"></i> System Resources</h2>
-      <div class="system-grid">
-        <div class="chart-container">
-          <div class="chart-title">Data Received</div>
-          <div class="chart-content">
-            <div data-netdata="system.net" 
-                 data-dimensions="received" 
-                 data-chart-library="easypiechart"
-                 data-title="" 
-                 data-width="100%" 
-                 data-height="100%"
-                 data-points="720" 
-                 data-common-units="system.net.mainhead"
-                 data-colors="#00ff88">
-            </div>
+          <div class="chart">
+            <div data-netdata="net.usb0" data-title="HP" data-chart-library="gauge" data-after="-100" data-width="100%" data-points="720" data-gauge-generate-gradient="[0,5,10,60,100]" data-gauge-gradient-percent-color-0="#fa709a" data-gauge-gradient-percent-color-5="#fa709a" data-gauge-gradient-percent-color-10="#f093fb" data-gauge-gradient-percent-color-60="#4facfe" data-gauge-gradient-percent-color-100="#43e97b" data-colors="#43e97b"></div>
           </div>
-        </div>
-        
-        <div class="chart-container">
-          <div class="chart-title">CPU Usage</div>
-          <div class="chart-content">
-            <div data-netdata="system.cpu" 
-                 data-chart-library="easypiechart"
-                 data-title="" 
-                 data-units="%" 
-                 data-append-options="percentage"
-                 data-easypiechart-max-value="100"
-                 data-width="100%" 
-                 data-height="100%"
-                 data-points="720" 
-                 data-colors="#ff00ff">
-            </div>
-          </div>
-        </div>
-        
-        <div class="chart-container">
-          <div class="chart-title">Memory Usage</div>
-          <div class="chart-content">
-            <div data-netdata="system.ram" 
-                 data-dimensions="used|buffers|active|wired" 
-                 data-append-options="percentage" 
-                 data-chart-library="easypiechart"
-                 data-title="" 
-                 data-units="%" 
-                 data-easypiechart-max-value="100"
-                 data-width="100%" 
-                 data-height="100%"
-                 data-points="720"
-                 data-colors="#00d4ff">
-            </div>
-          </div>
-        </div>
-        
-        <div class="chart-container">
-          <div class="chart-title">Data Transmitted</div>
-          <div class="chart-content">
-            <div data-netdata="system.net" 
-                 data-dimensions="sent" 
-                 data-chart-library="easypiechart"
-                 data-title="" 
-                 data-width="100%" 
-                 data-height="100%"
-                 data-points="720" 
-                 data-common-units="system.net.mainhead"
-                 data-colors="#ffa502">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
-
-    <!-- Network Statistics Section with Tabs - TETAP DENGAN BORDER -->
-    <div class="section">
-    	<div class="header">
-      <h2 class="section-title"><i class="fas fa-chart-line"></i> Network Statistics</h2>
-      <div class="stats-section">
-        <!-- Tab Navigation -->
-        <div class="tab-navigation">
-          <button class="tab-button active" data-tab="summary">
-            <i class="fas fa-chart-bar"></i>
-            <span>Summary</span>
-          </button>
-          <button class="tab-button" data-tab="minutes">
-            <i class="fas fa-clock"></i>
-            <span>5 Minutes</span>
-          </button>
-          <button class="tab-button" data-tab="hourly">
-            <i class="fas fa-hourglass-half"></i>
-            <span>Hourly</span>
-          </button>
-          <button class="tab-button" data-tab="daily">
-            <i class="fas fa-calendar-day"></i>
-            <span>Daily</span>
-          </button>
-          <button class="tab-button" data-tab="monthly">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Monthly</span>
-          </button>
-          <button class="tab-button" data-tab="yearly">
-            <i class="fas fa-calendar"></i>
-            <span>Yearly</span>
-          </button>
-          <button class="tab-button" data-tab="top_25">
-            <i class="fas fa-calendar"></i>
-            <span>top 25</span>
-          </button>
-        </div>
-</div>
-        <!-- Tab Contents -->
-        <div class="tab-content active" id="summary">
-          <div class="stats-grid">
-            <div class="stats-card">
-              <div class="stats-card-title">Network Summary Statistics</div>
-              <img src="/vnstati/br-lan_vnstat_s.png" alt="Network Summary" id="summary-img">
-            </div>
+          <div class="chart">
+            <div data-netdata="net.br-lan" data-title="LAN" data-chart-library="gauge" data-after="-150" data-width="100%" data-points="720" data-colors="#667eea"></div>
           </div>
         </div>
 
-        <div class="tab-content" id="minutes">
-          <div class="stats-grid">
-            <div class="stats-card">
-              <div class="stats-card-title">5 Minutes Network Statistics</div>
-              <img src="/vnstati/br-lan_vnstat_5.png" alt="5 Minutes Stats" id="minutes-img">
+        <!-- SIMPLE CHARTS2 CONTAINER: Desktop=Scroll, Mobile=Grid -->
+        <div class="charts2-container">
+          <div class="grid-charts2" id="scrollCharts">
+            <div class="chart">
+              <div data-netdata="system.net" data-dimensions="received" data-chart-library="easypiechart" data-title="RECEIVED" data-width="100%" data-points="720" data-common-units="system.net.mainhead" data-colors="#4facfe"></div>
+            </div>
+            <div class="chart">
+              <div data-netdata="system.net" data-dimensions="sent" data-chart-library="easypiechart" data-title="SENT" data-width="100%" data-points="720" data-common-units="system.net.mainhead" data-colors="#f093fb"></div>
+            </div>
+            <div class="chart">
+              <div data-netdata="system.ram" data-dimensions="used|buffers|active|wired" data-chart-library="easypiechart" data-title="RAM" data-width="100%" data-points="720" data-colors="#667eea"></div>
+            </div>
+            <div class="chart">
+              <div data-netdata="system.cpu" data-chart-library="easypiechart" data-title="CPU" data-units="%" data-easypiechart-max-value="100" data-width="100%" data-points="720" data-colors="#43e97b"></div>
+            </div>
+            <div class="chart">
+              <div data-netdata="system.load" data-chart-library="easypiechart" data-title="LOAD" data-width="100%" data-points="720" data-colors="#ef4444"></div>
+            </div>
+            <div class="chart">
+              <div data-netdata="netfilter.conntrack_sockets" data-chart-library="easypiechart" data-title="CONNECTIONS" data-width="100%" data-points="720" data-colors="#fbbf24"></div>
             </div>
           </div>
         </div>
-
-        <div class="tab-content" id="hourly">
-          <div class="stats-grid">
-            <div class="stats-card">
-              <div class="stats-card-title">Hourly Network Statistics</div>
-              <img src="/vnstati/br-lan_vnstat_h.png" alt="Hourly Stats" id="hourly-img">
-            </div>
-          </div>
-        </div>
-
-        <div class="tab-content" id="daily">
-          <div class="stats-grid">
-            <div class="stats-card">
-              <div class="stats-card-title">Daily Network Statistics</div>
-              <img src="/vnstati/br-lan_vnstat_d.png" alt="Daily Stats" id="daily-img">
-            </div>
-          </div>
-        </div>
-
-        <div class="tab-content" id="monthly">
-          <div class="stats-grid">
-            <div class="stats-card">
-              <div class="stats-card-title">Monthly Network Statistics</div>
-              <img src="/vnstati/br-lan_vnstat_m.png" alt="Monthly Stats" id="monthly-img">
-            </div>
-          </div>
-        </div>
-
-        <div class="tab-content" id="yearly">
-          <div class="stats-grid">
-            <div class="stats-card">
-              <div class="stats-card-title">Yearly Network Statistics</div>
-              <img src="/vnstati/br-lan_vnstat_y.png" alt="Yearly Stats" id="yearly-img">
-            </div>
-          </div>
-        </div>
-        <div class="tab-content" id="top_25">
-          <div class="stats-grid">
-            <div class="stats-card">
-              <div class="stats-card-title">top 25 Network Statistics</div>
-              <img src="/vnstati/br-lan_vnstat_t.png" alt="top 25" id="top-img">
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script type="text/javascript">
-    function showTime(){
-      var a_p = "";
-			var today = new Date();
-			var curr_hour = today.getHours();
-			var curr_minute = today.getMinutes();
-			var curr_second = today.getSeconds();
+  <div class="stats-modal" id="statsModal">
+    <button class="close-btn" id="closeBtn">×</button>
+    
+    <h2 class="title">Network Statistics</h2>
+    <p class="subtitle" style="margin-bottom:20px;">Historical network usage data</p>
+    
+    <div class="grid-btns">
+      <button class="chart-btn active" data-chart="summary">Summary</button>
+      <button class="chart-btn" data-chart="minutes">5 Minutes</button>
+      <button class="chart-btn" data-chart="hourly">Hourly</button>
+      <button class="chart-btn" data-chart="daily">Daily</button>
+      <button class="chart-btn" data-chart="monthly">Monthly</button>
+      <button class="chart-btn" data-chart="yearly">Yearly</button>
+    </div>
+    
+    <div class="img-cnt" id="imageContainer">
+      <img id="summary" class="chart-img" src="/vnstati/br-lan_vnstat_s.png" alt="Network Summary" style="display:block">
+      <img id="minutes" class="chart-img" src="/vnstati/br-lan_vnstat_5.png" alt="5 Minutes Stats">
+      <img id="hourly" class="chart-img" src="/vnstati/br-lan_vnstat_h.png" alt="Hourly Stats">
+      <img id="daily" class="chart-img" src="/vnstati/br-lan_vnstat_d.png" alt="Daily Stats">
+      <img id="monthly" class="chart-img" src="/vnstati/br-lan_vnstat_m.png" alt="Monthly Stats">
+      <img id="yearly" class="chart-img" src="/vnstati/br-lan_vnstat_y.png" alt="Yearly Stats">
+    </div>
+  </div>
 
-			if (curr_hour<12) {
-				a_p = "(sugeng Enjing houjie)";
-			}else {
-				a_p = "(sugeng dalu houjie)";
-			}
+<script>
+// Cached DOM elements
+const el = {
+  themeBtn: document.getElementById('themeBtn'),
+  themeText: document.getElementById('themeText'),
+  statsBtn: document.getElementById('statsBtn'),
+  resetBtn: document.getElementById('resetBtn'),
+  toast: document.getElementById('toast'),
+  toastMsg: document.getElementById('toastMsg'),
+  currentDate: document.getElementById('currentDate'),
+  currentTime: document.getElementById('currentTime'),
+  currentDay: document.getElementById('currentDay'),
+  imageContainer: document.getElementById('imageContainer'),
+  statsModal: document.getElementById('statsModal'),
+  blurOverlay: document.getElementById('blurOverlay'),
+  closeBtn: document.getElementById('closeBtn'),
+  chartImages: document.querySelectorAll('.chart-img'),
+  chartButtons: document.querySelectorAll('.chart-btn'),
+  scrollCharts: document.getElementById('scrollCharts')
+};
 
-			if (curr_hour == 0) {
-				curr_hour=24;
-			}
-			if (curr_hour == 24) {
-				curr_hour=curr_hour-24;
-			}
-			curr_hour = checkTime(curr_hour);
-			curr_minute = checkTime(curr_minute);
-			curr_second = checkTime(curr_second);
+// Simple scroll functions - Desktop only
+function scrollLeft() {
+  if (window.innerWidth > 768) {
+    el.scrollCharts.scrollBy({ left: -200, behavior: 'smooth' });
+  }
+}
 
-			document.getElementById('time').innerHTML= curr_hour+":"+curr_minute+":"+curr_second;
-			document.getElementById('nama').innerHTML= a_p;
-		}
+function scrollRight() {
+  if (window.innerWidth > 768) {
+    el.scrollCharts.scrollBy({ left: 200, behavior: 'smooth' });
+  }
+}
 
-		function checkTime(i){
-			if (i<10) {
-				i = "0"+i;
-			}
-			return i;
-		}
-		setInterval(showTime,100);
-  </script>
+// Theme System
+const themes = ['light', 'dark', 'ocean', 'purple', 'gradient', 'cyber', 'transparent'];
+const themeNames = ['Light', 'Dark', 'Ocean', 'Purple', 'Gradient', 'Cyber', 'Glass'];
+let currentTheme = localStorage.getItem('selectedTheme') || 'light';
 
-  <script>
-    // IP Address fetching
-    fetch("https://iptools-4.top10vpn.com/ip/?genToken=1")
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById("wimi-ipv4").innerText = data.ip;
-      })
-      .catch(error => {
-        document.getElementById("wimi-ipv4").innerText = "Error";
-      });
-  </script>
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  const index = themes.indexOf(currentTheme);
+  el.themeText.textContent = themeNames[index];
+  localStorage.setItem('selectedTheme', currentTheme);
+}
 
-  <script>
-    // Tab functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const tabButtons = document.querySelectorAll('.tab-button');
-      const tabContents = document.querySelectorAll('.tab-content');
+function toggleTheme() {
+  const index = themes.indexOf(currentTheme);
+  currentTheme = themes[(index + 1) % themes.length];
+  applyTheme();
+}
 
-      tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          const targetTab = button.getAttribute('data-tab');
-          
-          // Remove active class from all buttons and contents
-          tabButtons.forEach(btn => btn.classList.remove('active'));
-          tabContents.forEach(content => content.classList.remove('active'));
-          
-          // Add active class to clicked button and corresponding content
-          button.classList.add('active');
-          document.getElementById(targetTab).classList.add('active');
-          
-          // Add a small delay and refresh the image to ensure it loads properly
-          setTimeout(() => {
-            const activeImg = document.querySelector(`#${targetTab} img`);
-            if (activeImg) {
-              const src = activeImg.src;
-              activeImg.src = '';
-              activeImg.src = src + '?' + new Date().getTime(); // Add cache bust
-            }
-          }, 100);
+// DateTime System
+const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+function updateDateTime() {
+  const now = new Date();
+  const pad = n => n.toString().padStart(2, '0');
+  el.currentTime.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  el.currentDate.textContent = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()}`;
+  el.currentDay.textContent = days[now.getDay()];
+}
+
+// Modal System
+let isModalOpen = false;
+
+function showModal() {
+  isModalOpen = true;
+  el.blurOverlay.classList.add('active');
+  document.body.classList.add('stats-open');
+  el.statsModal.classList.add('show');
+  el.statsBtn.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  localStorage.setItem('statsVisible', 'true');
+}
+
+function hideModal() {
+  isModalOpen = false;
+  el.blurOverlay.classList.remove('active');
+  document.body.classList.remove('stats-open');
+  el.statsModal.classList.remove('show');
+  el.statsBtn.classList.remove('active');
+  document.body.style.overflow = '';
+  localStorage.setItem('statsVisible', 'false');
+}
+
+function toggleModal() {
+  isModalOpen ? hideModal() : showModal();
+}
+
+// Chart System
+let currentChart = 'summary';
+
+function showChart(type) {
+  if (type === currentChart) return;
+  
+  const newImg = document.getElementById(type);
+  if (!newImg) return;
+  
+  el.imageContainer.classList.add('loading');
+  document.getElementById(currentChart).style.display = 'none';
+  
+  const displayChart = () => {
+    newImg.style.display = 'block';
+    el.imageContainer.classList.remove('loading');
+    currentChart = type;
+  };
+  
+  if (newImg.complete) {
+    setTimeout(displayChart, 200);
+  } else {
+    newImg.src = newImg.src.split('?')[0] + '?t=' + Date.now();
+    newImg.onload = newImg.onerror = () => setTimeout(displayChart, 200);
+  }
+}
+
+// Toast System
+let toastTimeout;
+
+function showToast(type, message) {
+  if (toastTimeout) clearTimeout(toastTimeout);
+  el.toast.className = `toast ${type}`;
+  el.toastMsg.textContent = message;
+  el.toast.classList.add('show');
+  toastTimeout = setTimeout(() => el.toast.classList.remove('show'), 3000);
+}
+
+// Reset System
+async function resetDatabase() {
+  if (el.resetBtn.classList.contains('loading')) return;
+  
+  el.resetBtn.classList.add('loading');
+  el.imageContainer.classList.add('loading');
+  
+  try {
+    const response = await fetch('/cgi-bin/reset-vnstat.sh', { method: 'POST' });
+    
+    if (response.ok) {
+      showToast('success', 'Reset Database Success');
+      setTimeout(() => {
+        const timestamp = Date.now();
+        el.chartImages.forEach(img => {
+          img.src = img.src.split('?')[0] + '?t=' + timestamp;
         });
-      });
+        el.resetBtn.classList.remove('loading');
+        el.imageContainer.classList.remove('loading');
+      }, 5000);
+    } else {
+      throw new Error('Reset failed');
+    }
+  } catch (error) {
+    el.resetBtn.classList.remove('loading');
+    el.imageContainer.classList.remove('loading');
+    showToast('error', 'Reset failed. Please try again.');
+  }
+}
 
-      // Auto-refresh images every 30 seconds for the active tab
-      setInterval(() => {
-        const activeTab = document.querySelector('.tab-content.active img');
-        if (activeTab) {
-          const src = activeTab.src.split('?')[0]; // Remove any existing cache bust
-          activeTab.src = src + '?' + new Date().getTime();
-        }
-      }, 30000);
-    });
-  </script>
+// Event Handlers
+el.themeBtn.addEventListener('click', e => { e.preventDefault(); toggleTheme(); });
+el.statsBtn.addEventListener('click', e => { e.preventDefault(); toggleModal(); });
+el.resetBtn.addEventListener('click', e => { e.preventDefault(); resetDatabase(); });
+el.closeBtn.addEventListener('click', e => { e.preventDefault(); hideModal(); });
+el.blurOverlay.addEventListener('click', e => { if (e.target === el.blurOverlay) hideModal(); });
+
+document.querySelector('.grid-btns').addEventListener('click', e => {
+  e.preventDefault();
+  const btn = e.target.closest('.chart-btn');
+  if (!btn || btn.classList.contains('active')) return;
+  
+  el.chartButtons.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  showChart(btn.dataset.chart);
+});
+
+// Simple keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key === 't') {
+    e.preventDefault();
+    toggleTheme();
+  } else if (e.key === 'Escape' && isModalOpen) {
+    hideModal();
+  } else if (e.key === 'ArrowLeft' && !isModalOpen) {
+    e.preventDefault();
+    scrollLeft();
+  } else if (e.key === 'ArrowRight' && !isModalOpen) {
+    e.preventDefault();
+    scrollRight();
+  }
+});
+
+// Simple mouse wheel scroll - Desktop only
+el.scrollCharts.addEventListener('wheel', e => {
+  if (window.innerWidth > 768 && Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+    e.preventDefault();
+    el.scrollCharts.scrollBy({ left: e.deltaY > 0 ? 100 : -100, behavior: 'smooth' });
+  }
+});
+
+// Initialize
+function init() {
+  applyTheme();
+  updateDateTime();
+  
+  // Start datetime updates
+  setInterval(updateDateTime, 1000);
+  
+  // Restore modal state
+  if (localStorage.getItem('statsVisible') === 'true') {
+    setTimeout(showModal, 100);
+  }
+  
+  console.log('Network Monitor initialized with connection tracking');
+  console.log(`Mode: ${window.innerWidth > 768 ? 'Desktop (Scrollable)' : 'Mobile (Grid)'}`);
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
 </body>
 </html>
