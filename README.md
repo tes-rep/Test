@@ -51,7 +51,7 @@
 ---
 
 <p align="center">
-<strong>XIDZs-WRT | 2025</strong>
+<strong>HJ-WRT | 2025</strong>
 </p>
 
 ---
@@ -60,13 +60,13 @@
 
 <p align="center">
 <small>
-<a href="https://github.com/de-quenx/XIDZs-WRT/blob/main/LICENSE">LICENSE</a><br>
+<a href="https://github.com/de-quenx/HJ-WRT/blob/main/LICENSE">LICENSE</a><br>
 <a href="https://github.com/rizkikotet-dev/RTA-WRT">RTA-WrtBuilder By RizkiKotet-Dev</a><br>
 <a href="https://github.com/frizkyiman/friWrt-MyWrtBuilder">friWrt-MyWrtBuilder By frizkyiman</a><br>
 <a href="https://github.com/Revincx/MyWrtBuilder">MyWrtBuilder By Revincx</a><br>
 <a href="https://github.com/armarchindo/ULO-Builder/blob/main/ulo">ULO Builder By DBAI</a><br>
 <a href="https://t.me/xidz_x">XIDZs-WrtBuilder By Fidz</a><br>
 <a href="https://github.com/ophub">Ophub</a><br>
-<a href="https://github.com/Dirgha80">Dirgha</a><br>
+<a href="https://github.com/Dirgha80">fOR KERNEL S905X4 BY Dirgha</a><br>
 </small>
 </p>
