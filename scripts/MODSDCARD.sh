@@ -16,12 +16,15 @@ build_mod_sdcard() {
     fi
 
     # Validate and set paths
-    if ! cd "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"; then
-        error_msg "Failed to change directory to $GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
+    local compiled_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
+    local mod_dir="${compiled_dir}/mod"
+    mkdir -p "$mod_dir"
+
+    if ! cd "$compiled_dir"; then
+        error_msg "Failed to change directory to $compiled_dir"
         return 1
     fi
 
-    local imgpath="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
     local file_to_process="$image_path"
 
     cleanup() {
@@ -142,16 +145,17 @@ build_mod_sdcard() {
         return 1
     fi
 
+    # Remove old file jika ada
     if [ -f "../${file_name}.gz" ]; then
         rm -rf "../${file_name}.gz"
     fi
 
+    # Buat nama baru dengan prefix HJ dan pindah ke folder mod
     local kernel
     kernel=$(grep -oP 'k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)?' <<<"${file_name}")
-    local new_name="XIDZs-${OP_BASE}-${BRANCH}-${suffix}-${kernel}-${TUNNEL}-${DATE}-MODSDCARD.img.gz"
-
-    mv "${file_name}.gz" "../${new_name}" || {
-        error_msg "Failed to rename image file"
+    local new_name="HJ-${OP_BASE}-${BRANCH}-${suffix}-${kernel}-${TUNNEL}-${DATE}-MODSDCARD.img.gz"
+    mv "${file_name}.gz" "${mod_dir}/${new_name}" || {
+        error_msg "Failed to move/rename image file to ${mod_dir}/${new_name}"
         return 1
     }
 
@@ -163,12 +167,12 @@ build_mod_sdcard() {
     return 0
 }
 
+# Fungsi helper untuk memproses beberapa build
 process_builds() {
     local img_dir="$1"
     local builds=("${@:2}")
     local exit_code=0
     
-    # Process builds based on tunnel mode
     for build in "${builds[@]}"; do
         IFS=: read -r device dtb model <<< "$build"
         local image_file=$(find "$img_dir" -name "*${device}*.img.gz")
@@ -186,35 +190,33 @@ process_builds() {
     return $exit_code
 }
 
+# Main execution
 main() {
     local exit_code=0
     local img_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
 
-    # konfigurasi builds MATRIXTARGET
     local builds=()
     if [[ "$MATRIXTARGET" == "Amlogic s905x HG680P MODSDCARD" ]]; then
         builds=(
-            "_s905x_k5.15.189:meson-gxl-s905x-p212.dtb:s905x_HG680P"
-            "_s905x_k6.1.66:meson-gxl-s905x-p212.dtb:s905x_HG680P"
-            "_s905x_k6.6.92:meson-gxl-s905x-p212.dtb:s905x_HG680P"
-            "_s905x_k6.12.39:meson-gxl-s905x-p212.dtb:s905x_HG680P"
+            "_s905x_k5.15.*:meson-gxl-s905x-p212.dtb:s905x_HG680P"
+            "_s905x_k6.1.*:meson-gxl-s905x-p212.dtb:s905x_HG680P"
+            "_s905x_k6.6.*:meson-gxl-s905x-p212.dtb:s905x_HG680P"
+            "_s905x_k6.12.*:meson-gxl-s905x-p212.dtb:s905x_HG680P"
         )
     elif [[ "$MATRIXTARGET" == "Amlogic s905x B860H MODSDCARD" ]]; then
         builds=(
-            "_s905x-b860h_k5.15.189:meson-gxl-s905x-b860h.dtb:s905x_B860H"
-            "_s905x-b860h_k6.1.66:meson-gxl-s905x-b860h.dtb:s905x_B860H"
-            "_s905x-b860h_k6.6.92:meson-gxl-s905x-b860h.dtb:s905x_B860H"
-            "_s905x-b860h_k6.12.39:meson-gxl-s905x-b860h.dtb:s905x_B860H"
+            "_s905x-b860h_k5.15.*:meson-gxl-s905x-b860h.dtb:s905x_B860H"
+            "_s905x-b860h_k6.1.*:meson-gxl-s905x-b860h.dtb:s905x_B860H"
+            "_s905x-b860h_k6.6.*:meson-gxl-s905x-b860h.dtb:s905x_B860H"
+            "_s905x-b860h_k6.12.*:meson-gxl-s905x-b860h.dtb:s905x_B860H"
         )
     fi
     
-    # Validate environment
     if [[ ! -d "$img_dir" ]]; then
         error_msg "Image directory not found: $img_dir"
         return 1
     fi
     
-    # Process builds
     if ! process_builds "$img_dir" "${builds[@]}"; then
         exit_code=1
     fi
@@ -222,5 +224,4 @@ main() {
     return $exit_code
 }
 
-# Execute main function
 main
