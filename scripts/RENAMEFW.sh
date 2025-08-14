@@ -4,7 +4,7 @@
 
 rename_firmware() {
     echo -e "${STEPS} Renaming firmware files..."
-    local mod_dir="${compiled_dir}/mod"
+    local mod_dir="${firmware_dir}/mod"
     mkdir -p "$mod_dir"
     # Validasi direktori firmware
     local firmware_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
