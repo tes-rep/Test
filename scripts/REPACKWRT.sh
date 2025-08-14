@@ -43,7 +43,7 @@ repackwrt() {
     [[ -z "$tunnel_type" ]] && { error_msg "Tunnel type required"; exit 1; }
 
     # Direktori kerja
-    local readonly OPHUB_REPO="https://github.com/xidz-repo/amlogic-s9xxx-openwrt/archive/refs/heads/main.zip"
+    local readonly OPHUB_REPO="https://github.com/tes-rep/amlogic-s9xxx-openwrt/archive/refs/heads/main.zip"
     local readonly ULO_REPO="https://github.com/xidz-repo/ULO-Builder/archive/refs/heads/main.zip"
     local readonly work_dir="$GITHUB_WORKSPACE/$WORKING_DIR"
 
