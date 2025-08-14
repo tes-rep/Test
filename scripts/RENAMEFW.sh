@@ -4,7 +4,8 @@
 
 rename_firmware() {
     echo -e "${STEPS} Renaming firmware files..."
-
+    local mod_dir="${compiled_dir}/mod"
+    mkdir -p "$mod_dir"
     # Validasi direktori firmware
     local firmware_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
     if [[ ! -d "$firmware_dir" ]]; then
@@ -15,8 +16,7 @@ rename_firmware() {
     cd "${firmware_dir}" || {
        error_msg "Failed to change directory to ${firmware_dir}"
     }
-    local mod_dir="${compiled_dir}/mod"
-    mkdir -p "$mod_dir"
+    
     # Pola pencarian dan penggantian
     local search_replace_patterns=(
         # Format: "search|replace"
