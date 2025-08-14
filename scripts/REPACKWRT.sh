@@ -145,7 +145,7 @@ rename_firmware() {
             [[ -n "$kernel" ]] && new_name="HJ-${OP_BASE}-${BRANCH}-${replace}-${kernel}-${TUNNEL}-${DATE}.img.gz"
 
             echo -e "${INFO} Renaming: $file → $new_name"
-            mv "$file" "$mod_dir/$new_name" || echo -e "${WARN} Failed rename $file"
+            mv "$file" "$new_name" || echo -e "${WARN} Failed rename $file"
         done
     done
 
