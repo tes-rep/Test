@@ -178,7 +178,7 @@ rename_firmware() {
                 mv "$file" "$new_name" || { echo -e "${WARN} Failed to rename $file"; continue; }
 
                 # Pindahkan ke folder mod
-                mv "$new_name" "$output_dir/" || { echo -e "${WARN} Failed to move $new_name"; continue; }
+                cp "$new_name" "$output_dir/" || { echo -e "${WARN} Failed to move $new_name"; continue; }
             done
         done
     done
