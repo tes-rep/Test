@@ -570,7 +570,6 @@ jobs:
         id: modsdcard
         if: steps.beforeupload.outputs.status == 'success'
         run: |
-          cd ${WORKING_DIR}
           chmod +x scripts/MODSDCARD.sh
           ./scripts/MODSDCARD.sh
           echo "status=success" >> $GITHUB_OUTPUT
