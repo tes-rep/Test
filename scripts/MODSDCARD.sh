@@ -16,7 +16,7 @@ build_mod_sdcard() {
     fi
 
     # Validate and set paths
-    if ! cd "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"; then
+    if ! cd "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images/mod"; then
         error_msg "Failed to change directory to $GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
         return 1
     fi
@@ -150,7 +150,7 @@ build_mod_sdcard() {
     kernel=$(grep -oP 'k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)?' <<<"${file_name}")
     local new_name="HOUJIE-${suffix}-${kernel}-MODSDCARD.img.gz"
 
-    mv "${file_name}.gz" "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images/mod/${new_name}" || {
+    cp "${file_name}.gz" "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images/mod/${new_name}" || {
         error_msg "Failed to rename image file"
         return 1
     }
@@ -188,7 +188,7 @@ process_builds() {
 
 main() {
     local exit_code=0
-    local img_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
+    local img_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images/mod"
 
     # konfigurasi builds MATRIXTARGET
     local builds=()
