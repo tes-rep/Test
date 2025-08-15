@@ -169,9 +169,9 @@ rename_firmware() {
 
                 local new_name
                 if [[ -n "$kernel" && "$ext" == "img.gz" ]]; then
-                    new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}-${kernel}-${TUNNEL}-${DATE}.img.gz"
+                    new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}_${kernel}-${TUNNEL}-${DATE}.img.gz"
                 else
-                    new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}-${TUNNEL}-${DATE}.img.gz"
+                    new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}_${TUNNEL}-${DATE}.img.gz"
                 fi
 
                 echo -e "${INFO} Renaming: $file → $new_name"
