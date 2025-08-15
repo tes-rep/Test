@@ -194,10 +194,10 @@ main() {
     local builds=()
     if [[ "$TARGET" == "Amlogic s905x HG680P" ]]; then
         builds=(
-            "_s905x-k5.15.*:meson-gxl-s905x-p212.dtb:HG680P"
-            "_s905x-k6.1.*:meson-gxl-s905x-p212.dtb:HG680P"
-            "_s905x-k6.6.*:meson-gxl-s905x-p212.dtb:HG680P"
-            "_s905x-k6.12.*:meson-gxl-s905x-p212.dtb:HG680P"
+            "_s905x_k5.15.*:meson-gxl-s905x-p212.dtb:HG680P"
+            "_s905x_k6.1.*:meson-gxl-s905x-p212.dtb:HG680P"
+            "_s905x_k6.6.*:meson-gxl-s905x-p212.dtb:HG680P"
+            "_s905x_k6.12.*:meson-gxl-s905x-p212.dtb:HG680P"
         )
     elif [[ "$TARGET" == "Amlogic B860H-V1-V2" ]]; then
         builds=(
