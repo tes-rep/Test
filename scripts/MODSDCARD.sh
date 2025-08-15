@@ -192,7 +192,7 @@ main() {
 
     # konfigurasi builds MATRIXTARGET
     local builds=()
-    if [[ "$TARGET" == "Amlogic HG680P" ]]; then
+    if [[ "$TARGET" == "Amlogic s905x HG680P" ]]; then
         builds=(
             "_s905x_k5.15.*:meson-gxl-s905x-p212.dtb:HG680P"
             "_s905x_k6.1.*:meson-gxl-s905x-p212.dtb:HG680P"
