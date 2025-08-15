@@ -17,8 +17,8 @@ build_mod_sdcard() {
 
     # Validate and set paths
     local compiled_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
-    local mod_dir="${compiled_dir}/mod"
-    mkdir -p "$mod_dir"
+    OUTPUT_DIR="${FIRMWARE_DIR}/mod"
+    mkdir -p "$OUTPUT_DIR"
 
     if ! cd "$compiled_dir"; then
         error_msg "Failed to change directory to $compiled_dir"
@@ -154,7 +154,7 @@ build_mod_sdcard() {
     local kernel
     kernel=$(grep -oP 'k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)?' <<<"${file_name}")
     local new_name="HJ-${OP_BASE}-${BRANCH}-${suffix}-${kernel}-${TUNNEL}-${DATE}-MODSDCARD.img.gz"
-    mv "${file_name}.gz" "${mod_dir}/${new_name}" || {
+    mv "${file_name}.gz" "${OUTPUT_DIR}/${new_name}" || {
         error_msg "Failed to move/rename image file to ${mod_dir}/${new_name}"
         return 1
     }
