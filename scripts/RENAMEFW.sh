@@ -11,12 +11,14 @@ rename_firmware() {
         error_msg "Invalid firmware directory: ${firmware_dir}"
     fi
 
+    local mod_dir="${firmware_dir}/mod"
+    mkdir -p "$mod_dir"
+    
     # Pindah ke direktori firmware
     cd "${firmware_dir}" || {
        error_msg "Failed to change directory to ${firmware_dir}"
     }
-    local mod_dir="${firmware_dir}/mod"
-    mkdir -p "$mod_dir"
+    
     # Pola pencarian dan penggantian
     local search_replace_patterns=(
         # Format: "search|replace"
