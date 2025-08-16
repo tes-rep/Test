@@ -148,7 +148,7 @@ process_builds() {
 
 get_builds_for_target() {
     case "$MATRIXTARGET" in
-        "OPHUB Amlogic s905X HG680P"|"ULO Amlogic s905X HG680P")
+        "Amlogic s905X HG680P")
             echo "_s905x_k5:meson-gxl-s905x-p212.dtb:HG680P"
             echo "_s905x_k6:meson-gxl-s905x-p212.dtb:HG680P"
             echo "-s905x-:meson-gxl-s905x-p212.dtb:HG680P"
