@@ -189,7 +189,7 @@ rename_firmware() {
                     new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}-${TUNNEL}-${DATE}.img.gz"
                 fi
                 echo -e "${INFO} Renaming: $file → $new_name"
-                mv "$file" "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images/mod/$new_name" || {
+                cp "$file" "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images/mod/$new_name" || {
                     echo -e "${WARN} Failed to rename $file"
                     continue
                 }
@@ -200,7 +200,7 @@ rename_firmware() {
                 local new_name
                 new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}-${TUNNEL}-${DATE}.img.gz"
                 echo -e "${INFO} Renaming: $file → $new_name"
-                mv "$file" "$new_name" || {
+                cp "$file" "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images/mod/$new_name" || {
                     echo -e "${WARN} Failed to rename $file"
                     continue
                 }
