@@ -5,27 +5,27 @@
 rename_firmware() {
     echo -e "${STEPS} Renaming firmware files..."
 
-    # Direktori firmware
+    # Validasi direktori firmware
     local firmware_dir="$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images"
     if [[ ! -d "$firmware_dir" ]]; then
         error_msg "Invalid firmware directory: ${firmware_dir}"
     fi
 
-    # Direktori output: subfolder 'mod' di firmware_dir
-    local output_dir="${firmware_dir}/mod"
-    mkdir -p "$output_dir"
-
     # Pindah ke direktori firmware
-    cd "${firmware_dir}" || { error_msg "Failed to change directory to ${firmware_dir}"; }
+    cd "${firmware_dir}" || {
+       error_msg "Failed to change directory to ${firmware_dir}"
+    }
 
-    # Pola pencarian dan penggantian lengkap
+    # Pola pencarian dan penggantian
     local search_replace_patterns=(
+        # Format: "search|replace"
+
         # bcm27xx
         "-bcm27xx-bcm2709-rpi-2-ext4-factory|RaspberryPi_2B-Ext4_Factory"
         "-bcm27xx-bcm2709-rpi-2-ext4-sysupgrade|RaspberryPi_2B-Ext4_Sysupgrade"
         "-bcm27xx-bcm2709-rpi-2-squashfs-factory|RaspberryPi_2B-Squashfs_Factory"
         "-bcm27xx-bcm2709-rpi-2-squashfs-sysupgrade|RaspberryPi_2B-Squashfs_Sysupgrade"
-
+        
         "-bcm27xx-bcm2710-rpi-3-ext4-factory|RaspberryPi_3B-Ext4_Factory"
         "-bcm27xx-bcm2710-rpi-3-ext4-sysupgrade|RaspberryPi_3B-Ext4_Sysupgrade"
         "-bcm27xx-bcm2710-rpi-3-squashfs-factory|RaspberryPi_3B-Squashfs_Factory"
@@ -35,12 +35,12 @@ rename_firmware() {
         "-bcm27xx-bcm2711-rpi-4-ext4-sysupgrade|RaspberryPi_4B-Ext4_Sysupgrade"
         "-bcm27xx-bcm2711-rpi-4-squashfs-factory|RaspberryPi_4B-Squashfs_Factory"
         "-bcm27xx-bcm2711-rpi-4-squashfs-sysupgrade|RaspberryPi_4B-Squashfs_Sysupgrade"
-
+        
         "-bcm27xx-bcm2712-rpi-5-ext4-factory|RaspberryPi_5-Ext4_Factory"
         "-bcm27xx-bcm2712-rpi-5-ext4-sysupgrade|RaspberryPi_5-Ext4_Sysupgrade"
         "-bcm27xx-bcm2712-rpi-5-squashfs-factory|RaspberryPi_5-Squashfs_Factory"
         "-bcm27xx-bcm2712-rpi-5-squashfs-sysupgrade|RaspberryPi_5-Squashfs_Sysupgrade"
-
+        
         # Allwinner ULO
         "-h5-orangepi-pc2-|OrangePi_PC2"
         "-h5-orangepi-prime-|OrangePi_Prime"
@@ -53,12 +53,12 @@ rename_firmware() {
         "-h616-orangepi-zero2-|OrangePi_Zero2"
         "-h618-orangepi-zero2w-|OrangePi_Zero2W"
         "-h618-orangepi-zero3-|OrangePi_Zero3"
-
+        
         # Rockchip ULO
         "-rk3566-orangepi-3b-|OrangePi_3B"
         "-rk3588s-orangepi-5-|OrangePi_5"
         "-firefly_roc-rk3328-cc-|Firefly-RK3328"
-
+        
         # Xunlong Official
         "-xunlong_orangepi-r1-plus-lts-squashfs-sysupgrade|OrangePi-R1-Plus-LTS-squashfs-sysupgrade"
         "-xunlong_orangepi-r1-plus-lts-ext4-sysupgrade|OrangePi-R1-Plus-LTS-ext4-sysupgrade"
@@ -72,7 +72,7 @@ rename_firmware() {
         "-xunlong_orangepi-zero2-ext4-sdcard|OrangePi-Zero2-ext4-sdcard"   
         "-xunlong_orangepi-zero3-squashfs-sdcard|OrangePi-Zero3-squashfs-sdcard"
         "-xunlong_orangepi-zero3-ext4-sdcard|OrangePi-Zero3-ext4-sdcard"
-
+        
         # friendlyarm Official
         "-friendlyarm_nanopi-r2c-ext4-sysupgrade|Nanopi-R2C-ext4-sysupgrade"
         "-friendlyarm_nanopi-r2c-plus-ext4-sysupgrade|Nanopi-R2C-Plus-ext4-sysupgrade"
@@ -86,7 +86,7 @@ rename_firmware() {
         "-friendlyarm_nanopi-neo-plus2-ext4-sysupgrade|Nanopi-Neo-Plus2-ext4-sysupgrade"
         "-friendlyarm_nanopi-r1s-h5-ext4-sysupgrade|Nanopi-R1-H5-ext4-sysupgrade"
         "-firefly_roc-rk3328-cc-ext4-sysupgrade|Firefly_Roc-RK3328-CC-ext4-sysupgrade"
-
+        
         "-firefly_roc-rk3328-cc-squashfs-sysupgrade|Firefly_Roc-RK3328-CC-squashfs-sysupgrade"
         "-friendlyarm_nanopi-r2c-squashfs-sysupgrade|Nanopi-R2C-squashfs-sysupgrade"
         "-friendlyarm_nanopi-r2c-plus-squashfs-sysupgrade|Nanopi-R2C-Plus-squashfs-sysupgrade"
@@ -99,16 +99,7 @@ rename_firmware() {
         "-friendlyarm_nanopi-neo2-squashfs-sysupgrade|Nanopi-Neo2-squashfs-sysupgrade"
         "-friendlyarm_nanopi-neo-plus2-squashfs-sysupgrade|Nanopi-Neo-Plus2-squashfs-sysupgrade"
         "-friendlyarm_nanopi-r1s-h5-squashfs-sysupgrade|Nanopi-R1S-H5-squashfs-sysupgrade"
-
-        # x86_64 Official
-        "x86-64-generic-ext4-combined-efi|X86_64_Generic_Ext4_Combined_EFI"
-        "x86-64-generic-ext4-combined|X86_64_Generic_Ext4_Combined"
-        "x86-64-generic-ext4-rootfs|X86_64_Generic_Ext4_Rootfs"
-        "x86-64-generic-squashfs-combined-efi|X86_64_Generic_Squashfs_Combined_EFI"
-        "x86-64-generic-squashfs-combined|X86_64_Generic_Squashfs_Combined"
-        "x86-64-generic-squashfs-rootfs|X86_64_Generic_Squashfs_Rootfs"
-        "x86-64-generic-rootfs|X86_64_Generic_Rootfs"
-
+         
         # Amlogic ULO
         "-s905x-b860h-|s905x-B860H"
         "-s905x-hg680p-|s905x-HG680P"
@@ -151,40 +142,74 @@ rename_firmware() {
         "_s905x4-advan_|s905x4_AT01-AX810"
         "_s905w_|s905w_TX3_Mini"
         "_s905w-x96-mini_|s905w-X96-Mini"
+        
+        # Allwinner Ophub
+        "_allwinner_orangepi-3_|OrangePi_3"
+        "_allwinner_orangepi-zplus_|OrangePi_ZeroPlus"
+        "_allwinner_orangepi-zplus2_|OrangePi_ZeroPlus2"
+        "_allwinner_orangepi-zero2_|OrangePi_Zero2"
+        "_allwinner_orangepi-zero3_|OrangePi_Zero3"
+        
+        # Rockchip Ophub
+        "_rk3318-box_|RK3318-Box"
+        "_renegade-rk3328_|Firefly-RK3328"
+        "_h96-max-m2_|RK3528-H96-Max"
+        "_panther-x2_|RK3566-Panther-X2"
+        "_rock5b_|RK3588-Rock5B"
+        "_king3399_|RK3399-King3399"
+        
+        # friendlyarm Ophub
+        "_nanopi-r5s_|Nanopi-r5s"
+        "_nanopi-r5c_|Nanopi-r5c"
+        
+        # x86_64 Official
+        "x86-64-generic-ext4-combined-efi|X86_64_Generic_Ext4_Combined_EFI"
+        "x86-64-generic-ext4-combined|X86_64_Generic_Ext4_Combined"
+        "x86-64-generic-ext4-rootfs|X86_64_Generic_Ext4_Rootfs"
+        "x86-64-generic-squashfs-combined-efi|X86_64_Generic_Squashfs_Combined_EFI"
+        "x86-64-generic-squashfs-combined|X86_64_Generic_Squashfs_Combined"
+        "x86-64-generic-squashfs-rootfs|X86_64_Generic_Squashfs_Rootfs"
+        "x86-64-generic-rootfs|X86_64_Generic_Rootfs"
     )
 
-    # Loop rename & pindah
-    for pattern in "${search_replace_patterns[@]}"; do
+   for pattern in "${search_replace_patterns[@]}"; do
         local search="${pattern%%|*}"
         local replace="${pattern##*|}"
 
-        for ext in img.gz tar.gz; do
-            for file in *"${search}"*.$ext; do
-                [[ -f "$file" ]] || continue
-
+        for file in *"${search}"*.img.gz; do
+            if [[ -f "$file" ]]; then
                 local kernel=""
                 if [[ "$file" =~ k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)? ]]; then
                     kernel="${BASH_REMATCH[0]}"
                 fi
-
                 local new_name
-                if [[ -n "$kernel" && "$ext" == "img.gz" ]]; then
-                    new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}_${kernel}-${TUNNEL}-${DATE}.img.gz"
+                if [[ -n "$kernel" ]]; then
+                    new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}-${kernel}-${TUNNEL}-${DATE}.img.gz"
                 else
-                    new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}_${TUNNEL}-${DATE}.img.gz"
+                    new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}-${TUNNEL}-${DATE}.img.gz"
                 fi
-
                 echo -e "${INFO} Renaming: $file → $new_name"
-                mv "$file" "$new_name" || { echo -e "${WARN} Failed to rename $file"; continue; }
-
-                # Pindahkan ke folder mod
-                cp "$new_name" "$output_dir/" || { echo -e "${WARN} Failed to move $new_name"; continue; }
-            done
+                mv "$file" "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images/mod/$new_name" || {
+                    echo -e "${WARN} Failed to rename $file"
+                    continue
+                }
+            fi
+        done
+        for file in *"${search}"*.tar.gz; do
+            if [[ -f "$file" ]]; then
+                local new_name
+                new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}-${TUNNEL}-${DATE}.img.gz"
+                echo -e "${INFO} Renaming: $file → $new_name"
+                mv "$file" "$new_name" || {
+                    echo -e "${WARN} Failed to rename $file"
+                    continue
+                }
+            fi
         done
     done
 
     sync && sleep 3
-    echo -e "${INFO} Rename & move operation completed. Files are in $output_dir"
+    echo -e "${INFO} Rename operation completed."
 }
 
 rename_firmware
