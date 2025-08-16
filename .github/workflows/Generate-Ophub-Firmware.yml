@@ -728,7 +728,7 @@ jobs:
         with:
           tag_name: ${{ env.RELEASE_TAG }}
           name: ${{ env.RELEASE_NAME }}
-          files: ${{ env.WORKING_DIR }}/compiled_images/*.img.gz
+          files: ${{ env.WORKING_DIR }}/compiled_images/mod/*.img.gz
           prerelease: ${{ github.ref_name == 'dev' }}
       
       - name: Wait before next build
