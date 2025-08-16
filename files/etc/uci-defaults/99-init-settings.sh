@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Setup logging
-LOG_FILE="/root/setup-xidzswrt.log"
+LOG_FILE="/root/houjie-wrt.log"
 exec > "$LOG_FILE" 2>&1
 
 # logging dengan status
@@ -31,8 +31,8 @@ log_status() {
 
 # header log
 log_status "INFO" "========================================="
-log_status "INFO" "XIDZs-WRT Setup Script Started"
-log_status "INFO" "Script Setup By Xidz-x | Fidz"
+log_status "INFO" "HJ-WRT Setup Script Started"
+log_status "INFO" "Script Setup By HOUJIE | HJ"
 log_status "INFO" "Installed Time: $(date '+%A, %d %B %Y %T')"
 log_status "INFO" "========================================="
 
@@ -425,7 +425,7 @@ log_status "SUCCESS" "All setup completed successfully"
 rm -rf /etc/uci-defaults/$(basename "$0") 2>/dev/null
 
 log_status "INFO" "========================================="
-log_status "INFO" "XIDZs-WRT Setup Script Finished"
+log_status "INFO" "HOUJIE-WRT Setup Script Finished"
 log_status "INFO" "Check log file: $LOG_FILE"
 log_status "INFO" "========================================="
 
