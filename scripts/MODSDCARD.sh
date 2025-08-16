@@ -148,7 +148,7 @@ build_mod_sdcard() {
 
     local kernel
     kernel=$(grep -oP 'k[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9-]+)?' <<<"${file_name}")
-    local new_name="HJ-${OP_BASE}-${BRANCH}-${suffix}-${kernel}-${TUNNEL}-${DATE}-MODSDCARD.img.gz"
+    local new_name="HJ-${BRANCH}-${suffix}-${kernel}-${TUNNEL}-MODSDCARD.img.gz"
 
     cp "${file_name}.gz" "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images/mod/${new_name}" || {
         error_msg "Failed to rename image file"
