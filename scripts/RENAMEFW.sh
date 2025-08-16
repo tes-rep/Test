@@ -184,9 +184,9 @@ rename_firmware() {
                 fi
                 local new_name
                 if [[ -n "$kernel" ]]; then
-                    new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}-${kernel}-${TUNNEL}-${DATE}.img.gz"
+                    new_name="HJ-${BRANCH}-${replace}-${kernel}-${TUNNEL}.img.gz"
                 else
-                    new_name="XIDZs-${OP_BASE}-${BRANCH}-${replace}-${TUNNEL}-${DATE}.img.gz"
+                    new_name="HJ-${BRANCH}-${replace}-${TUNNEL}.img.gz"
                 fi
                 echo -e "${INFO} Renaming: $file → $new_name"
                 cp "$file" "$GITHUB_WORKSPACE/$WORKING_DIR/compiled_images/mod/$new_name" || {
