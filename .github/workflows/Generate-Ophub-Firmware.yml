@@ -53,6 +53,21 @@ on:
           - RK3568 NanoPi-R5S
           - RK3588 Rock5B
           - RK3399 King3399
+      openwrt_kernel:
+        description: "Select kernel version"
+        required: false
+        default: "6.6.y_6.12.y"
+        type: choice
+        options:
+          - 5.4.y
+          - 5.10.y
+          - 5.15.y
+          - 6.1.y
+          - 6.6.y
+          - 6.12.y
+          - 6.1.y_6.6.y
+          - 5.15.y_5.10.y
+          - 6.6.y_6.12.y  
       tunnel:
         description: "Select Tunnel VPN"
         required: true
@@ -336,7 +351,7 @@ jobs:
           case "$MATRIXTARGET" in
             "Amlogic s905 MXQ-Pro+")
               TARGET_BUILD="s905-mxqpro-plus"
-              KERNEL="5.15.y_6.1.y"
+              KERNEL="${{ inputs.openwrt_kernel }}"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
@@ -426,7 +441,7 @@ jobs:
               ;;
             "Amlogic s905x HG680P")
               TARGET_BUILD="s905x"
-              KERNEL="5.15.y_6.1.y_6.6.y_6.12.y"
+              KERNEL="${{ inputs.openwrt_kernel }}"
               echo "TARGET_BUILD=$TARGET_BUILD" >> $GITHUB_ENV
               echo "KERNEL=$KERNEL" >> $GITHUB_ENV
               ;;
