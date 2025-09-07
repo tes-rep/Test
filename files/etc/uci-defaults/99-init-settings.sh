@@ -210,18 +210,26 @@ sed -i '/exit 0/i #sh /usr/bin/autojam.sh bug.com' /etc/rc.local 2>/dev/null
 rm -f /etc/hotplug.d/tty/25-modemmanager-tty 2>/dev/null
 log_status "SUCCESS" "Auto sync, cache settings, remove mm tty applied"
 
-# setup device amlogic
-log_status "INFO" "Checking for Amlogic device configuration..."
-if opkg list-installed 2>/dev/null | grep -q luci-app-amlogic; then
-    log_status "INFO" "luci-app-amlogic detected"
-    rm -f /etc/profile.d/30-sysinfo.sh 2>/dev/null
-    sed -i '/exit 0/i #sleep 5 && /usr/bin/k5hgled -r' /etc/rc.local 2>/dev/null
-    sed -i '/exit 0/i #sleep 5 && /usr/bin/k6hgled -r' /etc/rc.local 2>/dev/null
-else
-    log_status "INFO" "luci-app-amlogic not detected"
-    rm -f /usr/bin/k5hgled /usr/bin/k6hgled 2>/dev/null
-    rm -f /usr/bin/k5hgledon /usr/bin/k6hgledon 2>/dev/null
-fi
+# setup device amlogic via kernel version
+log_status "INFO" "Checking kernel version for Amlogic configuration..."
+KERNEL_VER=$(uname -r | cut -d. -f1)
+
+case "$KERNEL_VER" in
+    5)
+        log_status "INFO" "Kernel 5 detected ($KERNEL_VER.x), using k5hgled"
+        sed -i '/exit 0/i sleep 5 && /usr/bin/k5hgled -r' /etc/rc.local 2>/dev/null
+        ;;
+    6)
+        log_status "INFO" "Kernel 6 detected ($KERNEL_VER.x), using k6hgled"
+        sed -i '/exit 0/i sleep 5 && /usr/bin/k6hgled -r' /etc/rc.local 2>/dev/null
+        ;;
+    *)
+        log_status "INFO" "Unsupported kernel version ($KERNEL_VER.x), cleaning up hgled binaries"
+        rm -f /usr/bin/k5hgled /usr/bin/k6hgled 2>/dev/null
+        rm -f /usr/bin/k5hgledon /usr/bin/k6hgledon 2>/dev/null
+        ;;
+esac
+
 
 log_status "INFO" "Setting up misc settings and sett permission"
 # setup misc settings
